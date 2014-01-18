@@ -151,6 +151,11 @@ abstract class DocumentoBaseDAOBase extends DAO
 			array_push( $val, $documento_base->getJsonImpresion() );
 		}
 
+		if( ! is_null( $documento_base->getNombrePlantilla() ) ){
+			$sql .= " `nombre_plantilla` = ? AND";
+			array_push( $val, $documento_base->getNombrePlantilla() );
+		}
+
 		if( ! is_null( $documento_base->getUltimaModificacion() ) ){
 			$sql .= " `ultima_modificacion` = ? AND";
 			array_push( $val, $documento_base->getUltimaModificacion() );
@@ -178,7 +183,7 @@ abstract class DocumentoBaseDAOBase extends DAO
 	  *	
 	  * Este metodo es un metodo de ayuda para uso interno. Se ejecutara todas las manipulaciones
 	  * en la base de datos que estan dadas en el objeto pasado.No se haran consultas SELECT 
-	  * aqui, sin embargo. El valor de retorno indica cuántas filas se vieron afectadas.
+	  * aqui, sin embargo. El valor de retorno indica cuÃ¡ntas filas se vieron afectadas.
 	  *	
 	  * @internal private information for advanced developers only
 	  * @return Filas afectadas o un string con la descripcion del error
@@ -186,13 +191,14 @@ abstract class DocumentoBaseDAOBase extends DAO
 	  **/
 	private static final function update( $documento_base )
 	{
-		$sql = "UPDATE documento_base SET  `id_empresa` = ?, `id_sucursal` = ?, `nombre` = ?, `activo` = ?, `json_impresion` = ?, `ultima_modificacion` = ? WHERE  `id_documento_base` = ?;";
+		$sql = "UPDATE documento_base SET  `id_empresa` = ?, `id_sucursal` = ?, `nombre` = ?, `activo` = ?, `json_impresion` = ?, `nombre_plantilla` = ?, `ultima_modificacion` = ? WHERE  `id_documento_base` = ?;";
 		$params = array( 
 			$documento_base->getIdEmpresa(), 
 			$documento_base->getIdSucursal(), 
 			$documento_base->getNombre(), 
 			$documento_base->getActivo(), 
 			$documento_base->getJsonImpresion(), 
+			$documento_base->getNombrePlantilla(), 
 			$documento_base->getUltimaModificacion(), 
 			$documento_base->getIdDocumentoBase(), );
 		global $conn;
@@ -217,7 +223,7 @@ abstract class DocumentoBaseDAOBase extends DAO
 	  **/
 	private static final function create( &$documento_base )
 	{
-		$sql = "INSERT INTO documento_base ( `id_documento_base`, `id_empresa`, `id_sucursal`, `nombre`, `activo`, `json_impresion`, `ultima_modificacion` ) VALUES ( ?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO documento_base ( `id_documento_base`, `id_empresa`, `id_sucursal`, `nombre`, `activo`, `json_impresion`, `nombre_plantilla`, `ultima_modificacion` ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
 		$params = array( 
 			$documento_base->getIdDocumentoBase(), 
 			$documento_base->getIdEmpresa(), 
@@ -225,6 +231,7 @@ abstract class DocumentoBaseDAOBase extends DAO
 			$documento_base->getNombre(), 
 			$documento_base->getActivo(), 
 			$documento_base->getJsonImpresion(), 
+			$documento_base->getNombrePlantilla(), 
 			$documento_base->getUltimaModificacion(), 
 		 );
 		global $conn;
@@ -335,6 +342,17 @@ abstract class DocumentoBaseDAOBase extends DAO
 				array_push( $val, max($a,$b)); 
 		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
 			$sql .= " `json_impresion` = ? AND"; 
+			$a = is_null ( $a ) ? $b : $a;
+			array_push( $val, $a);
+			
+		}
+
+		if( ( !is_null (($a = $documento_baseA->getNombrePlantilla()) ) ) & ( ! is_null ( ($b = $documento_baseB->getNombrePlantilla()) ) ) ){
+				$sql .= " `nombre_plantilla` >= ? AND `nombre_plantilla` <= ? AND";
+				array_push( $val, min($a,$b)); 
+				array_push( $val, max($a,$b)); 
+		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
+			$sql .= " `nombre_plantilla` = ? AND"; 
 			$a = is_null ( $a ) ? $b : $a;
 			array_push( $val, $a);
 			

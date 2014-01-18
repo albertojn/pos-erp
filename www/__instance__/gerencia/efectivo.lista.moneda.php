@@ -14,10 +14,17 @@
 		$tabla = new TableComponent( 
 			array(
                                 "nombre"                => "Nombre",
-				"simbolo"               => "Simbolo"
+				"simbolo"               => "Simbolo",
+				"activa" => "Activa"
 			),
 			EfectivoController::ListaMoneda()
 		);
+
+		function funcion_bool_to_string($valor){
+			return ($valor===true || $valor==="1" || $valor===1) ? "<strong>Si</strong>" : "No";
+        }
+
+        $tabla->addColRender("activa", "funcion_bool_to_string");
 //                
 //                function funcion_moneda($id_moneda)
 //                {

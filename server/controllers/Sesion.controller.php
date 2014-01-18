@@ -199,12 +199,18 @@ class SesionController implements ISesion{
 			case 5: $next_url = "c/"; break;
 		}
 		
-		return array( 
+		$r = array( 
 				"auth_token" => $nueva_sesion->getAuthToken(), 
 				"login_succesful" => true,
-				"usuario_grupo" => $user->getIdRol(),
-				"siguiente_url" => $next_url
+				"usuario_grupo" => $user->getIdRol(),				
+				"siguiente_url" => $next_url,				
 			);
+                
+               if ($user->getIdRol() == 5) {
+                   $r["detalles_usuario"] = ClientesController::Detalle($user->getIdUsuario());
+               } 
+                
+                return $r;
 	}
 
 
@@ -283,20 +289,15 @@ class SesionController implements ISesion{
 
 
 
-	static function isLoggedIn(){
-		
-		//Logger::log("isLoggedIn() started...");
-		
-		if(isset(self::$_is_logged_in) && !is_null(self::$_is_logged_in) && self::$_is_logged_in){
-			////Logger::log("isLoggedIn() already set ...");
+	static function isLoggedIn() {
+
+		if (isset(self::$_is_logged_in) && !is_null(self::$_is_logged_in) && self::$_is_logged_in) {
 			return true;
 		}
-		
 
 		$auth_token = null;
 
-
-		if(isset($_GET["at"]) ){
+		if (isset($_GET["at"]) ) {
 			$auth_token =$_GET["at"];
 
 		} else if(isset($_POST["at"])){
@@ -308,36 +309,22 @@ class SesionController implements ISesion{
 
 		}
 
-
-
-		
-		if( is_null($auth_token) ) {
-			Logger::log("there is no auth token in the cookie");
+		if (is_null($auth_token)) {
+			Logger::log("No auth token in GET/POST/COOKIE");
 			self::$_is_logged_in = false;
 			return false;
-
 		}
-		
-		////Logger::log("There is a session token in the cookie, lets test it.");
-	
+
 		$user = SesionDAO::getUserByAuthToken($auth_token);
-	
-		if(is_null($user)){
-			//Logger::warn("auth_token was not found in the db, why is this?");
+
+		if (is_null($user)) {
 			self::$_is_logged_in = false;
 			return false;
 		}else{
-			//Logger::log("auth_token validated, it belongs to user_id=" . $user->getIdUsuario());
 			self::$_is_logged_in = true;
-			return true;			
+			return true;
 		}
-		
-
-
-
 	}
-	
-
 
 	private static function login( $auth_token, $user_id, $rol_id ){
 		if(headers_sent( )){

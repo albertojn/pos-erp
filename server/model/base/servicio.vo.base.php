@@ -168,7 +168,7 @@ class Servicio extends VO
 	/**
 	  * garantia
 	  * 
-	  * Si este servicio tiene una garantÃƒÂ­a en meses.<br>
+	  * Si este servicio tiene una garantÃƒÆ’Ã‚Â­a en meses.<br>
 	  * @access public
 	  * @var int(11)
 	  */
@@ -409,7 +409,7 @@ class Servicio extends VO
 	/**
 	  * getGarantia
 	  * 
-	  * Get the <i>garantia</i> property for this object. Donde <i>garantia</i> es Si este servicio tiene una garantÃƒÂ­a en meses.
+	  * Get the <i>garantia</i> property for this object. Donde <i>garantia</i> es Si este servicio tiene una garantÃƒÆ’Ã‚Â­a en meses.
 	  * @return int(11)
 	  */
 	final public function getGarantia()
@@ -420,7 +420,7 @@ class Servicio extends VO
 	/**
 	  * setGarantia( $garantia )
 	  * 
-	  * Set the <i>garantia</i> property for this object. Donde <i>garantia</i> es Si este servicio tiene una garantÃƒÂ­a en meses..
+	  * Set the <i>garantia</i> property for this object. Donde <i>garantia</i> es Si este servicio tiene una garantÃƒÆ’Ã‚Â­a en meses..
 	  * Una validacion basica se hara aqui para comprobar que <i>garantia</i> es de tipo <i>int(11)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param int(11)

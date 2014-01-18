@@ -91,7 +91,8 @@
 
 	$form->createComboBoxJoin("id_ciudad", "nombre", CiudadDAO::getAll());
 	$form->createComboBoxJoin( "tarifa_venta_obtenida", "tarifa_venta_obtenida", array("rol", "proveedor", "cliente","usuario") );
-
+	$form->createComboBoxJoin("id_perfil", "descripcion", POSController::ListaPerfilConfiguracion());
+	
 	$form->renameField(array(
 	    "id_ciudad" => "ciudad"
 	));
@@ -106,7 +107,8 @@
 	    "nombre",
 	    "id_rol",
 	    "password",
-	    "codigo_usuario"
+	    "codigo_usuario",
+		"id_perfil"
 	));
 
 

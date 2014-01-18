@@ -130,7 +130,7 @@ class CorteDeCaja extends VO
 	/**
 	  * saldo_esperado
 	  * 
-	  * Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÂºltimo corte de caja o a la apertura de la misma<br>
+	  * Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÆ’Ã‚Âºltimo corte de caja o a la apertura de la misma<br>
 	  * @access public
 	  * @var float
 	  */
@@ -139,7 +139,7 @@ class CorteDeCaja extends VO
 	/**
 	  * saldo_final
 	  * 
-	  * Saldo que se deja en caja despuÃƒÂ©s de realizar el corte<br>
+	  * Saldo que se deja en caja despuÃƒÆ’Ã‚Â©s de realizar el corte<br>
 	  * @access public
 	  * @var float
 	  */
@@ -296,7 +296,7 @@ class CorteDeCaja extends VO
 	/**
 	  * getSaldoEsperado
 	  * 
-	  * Get the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÂºltimo corte de caja o a la apertura de la misma
+	  * Get the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÆ’Ã‚Âºltimo corte de caja o a la apertura de la misma
 	  * @return float
 	  */
 	final public function getSaldoEsperado()
@@ -307,7 +307,7 @@ class CorteDeCaja extends VO
 	/**
 	  * setSaldoEsperado( $saldo_esperado )
 	  * 
-	  * Set the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÂºltimo corte de caja o a la apertura de la misma.
+	  * Set the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÆ’Ã‚Âºltimo corte de caja o a la apertura de la misma.
 	  * Una validacion basica se hara aqui para comprobar que <i>saldo_esperado</i> es de tipo <i>float</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param float
@@ -320,7 +320,7 @@ class CorteDeCaja extends VO
 	/**
 	  * getSaldoFinal
 	  * 
-	  * Get the <i>saldo_final</i> property for this object. Donde <i>saldo_final</i> es Saldo que se deja en caja despuÃƒÂ©s de realizar el corte
+	  * Get the <i>saldo_final</i> property for this object. Donde <i>saldo_final</i> es Saldo que se deja en caja despuÃƒÆ’Ã‚Â©s de realizar el corte
 	  * @return float
 	  */
 	final public function getSaldoFinal()
@@ -331,7 +331,7 @@ class CorteDeCaja extends VO
 	/**
 	  * setSaldoFinal( $saldo_final )
 	  * 
-	  * Set the <i>saldo_final</i> property for this object. Donde <i>saldo_final</i> es Saldo que se deja en caja despuÃƒÂ©s de realizar el corte.
+	  * Set the <i>saldo_final</i> property for this object. Donde <i>saldo_final</i> es Saldo que se deja en caja despuÃƒÆ’Ã‚Â©s de realizar el corte.
 	  * Una validacion basica se hara aqui para comprobar que <i>saldo_final</i> es de tipo <i>float</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param float

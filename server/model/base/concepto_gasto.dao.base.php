@@ -136,14 +136,14 @@ abstract class ConceptoGastoDAOBase extends DAO
 			array_push( $val, $concepto_gasto->getDescripcion() );
 		}
 
-		if( ! is_null( $concepto_gasto->getMonto() ) ){
-			$sql .= " `monto` = ? AND";
-			array_push( $val, $concepto_gasto->getMonto() );
-		}
-
 		if( ! is_null( $concepto_gasto->getActivo() ) ){
 			$sql .= " `activo` = ? AND";
 			array_push( $val, $concepto_gasto->getActivo() );
+		}
+
+		if( ! is_null( $concepto_gasto->getIdCuentaContable() ) ){
+			$sql .= " `id_cuenta_contable` = ? AND";
+			array_push( $val, $concepto_gasto->getIdCuentaContable() );
 		}
 
 		if(sizeof($val) == 0){return self::getAll(/* $pagina = NULL, $columnas_por_pagina = NULL, $orden = NULL, $tipo_de_orden = 'ASC' */);}
@@ -168,7 +168,7 @@ abstract class ConceptoGastoDAOBase extends DAO
 	  *	
 	  * Este metodo es un metodo de ayuda para uso interno. Se ejecutara todas las manipulaciones
 	  * en la base de datos que estan dadas en el objeto pasado.No se haran consultas SELECT 
-	  * aqui, sin embargo. El valor de retorno indica cuántas filas se vieron afectadas.
+	  * aqui, sin embargo. El valor de retorno indica cuÃ¡ntas filas se vieron afectadas.
 	  *	
 	  * @internal private information for advanced developers only
 	  * @return Filas afectadas o un string con la descripcion del error
@@ -176,12 +176,12 @@ abstract class ConceptoGastoDAOBase extends DAO
 	  **/
 	private static final function update( $concepto_gasto )
 	{
-		$sql = "UPDATE concepto_gasto SET  `nombre` = ?, `descripcion` = ?, `monto` = ?, `activo` = ? WHERE  `id_concepto_gasto` = ?;";
+		$sql = "UPDATE concepto_gasto SET  `nombre` = ?, `descripcion` = ?, `activo` = ?, `id_cuenta_contable` = ? WHERE  `id_concepto_gasto` = ?;";
 		$params = array( 
 			$concepto_gasto->getNombre(), 
 			$concepto_gasto->getDescripcion(), 
-			$concepto_gasto->getMonto(), 
 			$concepto_gasto->getActivo(), 
+			$concepto_gasto->getIdCuentaContable(), 
 			$concepto_gasto->getIdConceptoGasto(), );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -205,13 +205,13 @@ abstract class ConceptoGastoDAOBase extends DAO
 	  **/
 	private static final function create( &$concepto_gasto )
 	{
-		$sql = "INSERT INTO concepto_gasto ( `id_concepto_gasto`, `nombre`, `descripcion`, `monto`, `activo` ) VALUES ( ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO concepto_gasto ( `id_concepto_gasto`, `nombre`, `descripcion`, `activo`, `id_cuenta_contable` ) VALUES ( ?, ?, ?, ?, ?);";
 		$params = array( 
 			$concepto_gasto->getIdConceptoGasto(), 
 			$concepto_gasto->getNombre(), 
 			$concepto_gasto->getDescripcion(), 
-			$concepto_gasto->getMonto(), 
 			$concepto_gasto->getActivo(), 
+			$concepto_gasto->getIdCuentaContable(), 
 		 );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -293,23 +293,23 @@ abstract class ConceptoGastoDAOBase extends DAO
 			
 		}
 
-		if( ( !is_null (($a = $concepto_gastoA->getMonto()) ) ) & ( ! is_null ( ($b = $concepto_gastoB->getMonto()) ) ) ){
-				$sql .= " `monto` >= ? AND `monto` <= ? AND";
-				array_push( $val, min($a,$b)); 
-				array_push( $val, max($a,$b)); 
-		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
-			$sql .= " `monto` = ? AND"; 
-			$a = is_null ( $a ) ? $b : $a;
-			array_push( $val, $a);
-			
-		}
-
 		if( ( !is_null (($a = $concepto_gastoA->getActivo()) ) ) & ( ! is_null ( ($b = $concepto_gastoB->getActivo()) ) ) ){
 				$sql .= " `activo` >= ? AND `activo` <= ? AND";
 				array_push( $val, min($a,$b)); 
 				array_push( $val, max($a,$b)); 
 		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
 			$sql .= " `activo` = ? AND"; 
+			$a = is_null ( $a ) ? $b : $a;
+			array_push( $val, $a);
+			
+		}
+
+		if( ( !is_null (($a = $concepto_gastoA->getIdCuentaContable()) ) ) & ( ! is_null ( ($b = $concepto_gastoB->getIdCuentaContable()) ) ) ){
+				$sql .= " `id_cuenta_contable` >= ? AND `id_cuenta_contable` <= ? AND";
+				array_push( $val, min($a,$b)); 
+				array_push( $val, max($a,$b)); 
+		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
+			$sql .= " `id_cuenta_contable` = ? AND"; 
 			$a = is_null ( $a ) ? $b : $a;
 			array_push( $val, $a);
 			

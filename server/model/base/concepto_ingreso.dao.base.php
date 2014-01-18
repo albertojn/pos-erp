@@ -136,14 +136,14 @@ abstract class ConceptoIngresoDAOBase extends DAO
 			array_push( $val, $concepto_ingreso->getDescripcion() );
 		}
 
-		if( ! is_null( $concepto_ingreso->getMonto() ) ){
-			$sql .= " `monto` = ? AND";
-			array_push( $val, $concepto_ingreso->getMonto() );
-		}
-
 		if( ! is_null( $concepto_ingreso->getActivo() ) ){
 			$sql .= " `activo` = ? AND";
 			array_push( $val, $concepto_ingreso->getActivo() );
+		}
+
+		if( ! is_null( $concepto_ingreso->getIdCuentaContable() ) ){
+			$sql .= " `id_cuenta_contable` = ? AND";
+			array_push( $val, $concepto_ingreso->getIdCuentaContable() );
 		}
 
 		if(sizeof($val) == 0){return self::getAll(/* $pagina = NULL, $columnas_por_pagina = NULL, $orden = NULL, $tipo_de_orden = 'ASC' */);}
@@ -168,7 +168,7 @@ abstract class ConceptoIngresoDAOBase extends DAO
 	  *	
 	  * Este metodo es un metodo de ayuda para uso interno. Se ejecutara todas las manipulaciones
 	  * en la base de datos que estan dadas en el objeto pasado.No se haran consultas SELECT 
-	  * aqui, sin embargo. El valor de retorno indica cuántas filas se vieron afectadas.
+	  * aqui, sin embargo. El valor de retorno indica cuÃ¡ntas filas se vieron afectadas.
 	  *	
 	  * @internal private information for advanced developers only
 	  * @return Filas afectadas o un string con la descripcion del error
@@ -176,12 +176,12 @@ abstract class ConceptoIngresoDAOBase extends DAO
 	  **/
 	private static final function update( $concepto_ingreso )
 	{
-		$sql = "UPDATE concepto_ingreso SET  `nombre` = ?, `descripcion` = ?, `monto` = ?, `activo` = ? WHERE  `id_concepto_ingreso` = ?;";
+		$sql = "UPDATE concepto_ingreso SET  `nombre` = ?, `descripcion` = ?, `activo` = ?, `id_cuenta_contable` = ? WHERE  `id_concepto_ingreso` = ?;";
 		$params = array( 
 			$concepto_ingreso->getNombre(), 
 			$concepto_ingreso->getDescripcion(), 
-			$concepto_ingreso->getMonto(), 
 			$concepto_ingreso->getActivo(), 
+			$concepto_ingreso->getIdCuentaContable(), 
 			$concepto_ingreso->getIdConceptoIngreso(), );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -205,13 +205,13 @@ abstract class ConceptoIngresoDAOBase extends DAO
 	  **/
 	private static final function create( &$concepto_ingreso )
 	{
-		$sql = "INSERT INTO concepto_ingreso ( `id_concepto_ingreso`, `nombre`, `descripcion`, `monto`, `activo` ) VALUES ( ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO concepto_ingreso ( `id_concepto_ingreso`, `nombre`, `descripcion`, `activo`, `id_cuenta_contable` ) VALUES ( ?, ?, ?, ?, ?);";
 		$params = array( 
 			$concepto_ingreso->getIdConceptoIngreso(), 
 			$concepto_ingreso->getNombre(), 
 			$concepto_ingreso->getDescripcion(), 
-			$concepto_ingreso->getMonto(), 
 			$concepto_ingreso->getActivo(), 
+			$concepto_ingreso->getIdCuentaContable(), 
 		 );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -293,23 +293,23 @@ abstract class ConceptoIngresoDAOBase extends DAO
 			
 		}
 
-		if( ( !is_null (($a = $concepto_ingresoA->getMonto()) ) ) & ( ! is_null ( ($b = $concepto_ingresoB->getMonto()) ) ) ){
-				$sql .= " `monto` >= ? AND `monto` <= ? AND";
-				array_push( $val, min($a,$b)); 
-				array_push( $val, max($a,$b)); 
-		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
-			$sql .= " `monto` = ? AND"; 
-			$a = is_null ( $a ) ? $b : $a;
-			array_push( $val, $a);
-			
-		}
-
 		if( ( !is_null (($a = $concepto_ingresoA->getActivo()) ) ) & ( ! is_null ( ($b = $concepto_ingresoB->getActivo()) ) ) ){
 				$sql .= " `activo` >= ? AND `activo` <= ? AND";
 				array_push( $val, min($a,$b)); 
 				array_push( $val, max($a,$b)); 
 		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
 			$sql .= " `activo` = ? AND"; 
+			$a = is_null ( $a ) ? $b : $a;
+			array_push( $val, $a);
+			
+		}
+
+		if( ( !is_null (($a = $concepto_ingresoA->getIdCuentaContable()) ) ) & ( ! is_null ( ($b = $concepto_ingresoB->getIdCuentaContable()) ) ) ){
+				$sql .= " `id_cuenta_contable` >= ? AND `id_cuenta_contable` <= ? AND";
+				array_push( $val, min($a,$b)); 
+				array_push( $val, max($a,$b)); 
+		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
+			$sql .= " `id_cuenta_contable` = ? AND"; 
 			$a = is_null ( $a ) ? $b : $a;
 			array_push( $val, $a);
 			

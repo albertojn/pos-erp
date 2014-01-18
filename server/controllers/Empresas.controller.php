@@ -169,8 +169,6 @@ class EmpresasController implements IEmpresas
 	 **/
 	public static function Buscar($activa = false, $limit = null, $order = null, $order_by = null, $query = null, $start = null)
 	{
-		Logger::log("Listando empresas ...");
-
 		if ($activa !== NULL && is_bool($activa) === false) {
 			Logger::error("Buscar() verifique el valor especificado en activa, se esperaba boolean, se encontro : (" . gettype($activa) . ") {$activa}");
 			return array("success" => false, "reason" => "Buscar() verifique el valor especificado en activa, se esperaba boolean, se encontro : (" . gettype($activa) . ") {$activa}");
@@ -207,7 +205,7 @@ class EmpresasController implements IEmpresas
 
 		$empresas = EmpresaDAO::buscar($activa, $limit, $order, $order_by, $query, $start);
 
-		return array("success" => true, "numero_de_resulatos" => count($empresas), "resultados" => $empresas);
+		return array("success" => true, "numero_de_resultados" => count($empresas), "resultados" => $empresas);
 	}
 	
 	/**
@@ -287,7 +285,7 @@ class EmpresasController implements IEmpresas
 	static function Nuevo($contabilidad, $direccion, $razon_social, $rfc, $cuentas_bancarias = null, 
 		$direccion_web = null, $duplicar =  false , $email = null, $impuestos_compra = null, 
 		$impuestos_venta = null, $mensaje_morosos = null, $representante_legal = null, $uri_logo = null
-	) {
+	) {				
 		//validamos la estructura de los impuestos
 		{
 			//verificamos los impuestos de compra
@@ -303,22 +301,23 @@ class EmpresasController implements IEmpresas
 			}
 		}
 
+		//Logger::error($contabilidad);		
 		//verificamos los datos de contabilidad
 		{
 			//verificamos si se enviaron todos los parametros
 			if (empty($contabilidad->id_moneda) || empty($contabilidad->ejercicio) || 
 				empty($contabilidad->periodo_actual) || empty($contabilidad->duracion_periodo)
 			) {
-				Logger::error("Error : Verifique la información de contabilidad este completa");
-				throw new InvalidDataException("Verifique la información de contabilidad este completa");
+				Logger::error("Error : Verifique que la información de contabilidad este completa");
+				throw new InvalidDataException("Verifique que la información de contabilidad este completa : " . $contabilidad);
 			}
 
 			//verificamos si se enviaron valores correctos
 			if (!is_numeric($contabilidad->id_moneda) || 
 				!is_numeric($contabilidad->periodo_actual) || !is_numeric($contabilidad->duracion_periodo)
 			) {
-				Logger::error("Error : Verifique la información de contabilidad sea correcta");
-				throw new InvalidDataException("Verifique la información de contabilidad sea correcta");
+				Logger::error("Error : Verifique que la información de contabilidad sea correcta");
+				throw new InvalidDataException("Verifique que la información de contabilidad sea correcta");
 			}
 
 			//validamos decimales
@@ -326,15 +325,20 @@ class EmpresasController implements IEmpresas
 				$contabilidad->periodo_actual - ((int) $contabilidad->periodo_actual) !== 0 ||
 				$contabilidad->duracion_periodo - ((int) $contabilidad->duracion_periodo) !== 0
 			) {
-				Logger::error("Error : Verifique la información de contabilidad sea correcta, el id_moneda, periodo_actual y duracion_periodo deben ser valores enteros");
-				throw new InvalidDataException("Error : Verifique la información de contabilidad sea correcta, el id_moneda, periodo_actual y duracion_periodo deben ser valores enteros");
+				Logger::error("Error : Verifique que la información de contabilidad sea correcta, el id_moneda, periodo_actual y duracion_periodo deben ser valores enteros");
+				throw new InvalidDataException("Error : Verifique que la información de contabilidad sea correcta, el id_moneda, periodo_actual y duracion_periodo deben ser valores enteros");
 			}
 
-			if ($contabilidad->duracion_periodo < 1 || 
-				$contabilidad->duracion_periodo === 5 || $contabilidad->duracion_periodo > 6
+			if ($contabilidad->duracion_periodo < "1" || 
+				$contabilidad->duracion_periodo === "5" || $contabilidad->duracion_periodo > "6"
 			) {
-				Logger::error("Error : Verifique la duracion de los perodos, solo pueden durar 1, 2, 3, 4 y 6 meses");
-				throw new InvalidDataException("Error : Verifique la duracion de los perodos, solo pueden durar 1, 2, 3, 4 y 6 meses");
+				Logger::error("Error : Verifique que la duracion de los perodos, solo pueden durar 1, 2, 3, 4 y 6 meses");
+				throw new InvalidDataException("Error : Verifique que la duracion de los perodos, solo pueden durar 1, 2, 3, 4 y 6 meses");
+			}
+
+			if($contabilidad->periodo_actual > (12 / $contabilidad->duracion_periodo)){
+				Logger::error("Error : Verifique el valor del periodo actual, debe concordar con la relacion de la duracion de los periodos");
+				throw new InvalidDataException("Error : Verifique el valor del periodo actual, debe concordar con la relacion de la duracion de los periodos");	
 			}
 
 		}
@@ -370,7 +374,8 @@ class EmpresasController implements IEmpresas
 		if (!empty($uri_logo)) {
 
 			$logo = new Logo(array(
-				"imagen" => urldecode($uri_logo)
+				"imagen" => $uri_logo,
+				"tipo" => "-"
 			));
 
 			try {
@@ -406,7 +411,7 @@ class EmpresasController implements IEmpresas
 				"rfc"    => $rfc,
 				"activo" => 1
 			)));
-
+			
 			if (!empty($empresas)) {
 				Logger::error("Este rfc ya esta en uso por la empresa activa");
 				throw new InvalidDataException("El rfc: " . $rfc . " ya esta en uso", 901);
@@ -473,6 +478,36 @@ class EmpresasController implements IEmpresas
 				DAO::transRollback();
 				Logger::error("No se pudo crear la relacion entre la moneda base y la empresa: " . $e->getMessage());
 				throw new Exception("No se pudo crear la relacion entre la moneda base y la empresa", 901);
+			}
+
+			//creamos la configuracion del tipo de cambio para esta empresa
+			$tc = new Configuracion(array(
+				"descripcion" => "tipo_cambio",
+				"valor"       => "",
+				"id_usuario"  => "",
+				"fecha"       => time()
+			));
+
+			try {
+				ConfiguracionDAO::save($tc);
+			}catch (Exception $e) {
+				DAO::transRollback();
+				Logger::error("No se pudo crear la configuracion del tipo de cambio para la empresa: " . $e->getMessage());
+				throw new Exception("No se pudo crear la configuracion del tipo de cambio para la empresa", 901);
+			}
+
+			//relacionamos la configuracion con la empresa que estamos creando
+			$conf_empresa = new ConfiguracionEmpresa(array(
+				"id_configuracion" => $tc->getIdConfiguracion(),
+				"id_empresa"       => $empresa->getIdEmpresa()
+			));
+
+			try {
+				ConfiguracionEmpresaDAO::save($conf_empresa);
+			}catch (Exception $e) {
+				DAO::transRollback();
+				Logger::error("No se pudo crear la relacion entre el tipo de cambio y la empresa: " . $e->getMessage());
+				throw new Exception("No se pudo crear la relacion entre el tipo de cambio y la empresa", 901);
 			}
 
 		}
@@ -559,7 +594,7 @@ class EmpresasController implements IEmpresas
 							"id_impuesto" => $impuestos_compra[$i]
 						)));
 					} catch (Exception $e) {
-						Logger::warn("Error al guardar un impuesto venta : " . $e->getMessage());
+						Logger::warn("Error al guardar un impuesto de compra : " . $e->getMessage());
 					}
 				}
 			}
@@ -572,7 +607,7 @@ class EmpresasController implements IEmpresas
 							"id_impuesto" => $impuestos_venta[$i]
 						)));
 					} catch (Exception $e) {
-						Logger::warn("Error al guardar un impuesto compra : " . $e->getMessage());
+						Logger::warn("Error al guardar un impuesto de venta : " . $e->getMessage());
 					}
 				}
 			}
@@ -626,9 +661,9 @@ class EmpresasController implements IEmpresas
 
 		//Verificamos si existen sucursales activas pertenecientes a la empresa
 		foreach ($sucursales_empresa as $sucursal) {
-			if ($sucursal->getActivo() === "0") {
-				Logger::error("La empresa $id_empresa ya esta desactivada");
-				throw new Exception("La empresa ya esta desactivada",901);
+			if ($sucursal->getActivo() === "1") {
+				Logger::error("Error : Hay una o mas sucursales activas, la empresa no se puede desactivar");
+				throw new Exception("Error : Hay una o mas sucursales activas, la empresa no se puede desactivar",901);
 			}
 		}
 
@@ -691,7 +726,7 @@ class EmpresasController implements IEmpresas
 	public static function Editar($id_empresa, $cuentas_bancarias = null, $direccion = null, $direccion_web = null, 
 		$email = null, $id_moneda = "0", $impuestos_compra = null, $impuestos_venta = null, 
 		$mensaje_morosos = null, $razon_social = null, $representante_legal = null, $rfc = null, $uri_logo = null
-	) {
+	) {		
 		//se guarda el registro de la empresa y se verifica que este activa
 		$empresa = EmpresaDAO::getByPK($id_empresa);
 
@@ -717,22 +752,29 @@ class EmpresasController implements IEmpresas
 
 			//editamos el id del logo
 			if (!empty($uri_logo)) {
+				//varificamos si cambio el logo
 
-				$logo = new Logo(array(
-					"imagen" => urldecode($uri_logo)
-				));
+				$_logo = LogoDAO::getByPK($empresa->getIdLogo());
 
-				try {
-					LogoDAO::save($logo);
-				}catch (Exception $e) {
-					DAO::transRollback();
-					Logger::error("No se pudo crear la empresa, error al crear el logo: " . $e->getMessage());
-					throw new Exception("No se pudo crear la empresa, consulte a su administrador de sistema", 901);
+				if($uri_logo !== $_logo->getImagen()){
+					$logo = new Logo(array(
+						"imagen" => $uri_logo,
+						"tipo" => "-"
+					));
+
+					try {
+						LogoDAO::save($logo);
+					}catch (Exception $e) {
+						DAO::transRollback();
+						Logger::error("No se pudo crear la empresa, error al crear el logo: " . $e->getMessage());
+						throw new Exception("No se pudo crear la empresa, consulte a su administrador de sistema", 901);
+					}
+
+					$id_logo = $logo->getIdLogo();
+
+					$empresa->setIdLogo($id_logo);
 				}
-
-				$id_logo = $logo->getIdLogo();
-
-				$empresa->setIdLogo($id_logo);
+				
 			}
 
 		}
@@ -896,24 +938,26 @@ class EmpresasController implements IEmpresas
 			$impuestos_empresa = ImpuestoEmpresaDAO::search(new ImpuestoEmpresa(array(
 				"id_empresa" => $empresa->getIdEmpresa()
 			)));
+			
+			if ($impuestos_compra != NULL) {
+				foreach ($impuestos_compra as $impuesto_compra) {
+					$exist_ic = false;
 
-			foreach ($impuestos_compra as $impuesto_compra) {
-				$exist_ic = false;
-				
-				foreach ($impuestos_empresa as $impuesto_empresa) {
-					if ($impuesto_compra->getIdImpuesto() == $impuesto_empresa->getIdImpuesto()) {
-						$exist_ic = true;
+					foreach ($impuestos_empresa as $impuesto_empresa) {
+						if ($impuesto_compra->getIdImpuesto() == $impuesto_empresa->getIdImpuesto()) {
+							$exist_ic = true;
+						}
 					}
-				}
-				
-				if (!$exist_ic) {
-					try {
-						ImpuestoEmpresaDAO::save(new ImpuestoEmpresa(array(
-							"id_empresa" => $empresa->getIdEmpresa(),
-							"id_impuesto" => $impuesto_compra->getIdImpuesto()
-						)));
-					} catch (Exception $e) {
-						Logger::warn("Error al guardar un impuesto compra : " . $e->getMessage());
+
+					if (!$exist_ic) {
+						try {
+							ImpuestoEmpresaDAO::save(new ImpuestoEmpresa(array(
+								"id_empresa" => $empresa->getIdEmpresa(),
+								"id_impuesto" => $impuesto_compra->getIdImpuesto()
+							)));
+						} catch (Exception $e) {
+							Logger::warn("Error al guardar un impuesto compra : " . $e->getMessage());
+						}
 					}
 				}
 			}
@@ -923,23 +967,25 @@ class EmpresasController implements IEmpresas
 				"id_empresa" => $empresa->getIdEmpresa()
 			)));
 
-			foreach ($impuestos_venta as $impuesto_venta) {
-				$exist_iv = false;
-				
+			if ($impuestos_venta != NULL) {
 				foreach ($impuestos_venta as $impuesto_venta) {
-					if ($impuesto_venta->getIdImpuesto() == $impuesto_venta->getIdImpuesto()) {
-						$exist_iv = true;
+					$exist_iv = false;
+
+					foreach ($impuestos_venta as $impuesto_venta) {
+						if ($impuesto_venta->getIdImpuesto() == $impuesto_venta->getIdImpuesto()) {
+							$exist_iv = true;
+						}
 					}
-				}
-				
-				if (!$exist_iv) {
-					try {
-						ImpuestoEmpresaDAO::save(new ImpuestoEmpresa(array(
-							"id_empresa" => $empresa->getIdEmpresa(),
-							"id_impuesto" => $impuesto_venta->getIdImpuesto()
-						)));
-					} catch (Exception $e) {
-						Logger::warn("Error al guardar un impuesto venta : " . $e->getMessage());
+
+					if (!$exist_iv) {
+						try {
+							ImpuestoEmpresaDAO::save(new ImpuestoEmpresa(array(
+								"id_empresa" => $empresa->getIdEmpresa(),
+								"id_impuesto" => $impuesto_venta->getIdImpuesto()
+							)));
+						} catch (Exception $e) {
+							Logger::warn("Error al guardar un impuesto venta : " . $e->getMessage());
+						}
 					}
 				}
 			}
@@ -947,8 +993,10 @@ class EmpresasController implements IEmpresas
 
 		//Editamos las cuentas bancarias
 		{
-			foreach ($cuentas_bancarias as $cuenta_bancarias) {
-				//Pendiente hasta que se haga el SPEC de cuentas bancarias
+			if ($cuentas_bancarias != NULL) {
+				foreach ($cuentas_bancarias as $cuenta_bancarias) {
+					//Pendiente hasta que se haga el SPEC de cuentas bancarias
+				}
 			}
 		}
 
@@ -979,6 +1027,22 @@ class EmpresasController implements IEmpresas
 
 		//relacionamos a la empresa con la direccion
 		$empresa->direccion = $direccion;
+
+		//obtenemos el logo
+		$logo = LogoDAO::getByPK($empresa->getIdLogo());
+
+		if($logo === NULL) {
+			$logo = LogoDAO::getByPK(-1);
+		}
+
+		$empresa->logo = $logo->getImagen();
+
+		//obtenemos su contabilidad
+
+		$contabilidad = array();
+
+		$contabilidad["moneda_base"] = EmpresaDAO::getMonedaBase($empresa->getIdEmpresa());
+		$contabilidad["ejercicio"] = EmpresaDAO::getEjercicioActual($empresa->getIdEmpresa());
 
 		//extraemos sus sucursales
 		$sucursales = array();
@@ -1028,7 +1092,7 @@ class EmpresasController implements IEmpresas
 			}
 		}
 
-		return array("detalles" => $empresa, "sucursales" => $sucursales, "impuestos_compra" => $impuestos_compra, "impuestos_venta" => $impuestos_venta);
+		return array("detalles" => $empresa, "sucursales" => $sucursales, "impuestos_compra" => $impuestos_compra, "impuestos_venta" => $impuestos_venta, "contabilidad" => $contabilidad);
 
 		Logger::log("Detalles de la empresa enviados con exito");
 	}

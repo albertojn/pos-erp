@@ -97,20 +97,6 @@
   
 	/**
  	 *
- 	 *Descarga un archivo .zip con los ultimos respaldos que se encuentren en el servidor de las instancias seleccionadas
- 	 *
- 	 * @param instance_ids json Lista de los id de las instancias a respaldar
- 	 **/
-  static function BdInstanciasDescargarBd
-	(
-		$instance_ids
-	);  
-  
-  
-	
-  
-	/**
- 	 *
  	 *Metodo que elimina todos los registros en la base de datos, especialmente util para hacer pruebas unitarias. Este metodo NO estara disponible al publico.
  	 *
  	 **/
@@ -128,55 +114,6 @@
  	 **/
   static function RespaldarBd
 	(
-	);  
-  
-  
-	
-  
-	/**
- 	 *
- 	 *Genera un scrip .sql en el servirdor de los id de instancia que reciba este metodo
- 	 *
- 	 * @param instance_ids json Lista de los id de las instancias a respaldar
- 	 * @return status string Respuesta enviada del servidor
- 	 * @return mensaje string Mensaje de respuesta del servidor
- 	 **/
-  static function BdInstanciasRespaldarBd
-	(
-		$instance_ids
-	);  
-  
-  
-	
-  
-	/**
- 	 *
- 	 *Restaurar una BD especifica, a partir de un listado de archivos.
- 	 *
- 	 * @param id_instancia int Id de la instancia que se requiere restaurar
- 	 * @param time int Fecha de creacin del archivo
- 	 * @return status string Estado de la respuesta
- 	 **/
-  static function EspecificaBdRestaurarBd
-	(
-		$id_instancia, 
-		$time
-	);  
-  
-  
-	
-  
-	/**
- 	 *
- 	 *Restaura las instancias seleccionadas de acuerdo a los scripts .sql mas recientes que haya en el servidor para cada instancia. La restauracion es un reemplazo total tanto de datos como esquema con respecto a los scripts encontrados.
- 	 *
- 	 * @param instance_ids json Lista de los id de las instancias a respaldar
- 	 * @return status string Respuesta enviada del servidor
- 	 * @return mensaje string Mensaje de respuesta del servidor
- 	 **/
-  static function BdInstanciasRestaurarBd
-	(
-		$instance_ids
 	);  
   
   
@@ -238,6 +175,96 @@
 		$cantidades, 
 		$costos, 
 		$ventas
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Detalles de un perfil espec?fico
+ 	 *
+ 	 * @param id_perfil int Id del perfil
+ 	 * @return detalles json Objeto con la descripción de los detalles del perfil
+ 	 **/
+  static function DetallesPerfilConfiguracion
+	(
+		$id_perfil
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Edita un perfil de usuario.
+ 	 *
+ 	 * @param id_perfil int Id del perfil que se desea modificar
+ 	 * @param configuracion json configuración del perfil
+ 	 * @param descripcion string descripción del perfil
+ 	 **/
+  static function EditarPerfilConfiguracion
+	(
+		$id_perfil, 
+		$configuracion = "", 
+		$descripcion = ""
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Elimina u perfil
+ 	 *
+ 	 * @param id_perfil int Id del perfil a eliminar
+ 	 **/
+  static function EliminarPerfilConfiguracion
+	(
+		$id_perfil
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Lista los perfiles relacionadas con esta  empresa. Se puede filtrar por empresa, descripci?n, fecha de creaci?n, ordenar ascendente o descendentemente.
+ 	 *
+ 	 * @param activo bool True para mostrar solo los perfiles activos, false para mostrar todos.
+ 	 * @param limit string Indica hasta que registro se desea obtener a partir del conjunto de resultados productos de la busqueda.
+ 	 * @param order string Indica si se ordenan los registros de manera Ascendente ASC, o descendente DESC.
+ 	 * @param order_by string Indica por que campo se ordenan los resultados.
+ 	 * @param query string Valor que se buscara en la consulta
+ 	 * @param start string Indica desde que registro se desea obtener a partir del conjunto de resultados productos de la bsqueda.
+ 	 * @return resultados json Array que contiene objetos con los detalles de los perfiles
+ 	 * @return numero_de_resultados int Numero de resultados encontrados
+ 	 **/
+  static function ListaPerfilConfiguracion
+	(
+		$activo =  false , 
+		$limit = null, 
+		$order = null, 
+		$order_by = null, 
+		$query = null, 
+		$start = null
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Crea un nuevo perfil de usuario.
+ 	 *
+ 	 * @param configuracion json Configuración del Perfil tomando como base la plantilla de de configuración
+ 	 * @param descripcion string Descripción del perfil
+ 	 * @return id_perfil int Id del perfil creado
+ 	 **/
+  static function NuevoPerfilConfiguracion
+	(
+		$configuracion, 
+		$descripcion
 	);  
   
   

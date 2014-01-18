@@ -12,23 +12,23 @@ Ext.Loader.setConfig({
 Ext.Loader.setPath('Ext.ux', 'http://api.caffeina.mx/ext-4.0.0/examples/ux/');
 
 Ext.require([
-    'Ext.data.*',
-    'Ext.form.*',
-    'Ext.grid.*',
+	'Ext.data.*',
+	'Ext.form.*',
+	'Ext.grid.*',
 	'Ext.tree.*',
-    'Ext.util.*',
-    'Ext.state.*',
+	'Ext.util.*',
+	'Ext.state.*',
 	'Ext.ux.grid.TransformGrid',
-    'Ext.window.MessageBox',
+	'Ext.window.MessageBox',
 	'Ext.tab.*',
-	  'Ext.panel.Panel',
-	  'Ext.button.Button',
-	  'Ext.window.Window',
+	'Ext.panel.Panel',
+	'Ext.button.Button',
+	'Ext.window.Window',
 	'Ext.ux.statusbar.StatusBar',
-	  'Ext.toolbar.TextItem',
-	  'Ext.menu.Menu',
-	  'Ext.toolbar.Spacer',
-	  'Ext.button.Split',
+	'Ext.toolbar.TextItem',
+	'Ext.menu.Menu',
+	'Ext.toolbar.Spacer',
+	'Ext.button.Split',
 	'Ext.form.field.TextArea',
 	'Ext.data.TreeStore',
 	'Ext.layout.container.Accordion'
@@ -60,15 +60,15 @@ var main = function () {
 	if((window.TableComponent !== undefined) && (TableComponent.convertToExtJs !== undefined)){
 		for (var i = TableComponent.convertToExtJs.length - 1; i >= 0; i--) {
 			Ext.create('Ext.ux.grid.TransformGrid', TableComponent.convertToExtJs[i], {
-	            //stripeRows: true,
-	            bodyCls: 'overrideTHTD',
-	            listeners: {
-	            	'itemclick' : function(a,b,c ){
-	            		if(!Ext.isIE)  console.log("ITEM CLICK id=" + b.raw.id, i +1 );
+				//stripeRows: true,
+				bodyCls: 'overrideTHTD',
+					listeners: {
+					'itemclick' : function(a,b,c ){
+							if(!Ext.isIE)  console.log("ITEM CLICK id=" + b.raw.id, i +1 );
 
-						eval(TableComponent.ExtJsTables[i+1].actionFunction+"("+b.raw.id+")")
-	            	}
-	            }
+							eval(TableComponent.ExtJsTables[i+1].actionFunction+"("+b.raw.id+")")
+						}
+					}
 
 			}).render();
 		};
@@ -198,7 +198,7 @@ POS.API =
 		params.auth_token = Ext.util.Cookies.get("at");
 
 		Ext.Ajax.request({
-                        timeout: 160000,
+			timeout: 160000,
 			method 	: method,
 			url 	: "../" + url,
 			success : function(a,b,c){ POS.API.ajaxCallBack( callback, a, b, c ); },
@@ -464,221 +464,233 @@ Ext.define('MGW10002', {
 
 
 
-var AdminPAQExplorer = function( id_botones ) {	
+var AdminPAQExplorer = function( id_botones ){
+	
+	
+	
 	var id_form_botones = id_botones;
 
 	var clientes = Ext.create('Ext.data.ArrayStore', {
-	  model: 'MGW10002',
-	  data: []
-	}),
-	productos = Ext.create('Ext.data.ArrayStore', {
-	 	model: 'MGW10005',
-	  data: []
-	});
+		        model: 'MGW10002',
+		        data: []
+			}),
+		productos = Ext.create('Ext.data.ArrayStore', {
+			        model: 'MGW10005',
+			        data: []
+			});		
+		
+	
+
 	
 	var createWindow = function(){
 		var tabs = Ext.createWidget('tabpanel', {
-	    height: 450,
-	    width: 650,
+	        height: 450,
+	        width: 650,
 			frame: true,
 			closable: true,
 			modal:true,
 			floating:true,
-			autoShow:true,
-	    activeTab: 0,
-	    defaults :{
-	      bodyPadding: 10
-	    },
-	    items: [
-				createGridForClientes(),
-				createGridForProds()
+			autoShow:true,	
+	        activeTab: 0,
+	        defaults :{
+	            bodyPadding: 10
+	        },
+	        items: [
+					createGridForClientes(),
+					createGridForProds()
 			]
-	  });
+	    });
 	}//createWindow
 	
-	var getData = function(table) {
-		Ext.data.JsonP.request({
-			url : Ext.get( id_form_botones + "url").getValue(),
 
+		
+	
+	var getData = function(table){
+		
+		Ext.data.JsonP.request({
+			url : Ext.get( id_form_botones +"url").getValue(),
 			params : {
 				sql		: "select * from MGW10002",
-				path	: Ext.get(id_form_botones + "path").getValue()//"C:\\Compacw\\Empresas\\Caffeina\\"
+				path	: Ext.get( id_form_botones +"path").getValue()//"C:\\Compacw\\Empresas\\Caffeina\\"
 			},
-
 			callback : function(status, response){
-				if(!status)
+				if(!status){
 					return;
+				}
 				
 				clientes.loadData(response.datos);
+				
 			}
 		});
 
-		console.log(2);
+		console.log(2)
 		
 		Ext.data.JsonP.request({
 			url : Ext.get( id_form_botones +"url").getValue(),//'https://192.168.0.15:16001/json/AdminPAQProxy/',
-			
 			params : {
 				sql		: "select * from MGW10005",
-				path	: Ext.get( id_form_botones + "path").getValue()//"C:\\Compacw\\Empresas\\Caffeina\\"
+				path	: Ext.get( id_form_botones +"path").getValue()//"C:\\Compacw\\Empresas\\Caffeina\\"
+																		//C:\Compacw\Empresas\Caffeina\
 			},
-
 			callback : function(status, response){
-				if(!status)
+				
+				if(!status){
 					return;
+				}
+				
+
 				
 				productos.loadData(response.datos);
 				
 			}
 		});
-
-		console.log(3);	
+		console.log(3)		
 	}//ajaxtoClient
 	
 	
 	var createGridForProds = function(){
 		
 		return Ext.create('Ext.grid.Panel', {
-	    store: productos, 
+	        store: productos, 
 			title : "productos",
 			frame : false,
-	        columns: [
-	        {
-        	text     : 'Código del Producto',
-	        width    : 75,
-		        sortable : true,
-		        dataIndex: 'CCODIGOP01'
-	        },
-	        {
-		        text     : 'Nombre del producto',
-		        width    : 75,
-	    	    sortable : true,
-	        	dataIndex: 'CNOMBREP01'
-	        },
-	        {
-		        text     : 'Tipo del Producto',
-		        width    : 75,
-	    	    sortable : true,
-	        	dataIndex: 'CTIPOPRO01'
-			},
-			{
-		        text     : 'Descripción detallada',
-	    	    width    : 75,
-	        	sortable : true,
-		        dataIndex: 'CDESCRIP01'
-          }
-		],
+			columns: [
+				{ text	   : 'Código del Producto',
+					width	 : 75,
+					sortable : true,
+					dataIndex: 'CCODIGOP01'
+				},
+				{
+					text	 : 'Nombre del producto',
+					width	 : 75,
+					sortable : true,
+					dataIndex: 'CNOMBREP01'
+				},
+				{
+					text	 : 'Tipo del Producto',
+					width	 : 75,
+					sortable : true,
+					dataIndex: 'CTIPOPRO01'
+				},
+				{
+					text	 : 'Descripción detallada',
+					width	 : 75,
+					sortable : true,
+					dataIndex: 'CDESCRIP01'
+				}
+			],
 
 			modal: true,
-			viewConfig: {
-				stripeRows: true,
-				enableTextSelection: true
-	   		},
+	        viewConfig: {
+	            stripeRows: true,
+	            enableTextSelection: true
+	        },
 			bbar: Ext.create('Ext.ux.StatusBar', {
-			  text: 'Mostrando n registros',
-			  // any standard Toolbar items:
-			  items: [
-			    {
-			      xtype: 'button',
-			      text: 'Cancelar',
-			      handler: function (){
-							this.close();
-			      }
-			    },
-			    {
-			      xtype: 'button',
-			      text: 'Importar',
-			      handler: function (){
-	          }
-          }
-	      ]
-	    })
-	  });
+			            text: 'Mostrando n registros',
+			            // any standard Toolbar items:
+			            items: [
+			                {
+			                    xtype: 'button',
+			                    text: 'Cancelar',
+			                    handler: function (){
+									this.close();
+			                    }
+			                },
+			                {
+			                    xtype: 'button',
+			                    text: 'Importar',
+			                    handler: function (){
+
+			                    }
+			                }
+			            ]
+			        })
+	    });
 	}//createGridForClientes()
 	
 	var createGridForClientes = function(){
 		
 		return Ext.create('Ext.grid.Panel', {
-	    store: clientes, 
+	        store: clientes, 
 			title : "Clientes",
-	    multiSelect: true,
+	        multiSelect: true,
 			frame : false,
-	    columns: [
-	      { text     : 'Identificador del Cliente', dataIndex: 'CCODIGOC01' },
-	      {
-	      	text     : 'Código del Cliente',
-	        width    : 75,
-	        sortable : true,
-	        dataIndex: 'CRAZONSO01'
-	      },
-	      {
-	        text     : 'Razón Social',
-	        width    : 75,
-	        sortable : true,
-	        dataIndex: 'CRAZONSO01'
-	      },
-	      {
-	        text     : 'Fecha de alta',
-	        width    : 75,
-	        sortable : true,
-	        dataIndex: 'CFECHAALTA'
-	      },
-	      {
-	        text     : 'RFC',
-	        width    : 75,
-	        sortable : true,
-	        dataIndex: 'CRFC'
-	      },
-	      {
-	        text     : 'CURP',
-	        width    : 75,
-	        sortable : true,
-	        dataIndex: 'CCURP'
-	      },
-	      {
-	        text     : 'Denominación comercial',
-	        width    : 75,
-	        sortable : true,
-	        dataIndex: 'CDENCOME01'
-	      },
-	      {
-	        text     : 'Representante',
-	        width    : 75,
-	        sortable : true,
-	        dataIndex: 'CREPLEGAL'
+	        columns: [
+	            { text     : 'Identificador del Cliente', dataIndex: 'CCODIGOC01' },
+	            { text     : 'Código del Cliente',
+	                width    : 75,
+	                sortable : true,
+	                dataIndex: 'CRAZONSO01'
+	            },
+	            {
+	                text     : 'Razón Social',
+	                width    : 75,
+	                sortable : true,
+	                dataIndex: 'CRAZONSO01'
+	            },
+	            {
+	                text     : 'Fecha de alta',
+	                width    : 75,
+	                sortable : true,
+	                dataIndex: 'CFECHAALTA'
+	            },
+	            {
+	                text     : 'RFC',
+	                width    : 75,
+	                sortable : true,
+	                dataIndex: 'CRFC'
+	            },
+	            {
+	                text     : 'CURP',
+	                width    : 75,
+	                sortable : true,
+	                dataIndex: 'CCURP'
+	            },
+	            {
+	                text     : 'Denominación comercial',
+	                width    : 75,
+	                sortable : true,
+	                dataIndex: 'CDENCOME01'
+	            },
+	            {
+	                text     : 'Representante',
+	                width    : 75,
+	                sortable : true,
+	                dataIndex: 'CREPLEGAL'
 	            }
-	    ],
+	        ],
 
-	    viewConfig: {
-	      stripeRows: true,
-	      enableTextSelection: true
-	    },
+	        viewConfig: {
+	            stripeRows: true,
+	            enableTextSelection: true
+	        },
 			bbar: Ext.create('Ext.ux.StatusBar', {
-			  text: 'Mostrando n registros',
-			  // any standard Toolbar items:
-			  items: [
-			    {
-			      xtype: 'button',
-			      text: 'Cancelar',
-			      handler: function (){
-							//this.close();
-			      }
-			    },
-			    {
-				    xtype: 'button',
-				    text: 'Importar',
-				    handler: function (){
-          	}
-			    }
-			  ]
-			})
-	  });
+			            text: 'Mostrando n registros',
+			            // any standard Toolbar items:
+			            items: [
+			                {
+			                    xtype: 'button',
+			                    text: 'Cancelar',
+			                    handler: function (){
+									//this.close();
+			                    }
+			                },
+			                {
+			                    xtype: 'button',
+			                    text: 'Importar',
+			                    handler: function (){
+
+			                    }
+			                }
+			            ]
+			        })
+	    });
 	}//createGridForClientes()
 
 	getData( );	
 	createWindow(  );
 
-}// AdminPaqExplorer
+}
 
 var importarClientes = function(d){
 	Ext.data.JsonP.request({
@@ -693,7 +705,7 @@ var importarClientes = function(d){
 				return;
 			}
 			
-	   	 	// create the data store
+			// create the data store
 		    var clientesAdminPAQ = Ext.create('Ext.data.ArrayStore', {
 		        model: 'MGW10002',
 		        data: response.datos
@@ -938,17 +950,17 @@ Ext.example = function(){
   };
 
 function startMap( direccion ){
-	    GeocoderRequest = {
-		    address : direccion + ", Mexico"
-	    };
+	GeocoderRequest = {
+		address : direccion + ", Mexico"
+	};
 
-	    try{
-		    gc = new google.maps.Geocoder( );
+	try{
+		gc = new google.maps.Geocoder( );
 		gc.geocode(GeocoderRequest,  drawMap);
 
-	    }catch(e){
+	}catch(e){
 		console.log(e);
-	    }
+	}
 }
 
 function FormatMoney(m){
@@ -1199,7 +1211,7 @@ var PosImClient = {
 		textarea.setRawValue();
 
 		//change color text to black on arrival
- 
+		
 	},
 
 	_createContactTree : function(){
@@ -1253,3 +1265,4 @@ var PosImClient = {
 			});
 	}
 }
+

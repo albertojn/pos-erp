@@ -11,11 +11,12 @@
     $page->addComponent( new TitleComponent( "Categorias Unidades de Medida" ) );
     $page->addComponent( new MessageComponent( "Lista Categorias Unidades de Medida" ) );
 
+    $resultados = ProductosController::BuscarCategoriaUdm();
     $tabla = new TableComponent( array(
         "descripcion" => "Descripcion",
         "activa" => "Activa"
         ),
-        CategoriaUnidadMedidaDAO::getAll( )
+        $resultados['resultados']
     );
 
     $tabla->addColRender("activa", "funcion_activa");

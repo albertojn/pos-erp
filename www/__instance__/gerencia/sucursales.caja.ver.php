@@ -19,7 +19,7 @@
 		//
 		// Titulo de la pagina
 		// 
-		$page->addComponent( new TitleComponent( "Detalles de caja: " . $esta_caja->getToken() , 2 ));
+		$page->addComponent( new TitleComponent( "Detalles de caja: " . $esta_caja->getDescripcion() , 2 ));
 
 		
 		//
@@ -72,11 +72,15 @@
 		// 
 		$form = new DAOFormComponent( $esta_caja );
 		$form->setEditable(false);
-		//$form->setEditable(false);		
 		$form->hideField( array( 
 				"id_caja",
+                "id_cuenta_contable",
 			 ));
-	    $form->createComboBoxJoin("id_sucursal", "razon_social", SucursalDAO::getAll(), $esta_caja->getIdSucursal() );
+	    $form->createComboBoxJoin("id_sucursal", "descripcion", SucursalDAO::getAll(), $esta_caja->getIdSucursal() );
+        $form->createComboBoxJoin("activa", "activa", array(array( "id" => 0, "caption" => "No" ),array( "id" => 1, "caption" => "Si"  )), $esta_caja->getActiva() );
+        $form->createComboBoxJoin("control_billetes", "control_billetes", array(array( "id" => 0, "caption" => "No" ),array( "id" => 1, "caption" => "Si"  )), $esta_caja->getControlBilletes() );
+        $form->createComboBoxJoin("abierta", "abierta", array(array( "id" => 0, "caption" => "No" ), array( "id" => 1, "caption" => "Si"  )), $esta_caja->getAbierta() );
+
 		$page->addComponent( $form );
 		
                 if($esta_caja->getControlBilletes())

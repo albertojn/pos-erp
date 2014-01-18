@@ -89,7 +89,7 @@ class Impuesto extends VO
 	/**
 	  * codigo
 	  * 
-	  * Determina el código para identificar el impuesto<br>
+	  * Determina el cÃ³digo para identificar el impuesto<br>
 	  * @access public
 	  * @var varchar(64)
 	  */
@@ -107,7 +107,7 @@ class Impuesto extends VO
 	/**
 	  * incluido_precio
 	  * 
-	  * Determina si el importe está incluido en el precio<br>
+	  * Determina si el importe estÃ¡ incluido en el precio<br>
 	  * @access public
 	  * @var tinyint(1)
 	  */
@@ -116,7 +116,7 @@ class Impuesto extends VO
 	/**
 	  * aplica
 	  * 
-	  * Determina el ámbito al que aplica el impuesto (compra, venta, ambos)<br>
+	  * Determina el Ã¡mbito al que aplica el impuesto (compra, venta, ambos)<br>
 	  * @access public
 	  * @var varchar(64)
 	  */
@@ -152,7 +152,7 @@ class Impuesto extends VO
 	/**
 	  * activo
 	  * 
-	  * Determina si está activo el impuesto<br>
+	  * Determina si estÃ¡ activo el impuesto<br>
 	  * @access public
 	  * @var tinyint(1)
 	  */
@@ -189,7 +189,7 @@ class Impuesto extends VO
 	/**
 	  * getCodigo
 	  * 
-	  * Get the <i>codigo</i> property for this object. Donde <i>codigo</i> es Determina el código para identificar el impuesto
+	  * Get the <i>codigo</i> property for this object. Donde <i>codigo</i> es Determina el cÃ³digo para identificar el impuesto
 	  * @return varchar(64)
 	  */
 	final public function getCodigo()
@@ -200,7 +200,7 @@ class Impuesto extends VO
 	/**
 	  * setCodigo( $codigo )
 	  * 
-	  * Set the <i>codigo</i> property for this object. Donde <i>codigo</i> es Determina el código para identificar el impuesto.
+	  * Set the <i>codigo</i> property for this object. Donde <i>codigo</i> es Determina el cÃ³digo para identificar el impuesto.
 	  * Una validacion basica se hara aqui para comprobar que <i>codigo</i> es de tipo <i>varchar(64)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param varchar(64)
@@ -237,7 +237,7 @@ class Impuesto extends VO
 	/**
 	  * getIncluidoPrecio
 	  * 
-	  * Get the <i>incluido_precio</i> property for this object. Donde <i>incluido_precio</i> es Determina si el importe está incluido en el precio
+	  * Get the <i>incluido_precio</i> property for this object. Donde <i>incluido_precio</i> es Determina si el importe estÃ¡ incluido en el precio
 	  * @return tinyint(1)
 	  */
 	final public function getIncluidoPrecio()
@@ -248,7 +248,7 @@ class Impuesto extends VO
 	/**
 	  * setIncluidoPrecio( $incluido_precio )
 	  * 
-	  * Set the <i>incluido_precio</i> property for this object. Donde <i>incluido_precio</i> es Determina si el importe está incluido en el precio.
+	  * Set the <i>incluido_precio</i> property for this object. Donde <i>incluido_precio</i> es Determina si el importe estÃ¡ incluido en el precio.
 	  * Una validacion basica se hara aqui para comprobar que <i>incluido_precio</i> es de tipo <i>tinyint(1)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param tinyint(1)
@@ -261,7 +261,7 @@ class Impuesto extends VO
 	/**
 	  * getAplica
 	  * 
-	  * Get the <i>aplica</i> property for this object. Donde <i>aplica</i> es Determina el ámbito al que aplica el impuesto (compra, venta, ambos)
+	  * Get the <i>aplica</i> property for this object. Donde <i>aplica</i> es Determina el Ã¡mbito al que aplica el impuesto (compra, venta, ambos)
 	  * @return varchar(64)
 	  */
 	final public function getAplica()
@@ -272,7 +272,7 @@ class Impuesto extends VO
 	/**
 	  * setAplica( $aplica )
 	  * 
-	  * Set the <i>aplica</i> property for this object. Donde <i>aplica</i> es Determina el ámbito al que aplica el impuesto (compra, venta, ambos).
+	  * Set the <i>aplica</i> property for this object. Donde <i>aplica</i> es Determina el Ã¡mbito al que aplica el impuesto (compra, venta, ambos).
 	  * Una validacion basica se hara aqui para comprobar que <i>aplica</i> es de tipo <i>varchar(64)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param varchar(64)
@@ -357,7 +357,7 @@ class Impuesto extends VO
 	/**
 	  * getActivo
 	  * 
-	  * Get the <i>activo</i> property for this object. Donde <i>activo</i> es Determina si está activo el impuesto
+	  * Get the <i>activo</i> property for this object. Donde <i>activo</i> es Determina si estÃ¡ activo el impuesto
 	  * @return tinyint(1)
 	  */
 	final public function getActivo()
@@ -368,7 +368,7 @@ class Impuesto extends VO
 	/**
 	  * setActivo( $activo )
 	  * 
-	  * Set the <i>activo</i> property for this object. Donde <i>activo</i> es Determina si está activo el impuesto.
+	  * Set the <i>activo</i> property for this object. Donde <i>activo</i> es Determina si estÃ¡ activo el impuesto.
 	  * Una validacion basica se hara aqui para comprobar que <i>activo</i> es de tipo <i>tinyint(1)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param tinyint(1)

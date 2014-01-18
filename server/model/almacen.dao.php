@@ -22,8 +22,7 @@ class AlmacenDAO extends AlmacenDAOBase
 {
     public static function Existencias(){
 
-        $sql = "select 
-                 s.razon_social as sucursal, 
+        $sql = "select  
                  s.id_sucursal, 
                  a.id_almacen, 
                  a.nombre as nombre_almacen, 

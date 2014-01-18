@@ -27,7 +27,8 @@
                                 "id_sucursal",
                                 "abierta",
                                 "saldo",
-                                "activa"
+                                "activa",
+                                "id_cuenta_contable"
 			 ));
                 $form->sendHidden("id_caja");
                 

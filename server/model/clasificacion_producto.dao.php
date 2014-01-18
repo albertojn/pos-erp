@@ -20,18 +20,27 @@ require_once("base/clasificacion_producto.vo.base.php");
   */
 class ClasificacionProductoDAO extends ClasificacionProductoDAOBase
 {
-	public static function buscarQuery($query, $how_many = 100){
-		$sql = "select * from clasificacion_producto where ( nombre like ? or descripcion like ? )  limit ?; ";
+	public static function ChecarRecursion($id, $id_padre) {
+        $nivel = 100;
+        while ($id_padre) {
+            $categoria = self::getByPK($id_padre);
+            $id_padre = $categoria->getIdCategoriaPadre();
+            if ($id_padre == $id) {
+                return false;
+            }
+            if (!$nivel) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-		$val = array( "%" . $query . "%" , "%" . $query . "%" , $how_many );
-		
-		global $conn;
-		$rs = $conn->Execute($sql, $val);
-		$ar = array( );
-		foreach ($rs as $foo) {
-			$bar =  new ClasificacionProducto($foo);
-    		array_push( $ar,$bar);
-		}
-		return $ar;
-	}
+    public static function NombreCompleto($id) {
+        $categoria = self::getByPK($id);
+        $nombre = '';
+        if ($categoria->getIdCategoriaPadre()) {
+            $nombre .= self::NombreCompleto($categoria->getIdCategoriaPadre()).'/';
+        }
+        return $nombre.$categoria->getNombre();
+    }
 }

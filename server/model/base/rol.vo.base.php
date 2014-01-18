@@ -25,6 +25,9 @@ class Rol extends VO
 			if( isset($data['id_rol']) ){
 				$this->id_rol = $data['id_rol'];
 			}
+			if( isset($data['id_rol_padre']) ){
+				$this->id_rol_padre = $data['id_rol_padre'];
+			}
 			if( isset($data['nombre']) ){
 				$this->nombre = $data['nombre'];
 			}
@@ -40,6 +43,9 @@ class Rol extends VO
 			if( isset($data['id_tarifa_venta']) ){
 				$this->id_tarifa_venta = $data['id_tarifa_venta'];
 			}
+			if( isset($data['id_perfil']) ){
+				$this->id_perfil = $data['id_perfil'];
+			}
 		}
 	}
 
@@ -54,11 +60,13 @@ class Rol extends VO
 	{ 
 		$vec = array( 
 			"id_rol" => $this->id_rol,
+			"id_rol_padre" => $this->id_rol_padre,
 			"nombre" => $this->nombre,
 			"descripcion" => $this->descripcion,
 			"salario" => $this->salario,
 			"id_tarifa_compra" => $this->id_tarifa_compra,
-			"id_tarifa_venta" => $this->id_tarifa_venta
+			"id_tarifa_venta" => $this->id_tarifa_venta,
+			"id_perfil" => $this->id_perfil
 		); 
 	return json_encode($vec); 
 	}
@@ -73,6 +81,15 @@ class Rol extends VO
 	  * @var int(11)
 	  */
 	public $id_rol;
+
+	/**
+	  * id_rol_padre
+	  * 
+	  * Id del padre de este rol<br>
+	  * @access public
+	  * @var int(11)
+	  */
+	public $id_rol_padre;
 
 	/**
 	  * nombre
@@ -120,6 +137,15 @@ class Rol extends VO
 	public $id_tarifa_venta;
 
 	/**
+	  * id_perfil
+	  * 
+	  * Id del perfil que tiene por default cada usuario de este rol, posteriormente se peude personalizar el perfil de cada usuario<br>
+	  * @access public
+	  * @var int(11)
+	  */
+	public $id_perfil;
+
+	/**
 	  * getIdRol
 	  * 
 	  * Get the <i>id_rol</i> property for this object. Donde <i>id_rol</i> es  [Campo no documentado]
@@ -145,6 +171,30 @@ class Rol extends VO
 	final public function setIdRol( $id_rol )
 	{
 		$this->id_rol = $id_rol;
+	}
+
+	/**
+	  * getIdRolPadre
+	  * 
+	  * Get the <i>id_rol_padre</i> property for this object. Donde <i>id_rol_padre</i> es Id del padre de este rol
+	  * @return int(11)
+	  */
+	final public function getIdRolPadre()
+	{
+		return $this->id_rol_padre;
+	}
+
+	/**
+	  * setIdRolPadre( $id_rol_padre )
+	  * 
+	  * Set the <i>id_rol_padre</i> property for this object. Donde <i>id_rol_padre</i> es Id del padre de este rol.
+	  * Una validacion basica se hara aqui para comprobar que <i>id_rol_padre</i> es de tipo <i>int(11)</i>. 
+	  * Si esta validacion falla, se arrojara... algo. 
+	  * @param int(11)
+	  */
+	final public function setIdRolPadre( $id_rol_padre )
+	{
+		$this->id_rol_padre = $id_rol_padre;
 	}
 
 	/**
@@ -265,6 +315,30 @@ class Rol extends VO
 	final public function setIdTarifaVenta( $id_tarifa_venta )
 	{
 		$this->id_tarifa_venta = $id_tarifa_venta;
+	}
+
+	/**
+	  * getIdPerfil
+	  * 
+	  * Get the <i>id_perfil</i> property for this object. Donde <i>id_perfil</i> es Id del perfil que tiene por default cada usuario de este rol, posteriormente se peude personalizar el perfil de cada usuario
+	  * @return int(11)
+	  */
+	final public function getIdPerfil()
+	{
+		return $this->id_perfil;
+	}
+
+	/**
+	  * setIdPerfil( $id_perfil )
+	  * 
+	  * Set the <i>id_perfil</i> property for this object. Donde <i>id_perfil</i> es Id del perfil que tiene por default cada usuario de este rol, posteriormente se peude personalizar el perfil de cada usuario.
+	  * Una validacion basica se hara aqui para comprobar que <i>id_perfil</i> es de tipo <i>int(11)</i>. 
+	  * Si esta validacion falla, se arrojara... algo. 
+	  * @param int(11)
+	  */
+	final public function setIdPerfil( $id_perfil )
+	{
+		$this->id_perfil = $id_perfil;
 	}
 
 }

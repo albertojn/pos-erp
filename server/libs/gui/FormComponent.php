@@ -526,6 +526,7 @@ class FormComponent implements GuiComponent {
 				case "markdown":
 				case "hidden": 
 				case 'text':
+				case 'number':
 				case 'string':
 					if ($this->is_editable === false){
 						//$html .= "<input id='" . $f->id .  "' name='" . $f->name .  "' value='" . $f->value .  "' type='". $f->type ."' >";

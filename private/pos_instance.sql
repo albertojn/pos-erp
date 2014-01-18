@@ -1,13 +1,14 @@
+
 -- phpMyAdmin SQL Dump
--- version 3.4.11.1deb1
+-- version 4.0.4
 -- http://www.phpmyadmin.net
 --
--- Servidor: localhost
--- Tiempo de generación: 11-04-2013 a las 22:38:53
--- Versión del servidor: 5.5.29
--- Versión de PHP: 5.4.6-1ubuntu1.2
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 18-07-2013 a las 20:02:01
+-- Versión del servidor: 5.5.32
+-- Versión de PHP: 5.4.16
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -15,10 +16,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-
---
--- Base de datos: `pos_instance_116`
---
 
 -- --------------------------------------------------------
 
@@ -151,7 +148,7 @@ CREATE TABLE IF NOT EXISTS `apertura_caja` (
   `id_caja` int(11) NOT NULL COMMENT 'Id de la caja que se abre',
   `fecha` int(11) NOT NULL COMMENT 'Fecha en que se realizo la apertura de caja',
   `saldo` float NOT NULL COMMENT 'Saldo con que inicia operaciones la caja',
-  `id_cajero` int(11) DEFAULT NULL COMMENT 'Id del usuario que realizarÃƒÆ’Ã‚Â¡ las funciones de cajero',
+  `id_cajero` int(11) DEFAULT NULL COMMENT 'Id del usuario que realizarÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ las funciones de cajero',
   PRIMARY KEY (`id_apertura_caja`),
   KEY `apertura_caja_ibfk_2` (`id_cajero`),
   KEY `apertura_caja_ibfk_1` (`id_caja`)
@@ -261,6 +258,7 @@ CREATE TABLE IF NOT EXISTS `caja` (
   `saldo` float NOT NULL DEFAULT '0' COMMENT 'Saldo actual de la caja',
   `control_billetes` tinyint(1) NOT NULL COMMENT 'Si esta caja esta llevando control de billetes o no',
   `activa` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Si la caja esta activa o ha sido eliminada',
+  `id_cuenta_contable` int(11) NOT NULL COMMENT 'El id de la cuenta contable a la que apunta esta caja',
   PRIMARY KEY (`id_caja`),
   KEY `id_sucursal` (`id_sucursal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
@@ -273,9 +271,25 @@ CREATE TABLE IF NOT EXISTS `caja` (
 
 CREATE TABLE IF NOT EXISTS `catalogo_cuentas` (
   `id_catalogo` int(11) NOT NULL AUTO_INCREMENT COMMENT 'El id del catalogo de cuentas',
-  `descripcion` varchar(150) NOT NULL COMMENT 'La descripción del catalogo de cuentas.',
-  `id_empresa` int(11) NOT NULL COMMENT 'El id de la empresa a la que va vinculada ésta cuenta',
+  `descripcion` varchar(150) NOT NULL COMMENT 'La descripciÃ³n del catalogo de cuentas.',
+  `id_empresa` int(11) NOT NULL COMMENT 'El id de la empresa a la que va vinculada Ã©sta cuenta',
   PRIMARY KEY (`id_catalogo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categoria_contacto`
+--
+
+CREATE TABLE IF NOT EXISTS `categoria_contacto` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_padre` int(10) unsigned DEFAULT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `activa` tinyint(4) NOT NULL DEFAULT '1',
+  `descripcion` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_padre` (`id_padre`,`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -385,7 +399,7 @@ CREATE TABLE IF NOT EXISTS `cierre_caja` (
   `id_cajero` int(11) DEFAULT NULL COMMENT 'Id del usuario que realiza las funciones de cajero al momento de cerrar la caja',
   `fecha` int(11) NOT NULL COMMENT 'fecha en que se realiza la operacion',
   `saldo_real` float NOT NULL COMMENT 'Saldo de la caja',
-  `saldo_esperado` float NOT NULL COMMENT 'Saldo que deberÃƒÆ’Ã‚Â­a de haber en la caja despuÃƒÆ’Ã‚Â©s de todos los movimientos del dÃƒÆ’Ã‚Â­a',
+  `saldo_esperado` float NOT NULL COMMENT 'Saldo que deberÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a de haber en la caja despuÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©s de todos los movimientos del dÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a',
   PRIMARY KEY (`id_cierre_caja`),
   KEY `cierre_caja_ibfk_2` (`id_cajero`),
   KEY `cierre_caja_ibfk_1` (`id_caja`)
@@ -533,15 +547,15 @@ CREATE TABLE IF NOT EXISTS `compra_arpilla` (
   `id_compra_arpilla` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id de la tabla compra por arpilla',
   `id_compra` int(11) NOT NULL COMMENT 'Id de la compra a la que se refiere',
   `peso_origen` float DEFAULT NULL COMMENT 'El peso del camion en el origen',
-  `fecha_origen` int(11) DEFAULT NULL COMMENT 'Fecha en la que se envÃƒÆ’Ã‚Â­o el embarque',
+  `fecha_origen` int(11) DEFAULT NULL COMMENT 'Fecha en la que se envÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­o el embarque',
   `folio` varchar(11) DEFAULT NULL COMMENT 'Folio del camion',
-  `numero_de_viaje` varchar(11) DEFAULT NULL COMMENT 'NÃƒÆ’Ã‚Âºmero de viaje',
+  `numero_de_viaje` varchar(11) DEFAULT NULL COMMENT 'NÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºmero de viaje',
   `peso_recibido` float NOT NULL COMMENT 'Peso del camion al llegar',
   `arpillas` float NOT NULL COMMENT 'Cantidad de arpillas recibidas',
   `peso_por_arpilla` float NOT NULL COMMENT 'El peso por arpilla promedio',
   `productor` varchar(64) DEFAULT NULL COMMENT 'Nombre del productor',
   `merma_por_arpilla` float NOT NULL COMMENT 'La merma de producto por arpilla',
-  `total_origen` float DEFAULT NULL COMMENT 'El valor del embarque segÃƒÆ’Ã‚Âºn el proveedor',
+  `total_origen` float DEFAULT NULL COMMENT 'El valor del embarque segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn el proveedor',
   PRIMARY KEY (`id_compra_arpilla`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tabla que detalla una compra realizada a un proveedor median' AUTO_INCREMENT=1 ;
 
@@ -573,8 +587,8 @@ CREATE TABLE IF NOT EXISTS `concepto_gasto` (
   `id_concepto_gasto` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id de la tabla concepto gasto',
   `nombre` varchar(50) NOT NULL COMMENT 'Nombre del concepto',
   `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripcion detallada del concepto',
-  `monto` float DEFAULT NULL COMMENT 'monto del concepto si este es fijo siempre',
   `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Si este concepto de gasto esta activo',
+  `id_cuenta_contable` int(11) NOT NULL COMMENT 'El id de la cuenta contable a la que apunta este concepto',
   PRIMARY KEY (`id_concepto_gasto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Conceptos de gasto' AUTO_INCREMENT=1 ;
 
@@ -588,8 +602,8 @@ CREATE TABLE IF NOT EXISTS `concepto_ingreso` (
   `id_concepto_ingreso` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id del concepto de ingreso',
   `nombre` varchar(50) NOT NULL COMMENT 'nombre del concepto',
   `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripcion del concepto',
-  `monto` float DEFAULT NULL COMMENT 'Si el concepto tienen un monto fijo',
   `activo` tinyint(1) NOT NULL COMMENT 'Si este concepto de ingreso esta activo',
+  `id_cuenta_contable` int(11) NOT NULL COMMENT 'El id de la cuenta contable a la que apunta este concepto',
   PRIMARY KEY (`id_concepto_ingreso`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Concepto de ingreso' AUTO_INCREMENT=1 ;
 
@@ -603,10 +617,10 @@ CREATE TABLE IF NOT EXISTS `configuracion` (
   `id_configuracion` int(11) NOT NULL AUTO_INCREMENT,
   `descripcion` varchar(128) NOT NULL,
   `valor` varchar(2048) NOT NULL COMMENT 'Cadena en formato de JSON que describe una configuracion',
-  `id_usuario` int(11) NOT NULL COMMENT 'id_usuario que realizo la ultima modificaciÃ³n ',
-  `fecha` int(11) NOT NULL COMMENT 'fecha de la ultima modificaciÃ³n, descrita en formato UNIX ',
+  `id_usuario` int(11) NOT NULL COMMENT 'id_usuario que realizo la ultima modificaciÃƒÂ³n ',
+  `fecha` int(11) NOT NULL COMMENT 'fecha de la ultima modificaciÃƒÂ³n, descrita en formato UNIX ',
   PRIMARY KEY (`id_configuracion`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Almacena las configuraciones bÃ¡sicas del sistema' AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Almacena las configuraciones bÃƒÂ¡sicas del sistema' AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -676,8 +690,8 @@ CREATE TABLE IF NOT EXISTS `corte_de_caja` (
   `id_cajero_nuevo` int(11) DEFAULT NULL COMMENT 'Id del usuario que entrara como nuevo cajero si es que hubo un cambio de turno con el corte de caja',
   `fecha` int(11) NOT NULL COMMENT 'fecha en la que se realiza el corte de caja',
   `saldo_real` float NOT NULL COMMENT 'Saldo actual de la caja',
-  `saldo_esperado` float NOT NULL COMMENT 'Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÆ’Ã‚Âºltimo corte de caja o a la apertura de la misma',
-  `saldo_final` float NOT NULL COMMENT 'Saldo que se deja en caja despuÃƒÆ’Ã‚Â©s de realizar el corte',
+  `saldo_esperado` float NOT NULL COMMENT 'Saldo que se espera de acuerdo a las ventas realizadas apartir del ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºltimo corte de caja o a la apertura de la misma',
+  `saldo_final` float NOT NULL COMMENT 'Saldo que se deja en caja despuÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©s de realizar el corte',
   PRIMARY KEY (`id_corte_de_caja`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -705,7 +719,7 @@ CREATE TABLE IF NOT EXISTS `corte_de_sucursal` (
 
 CREATE TABLE IF NOT EXISTS `cuenta_contable` (
   `id_cuenta_contable` int(11) NOT NULL AUTO_INCREMENT,
-  `clave` varchar(45) COLLATE utf8_spanish_ci NOT NULL COMMENT 'La clave que se le darÃ¡ a la nueva cuenta contable',
+  `clave` varchar(45) COLLATE utf8_spanish_ci NOT NULL COMMENT 'La clave que se le darÃƒÂ¡ a la nueva cuenta contable',
   `nivel` int(11) NOT NULL COMMENT 'Nivel de profundidad que tendra la cuenta en el arbol de cuentas',
   `consecutivo_en_nivel` int(11) NOT NULL COMMENT 'Dependiendo del nivel de profundidad de la cuenta contable, este valor indicara dentro de su nivel que numero consecutivo le corresponde con respecto a las mismas que estan en su mismo nivel',
   `nombre_cuenta` varchar(100) COLLATE utf8_spanish_ci NOT NULL COMMENT 'El nombre de la cuenta',
@@ -718,7 +732,7 @@ CREATE TABLE IF NOT EXISTS `cuenta_contable` (
   `es_cuenta_mayor` tinyint(1) NOT NULL COMMENT 'Indica si la cuenta es de mayor',
   `afectable` tinyint(1) NOT NULL COMMENT 'indica si sobre esta cuenta ya se pueden realizar operaciones',
   `id_cuenta_padre` int(11) DEFAULT NULL COMMENT 'id de la cuenta de la que depende',
-  `activa` tinyint(1) NOT NULL COMMENT 'Indica si la cuenta estÃ¡ disponible para su uso o no.',
+  `activa` tinyint(1) NOT NULL COMMENT 'Indica si la cuenta estÃƒÂ¡ disponible para su uso o no.',
   `id_catalogo_cuentas` int(11) NOT NULL COMMENT 'Id del catalogo de cuentas al que pertenece esta cuenta',
   PRIMARY KEY (`id_cuenta_contable`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=1 ;
@@ -774,7 +788,7 @@ CREATE TABLE IF NOT EXISTS `direccion` (
   `id_usuario_ultima_modificacion` int(11) NOT NULL COMMENT 'quien fue el usuario que modifico este registro la ultima vez',
   PRIMARY KEY (`id_direccion`),
   KEY `id_ciudad` (`id_ciudad`,`id_usuario_ultima_modificacion`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=223 ;
 
 -- --------------------------------------------------------
 
@@ -804,6 +818,7 @@ CREATE TABLE IF NOT EXISTS `documento_base` (
   `nombre` varchar(32) NOT NULL,
   `activo` tinyint(1) NOT NULL,
   `json_impresion` longtext NOT NULL,
+  `nombre_plantilla` text,
   `ultima_modificacion` int(11) NOT NULL,
   PRIMARY KEY (`id_documento_base`),
   UNIQUE KEY `nombre` (`nombre`)
@@ -854,10 +869,10 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Si esta empresa esta activa o no',
   `direccion_web` varchar(20) DEFAULT NULL COMMENT 'Direccion web de la empresa',
   `cedula` varchar(100) CHARACTER SET armscii8 DEFAULT NULL,
-  `id_logo` int(11) NOT NULL,
+  `id_logo` int(11) NULL,
   `mensaje_morosos` text CHARACTER SET utf8 COMMENT 'Mensaje para clientes y proveedores morosos',
   PRIMARY KEY (`id_empresa`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='tabla de empresas' AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='tabla de empresas' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -882,14 +897,15 @@ CREATE TABLE IF NOT EXISTS `extra_params_estructura` (
   `tabla` varchar(32) COLLATE utf8_spanish_ci NOT NULL,
   `campo` varchar(32) COLLATE utf8_spanish_ci NOT NULL,
   `tipo` enum('text','textarea','enum','password','string','int','float','bool','date') COLLATE utf8_spanish_ci NOT NULL,
-  `enum` longtext NULL,
+  `enum` longtext COLLATE utf8_spanish_ci,
   `longitud` int(11) NOT NULL,
   `obligatorio` tinyint(1) NOT NULL,
   `caption` varchar(32) COLLATE utf8_spanish_ci NOT NULL,
   `descripcion` text COLLATE utf8_spanish_ci,
   PRIMARY KEY (`id_extra_params_estructura`),
-  UNIQUE KEY `tabla` (`tabla`,`campo`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=3 ;
+  UNIQUE KEY `tabla` (`tabla`,`campo`),
+  KEY `tabla_2` (`tabla`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=37 ;
 
 -- --------------------------------------------------------
 
@@ -901,9 +917,10 @@ CREATE TABLE IF NOT EXISTS `extra_params_valores` (
   `id_extra_params_valores` int(11) NOT NULL AUTO_INCREMENT,
   `id_extra_params_estructura` int(11) NOT NULL,
   `id_pk_tabla` int(11) NOT NULL COMMENT 'el id del objeto en la tabla a la que se le agrego la columna',
-  `val` varchar(256) COLLATE utf8_spanish_ci NOT NULL,
-  PRIMARY KEY (`id_extra_params_valores`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=1 ;
+  `val` mediumtext COLLATE utf8_spanish_ci  NULL,
+  PRIMARY KEY (`id_extra_params_valores`),
+  KEY `id_pk_tabla` (`id_pk_tabla`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=7473 ;
 
 -- --------------------------------------------------------
 
@@ -922,13 +939,28 @@ CREATE TABLE IF NOT EXISTS `gasto` (
   `fecha_de_registro` int(11) NOT NULL COMMENT 'fecha de cuando el gasto se ingreso en el sistema',
   `id_sucursal` int(11) DEFAULT NULL COMMENT 'si el gasto pertenece a una sucursal especifica, este es el id de esa sucursal',
   `nota` varchar(64) DEFAULT NULL COMMENT 'alguna nota extra para el gasto',
-  `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripcion del gasto en caso de que no este contemplado en la lista de  conceptos de gasto',
+  `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripcion del gasto en caso de que no este contemplado en la lista de conceptos de gasto',
   `folio` varchar(50) DEFAULT NULL COMMENT 'Folio de la factura del gasto',
   `monto` float NOT NULL COMMENT 'Monto del gasto si no esta definido por el concepto de gasto',
   `cancelado` tinyint(1) NOT NULL COMMENT 'Si este gasto ha sido cancelado o no',
   `motivo_cancelacion` varchar(255) DEFAULT NULL COMMENT 'Motivo por el cual se realiza la cancelacion',
   PRIMARY KEY (`id_gasto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial_tipo_cambio`
+--
+
+CREATE TABLE IF NOT EXISTS `historial_tipo_cambio` (
+  `id_historial_tipo_cambio` int(11) NOT NULL AUTO_INCREMENT COMMENT 'El id del registro en la tabla.',
+  `id_moneda_base` int(11) NOT NULL COMMENT 'El id de la moneda base del sistema',
+  `fecha` int(11) NOT NULL COMMENT 'La fecha en formato UNIX en que se registra el tipo de cambio con respecto a la moneda base',
+  `json_equivalencias` text NOT NULL COMMENT 'Un JSON que contenga la equivalencia de la moneda base en las demÃ¡s monedas activadas en el sistema.',
+  `id_empresa` int(11) NOT NULL COMMENT 'El id de la empresa para la que aplica este tipo de cambio para su moneda base.',
+  PRIMARY KEY (`id_historial_tipo_cambio`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='LlevarÃ¡ el histÃ³rico de los tipo de cambio con respecto a ' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -962,14 +994,14 @@ CREATE TABLE IF NOT EXISTS `impresora_caja` (
 
 CREATE TABLE IF NOT EXISTS `impuesto` (
   `id_impuesto` int(11) NOT NULL AUTO_INCREMENT,
-  `codigo` varchar(64) CHARACTER SET utf8 NOT NULL COMMENT 'Determina el cÃ³digo para identificar el impuesto',
+  `codigo` varchar(64) CHARACTER SET utf8 NOT NULL COMMENT 'Determina el cÃƒÂ³digo para identificar el impuesto',
   `importe` float NOT NULL COMMENT 'El monto o el porcentaje correspondiente del impuesto',
-  `incluido_precio` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Determina si el importe estÃ¡ incluido en el precio',
-  `aplica` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT 'ambos' COMMENT 'Determina el Ã¡mbito al que aplica el impuesto (compra, venta, ambos)',
+  `incluido_precio` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Determina si el importe estÃƒÂ¡ incluido en el precio',
+  `aplica` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT 'ambos' COMMENT 'Determina el ÃƒÂ¡mbito al que aplica el impuesto (compra, venta, ambos)',
   `tipo` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT 'porcentaje' COMMENT 'Determina el tipo de impuesto: porcentaje, importe_fijo, ninguno, saldo_pendiente.',
   `nombre` varchar(100) NOT NULL COMMENT 'Nombre del impuesto',
   `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripcion larga del impuesto',
-  `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Determina si estÃ¡ activo el impuesto',
+  `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Determina si estÃƒÂ¡ activo el impuesto',
   PRIMARY KEY (`id_impuesto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -1097,7 +1129,7 @@ CREATE TABLE IF NOT EXISTS `ingreso` (
   `id_sucursal` int(11) DEFAULT NULL COMMENT 'si el ingreso pertenece a una sucursal especifica, este es el id de esa sucursal',
   `id_caja` int(11) DEFAULT NULL COMMENT 'si el ingreso se recibe en una caja, este es su id',
   `nota` varchar(64) DEFAULT NULL COMMENT 'alguna nota extra para el ingreso',
-  `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripcion del ingreso en caso de que no este contemplado en la lista de  conceptos de ingreso',
+  `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descripcion del ingreso en caso de que no este contemplado en la lista de conceptos de ingreso',
   `folio` varchar(50) DEFAULT NULL COMMENT 'Folio de la factura del ingreso',
   `monto` float NOT NULL COMMENT 'Monto del ingreso si no esta definido por el concepto de gasto',
   `cancelado` tinyint(1) NOT NULL COMMENT 'Si este ingreso ha sido cancelado o no',
@@ -1264,7 +1296,7 @@ CREATE TABLE IF NOT EXISTS `moneda` (
   `simbolo` varchar(10) NOT NULL COMMENT 'Simbolo de la moneda (US$,NP$)',
   `activa` tinyint(1) NOT NULL COMMENT 'Si esta moneda esta activa o ya no se usa',
   PRIMARY KEY (`id_moneda`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Tabla que contendrÃƒÆ’Ã‚Â¡ las distintas monedas que usa el uusa' AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Tabla que contendrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ las distintas monedas q' AUTO_INCREMENT=94 ;
 
 -- --------------------------------------------------------
 
@@ -1347,6 +1379,21 @@ CREATE TABLE IF NOT EXISTS `paquete_sucursal` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `perfil`
+--
+
+CREATE TABLE IF NOT EXISTS `perfil` (
+  `id_perfil` int(11) NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(64) NOT NULL,
+  `configuracion` longtext NOT NULL,
+  `fecha_creacion` int(11) NOT NULL,
+  `fecha_modificacion` int(11) NOT NULL,
+  PRIMARY KEY (`id_perfil`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `periodo`
 --
 
@@ -1421,8 +1468,9 @@ CREATE TABLE IF NOT EXISTS `prestamo` (
 
 CREATE TABLE IF NOT EXISTS `producto` (
   `id_producto` int(11) NOT NULL AUTO_INCREMENT,
+  `id_clasificacion_producto` int(11) DEFAULT NULL COMMENT 'Id de la clasificacion del producto',
   `compra_en_mostrador` tinyint(1) NOT NULL COMMENT 'Verdadero si el producto se puede comprar en mostrador',
-  `visible_en_vc` tinyint(1) NOT NULL COMMENT '1 para mostrar el productos en VC.',
+  `visible_en_vc` tinyint(1)  NULL COMMENT '1 para mostrar el productos en VC.',
   `metodo_costeo` enum('precio','costo','variable') NOT NULL COMMENT 'Si el precio se toma del precio base o del costo del producto',
   `activo` tinyint(1) NOT NULL COMMENT 'Si el producto esta activo o no',
   `codigo_producto` varchar(128) NOT NULL COMMENT 'Codigo interno del producto',
@@ -1547,7 +1595,7 @@ CREATE TABLE IF NOT EXISTS `regla` (
 CREATE TABLE IF NOT EXISTS `reporte` (
   `id_reporte` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id del reporte',
   PRIMARY KEY (`id_reporte`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tabla que contendrÃƒÆ’Ã‚Â¡ los reportes generados' AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tabla que contendrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ los reportes generados' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1680,11 +1728,13 @@ CREATE TABLE IF NOT EXISTS `retencion_usuario` (
 
 CREATE TABLE IF NOT EXISTS `rol` (
   `id_rol` int(11) NOT NULL AUTO_INCREMENT,
+  `id_rol_padre` int(11) DEFAULT NULL COMMENT 'Id del padre de este rol',
   `nombre` varchar(30) NOT NULL COMMENT 'Nombre del rol',
   `descripcion` varchar(255) DEFAULT NULL COMMENT 'descripcion larga de este rol',
   `salario` float DEFAULT NULL COMMENT 'Si los usuarios con dicho rol contaran con un salario',
-  `id_tarifa_compra` int(11) NOT NULL COMMENT 'Id de la tarifa de compra por default para los usuarios de este rol',
-  `id_tarifa_venta` int(11) NOT NULL COMMENT 'Id de la tarifa de venta por default para los usuarios de este rol',
+  `id_tarifa_compra` int(11) DEFAULT NULL COMMENT 'Id de la tarifa de compra por default para los usuarios de este rol',
+  `id_tarifa_venta` int(11) DEFAULT NULL COMMENT 'Id de la tarifa de venta por default para los usuarios de este rol',
+  `id_perfil` int(11) DEFAULT NULL COMMENT 'Id del perfil que tiene por default cada usuario de este rol, posteriormente se peude personalizar el perfil de cada usuario',
   PRIMARY KEY (`id_rol`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
@@ -1720,7 +1770,7 @@ CREATE TABLE IF NOT EXISTS `servicio` (
   `activo` tinyint(1) NOT NULL COMMENT 'Si el servicio esta activo',
   `descripcion_servicio` varchar(255) DEFAULT NULL COMMENT 'Descripcion del servicio',
   `costo_estandar` float NOT NULL COMMENT 'Valor del costo estandar del servicio',
-  `garantia` int(11) DEFAULT NULL COMMENT 'Si este servicio tiene una garantÃƒÆ’Ã‚Â­a en meses.',
+  `garantia` int(11) DEFAULT NULL COMMENT 'Si este servicio tiene una garantÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a en meses.',
   `control_existencia` int(11) DEFAULT NULL COMMENT '00000001 = Unidades. 00000010 = Caractersticas. 00000100 = Series. 00001000 = Pedimentos. 00010000 = LoteCaractersticas. 00000100 = Series. 00001000 = Pedimentos. 00010000 = Lote',
   `foto_servicio` varchar(50) DEFAULT NULL COMMENT 'Url de la foto del servicio',
   `precio` float DEFAULT NULL COMMENT 'El precio fijo del servicio',
@@ -1780,7 +1830,7 @@ CREATE TABLE IF NOT EXISTS `sesion` (
   PRIMARY KEY (`id_sesion`),
   UNIQUE KEY `id_usuario` (`id_usuario`),
   KEY `auth_token` (`auth_token`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Mantiene un seguimiento de las sesiones activas en el sistem' AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Mantiene un seguimiento de las sesiones activas en el sistem' AUTO_INCREMENT=5772 ;
 
 -- --------------------------------------------------------
 
@@ -1791,11 +1841,9 @@ CREATE TABLE IF NOT EXISTS `sesion` (
 CREATE TABLE IF NOT EXISTS `sucursal` (
   `id_sucursal` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id de la tabla sucursal',
   `id_direccion` int(11) NOT NULL COMMENT 'Id de la direccion de la sucursal',
-  `rfc` varchar(30) DEFAULT NULL COMMENT 'RFC de la sucursal',
-  `razon_social` varchar(100) NOT NULL COMMENT 'Razon social de la sucursal',
+  `id_tarifa` int(11) NULL COMMENT 'Id de la tarifa por default',
   `descripcion` varchar(255) DEFAULT NULL COMMENT 'Descrpicion de la sucursal',
   `id_gerente` int(11) DEFAULT NULL COMMENT 'Id del usuario que funje como gerente general de la sucursal',
-  `saldo_a_favor` float NOT NULL COMMENT 'Saldo a favor de la sucursal',
   `fecha_apertura` int(11) NOT NULL COMMENT 'Fecha en que se creo la sucursal',
   `activa` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Si esta sucursal esta activa o no',
   `fecha_baja` int(11) DEFAULT NULL COMMENT 'Fecha en que se dio de baja esta sucursal',
@@ -1896,7 +1944,7 @@ CREATE TABLE IF NOT EXISTS `ubicacion` (
   `fila` varchar(128) NOT NULL,
   `caja` varchar(128) NOT NULL,
   PRIMARY KEY (`id_ubicacion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Maneja las ubicaciones fÃƒÆ’Ã‚Â­sicas de los productos en el alm' AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Maneja las ubicaciones fÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­sicas de los produ' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1927,9 +1975,10 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `id_direccion` int(11) DEFAULT NULL COMMENT 'Id de la direccion del usuario',
   `id_direccion_alterna` int(11) DEFAULT NULL COMMENT 'Id de la direccion alterna del usuario',
   `id_sucursal` int(11) DEFAULT NULL COMMENT 'Id sucursal en la que labora este usuario o dodne se dio de alta',
-  `id_rol` int(11) NOT NULL COMMENT 'Id del rol que desempeÃƒÆ’Ã‚Â±ara el usuario en la instancia',
-  `id_clasificacion_cliente` int(11) DEFAULT NULL COMMENT 'Id de la clasificaiocn del cliente',
-  `id_clasificacion_proveedor` int(11) DEFAULT NULL COMMENT 'Id de la clasificacion del proveedor',
+  `id_rol` int(11) NOT NULL COMMENT 'Id del rol que desempeÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±ara el usuario en la instancia',
+  `id_categoria_contacto` int(11) DEFAULT NULL COMMENT 'Id de la categoria del cliente/proveedor',
+  `id_clasificacion_proveedor` int(11) DEFAULT NULL,
+  `id_clasificacion_cliente` int(11) DEFAULT NULL,
   `id_moneda` int(11) DEFAULT NULL COMMENT 'Id moneda de preferencia del usuario',
   `fecha_asignacion_rol` int(11) NOT NULL COMMENT 'Fecha en que se asigno o modifico el rol de este usuario',
   `nombre` varchar(100) CHARACTER SET latin1 NOT NULL COMMENT 'Nombre del agente',
@@ -1947,30 +1996,34 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `last_login` int(11) DEFAULT NULL COMMENT 'Fecha en la que ingreso el usuario por ultima vez',
   `consignatario` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Si el usuario es consignatario',
   `salario` float DEFAULT NULL COMMENT 'El salario que recibe el usuaario actualmente',
-  `correo_electronico` varchar(30) DEFAULT NULL COMMENT 'Correo electronico del usuario',
+  `correo_electronico` varchar(50) DEFAULT NULL COMMENT 'Correo electronico del usuario',
   `pagina_web` varchar(30) DEFAULT NULL COMMENT 'Pagina Web del usuario',
   `saldo_del_ejercicio` float NOT NULL DEFAULT '0' COMMENT 'Saldo del ejercicio del cliente',
   `ventas_a_credito` int(11) DEFAULT NULL COMMENT 'Ventas a credito del cliente',
   `representante_legal` varchar(100) DEFAULT NULL COMMENT 'Nombre del representante legal del usuario',
   `facturar_a_terceros` tinyint(1) DEFAULT NULL COMMENT 'Si el cliente puede facturar a terceros',
   `dia_de_pago` int(11) DEFAULT NULL COMMENT 'Fecha de pago del cliente',
-  `mensajeria` tinyint(1) DEFAULT NULL COMMENT 'Si el cliente cuenta con una cuenta de mensajerÃƒÆ’Ã‚Â­a y paqueterÃƒÆ’Ã‚Â­a',
+  `mensajeria` tinyint(1) DEFAULT NULL COMMENT 'Si el cliente cuenta con una cuenta de mensajerÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a y paqueterÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a',
   `intereses_moratorios` float DEFAULT NULL COMMENT 'Intereses moratorios del cliente',
-  `denominacion_comercial` varchar(100) DEFAULT NULL COMMENT 'DenominaciÃƒÆ’Ã‚Â³n comercial del cliente',
-  `dias_de_credito` int(11) DEFAULT NULL COMMENT 'DÃƒÆ’Ã‚Â­as de crÃƒÆ’Ã‚Â©dito que se le darÃƒÆ’Ã‚Â¡n al cliente',
+  `denominacion_comercial` varchar(100) DEFAULT NULL COMMENT 'DenominaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n comercial del cliente',
+  `dias_de_credito` int(11) DEFAULT NULL COMMENT 'DÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­as de crÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©dito que se le darÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡n al cliente',
   `cuenta_de_mensajeria` varchar(50) DEFAULT NULL COMMENT 'Cuenta de mensajeria del cliente',
-  `dia_de_revision` int(11) DEFAULT NULL COMMENT 'Fecha de revisiÃƒÆ’Ã‚Â³n del cliente',
+  `dia_de_revision` int(11) DEFAULT NULL COMMENT 'Fecha de revisiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del cliente',
   `codigo_usuario` varchar(50) DEFAULT NULL COMMENT 'Codigo del usuario para uso interno de la empresa',
   `dias_de_embarque` int(11) DEFAULT NULL COMMENT 'Dias de embarque del proveedor (Lunes, Martes, etc)',
-  `tiempo_entrega` int(11) DEFAULT NULL COMMENT 'Tiempo de entrega del proveedor en dÃƒÆ’Ã‚Â­as',
+  `tiempo_entrega` int(11) DEFAULT NULL COMMENT 'Tiempo de entrega del proveedor en dÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­as',
   `cuenta_bancaria` varchar(50) DEFAULT NULL COMMENT 'Cuenta bancaria del usuario',
   `id_tarifa_compra` int(11) NOT NULL COMMENT 'Id de la tarifa de compra por default para este usuario',
   `tarifa_compra_obtenida` enum('rol','proveedor','cliente','usuario') NOT NULL COMMENT 'Indica de donde fue obtenida la tarifa de compra',
   `id_tarifa_venta` int(11) NOT NULL COMMENT 'Id de la tarifa de venta por default para este usuario',
   `tarifa_venta_obtenida` enum('rol','proveedor','cliente','usuario') NOT NULL COMMENT 'Indica de donde fue obtenida la tarifa de venta',
   `token_recuperacion_pass` varchar(30) CHARACTER SET latin1 DEFAULT NULL COMMENT 'El token que se envia por correo para recuperar contrasena',
-  PRIMARY KEY (`id_usuario`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='tabla de usuarios' AUTO_INCREMENT=2 ;
+  `id_perfil` int(11) NOT NULL COMMENT 'Id del perfil de este usuario',
+  PRIMARY KEY (`id_usuario`),
+  KEY `id_direccion` (`id_direccion`),
+  KEY `id_clasificacion_cliente` (`id_clasificacion_cliente`),
+  KEY `id_rol` (`id_rol`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='tabla de usuarios' AUTO_INCREMENT=600 ;
 
 -- --------------------------------------------------------
 
@@ -2024,7 +2077,7 @@ CREATE TABLE IF NOT EXISTS `venta_arpilla` (
   `id_venta_arpilla` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id de la venta por arpilla',
   `id_venta` int(11) NOT NULL COMMENT 'Id de la venta en arpillas',
   `peso_destino` float NOT NULL COMMENT 'Peso del embarque en el destino',
-  `fecha_origen` int(11) NOT NULL COMMENT 'Fecha en la que se envÃƒÆ’Ã‚Â­a el embarque',
+  `fecha_origen` int(11) NOT NULL COMMENT 'Fecha en la que se envÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a el embarque',
   `folio` varchar(11) DEFAULT NULL COMMENT 'Folio de la entrega',
   `numero_de_viaje` varchar(11) DEFAULT NULL COMMENT 'Numero de viaje',
   `peso_origen` float NOT NULL COMMENT 'Peso del embarque en el origen',
@@ -2073,8 +2126,8 @@ CREATE TABLE IF NOT EXISTS `venta_orden` (
   `id_orden_de_servicio` int(11) NOT NULL COMMENT 'Id de la orden de servicio que se vendio',
   `precio` float NOT NULL COMMENT 'El precio de la orden',
   `descuento` float NOT NULL COMMENT 'El descuento de la orden',
-  `impuesto` float NOT NULL COMMENT 'Cantidad aÃƒÆ’Ã‚Â±adida por los impuestos',
-  `retencion` float NOT NULL COMMENT 'Cantidad aÃƒÆ’Ã‚Â±adida por las retenciones',
+  `impuesto` float NOT NULL COMMENT 'Cantidad aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adida por los impuestos',
+  `retencion` float NOT NULL COMMENT 'Cantidad aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adida por las retenciones',
   PRIMARY KEY (`id_venta`,`id_orden_de_servicio`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Detalle venta ordenes de servicio';
 

@@ -14,10 +14,8 @@
 
     $tabla = new TableComponent( 
         array(
-            "razon_social"	=> "Razon Social",
             "descripcion"	=> "Descripcion",
             "id_gerente" 	=> "Gerente",
-            "saldo_a_favor"	=> "Saldo",
             "activa"		=>"Activa"
         ),
         $sucursales["resultados"]

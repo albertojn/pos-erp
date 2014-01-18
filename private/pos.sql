@@ -65,6 +65,20 @@ CREATE TABLE IF NOT EXISTS `instance_request` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tipos_cambio`
+--
+
+CREATE TABLE IF NOT EXISTS `tipos_cambio` (
+  `id_tipo_cambio` int(11) NOT NULL AUTO_INCREMENT COMMENT 'sera el id del registro en  la tabla',
+  `id_moneda_base` int(11) NOT NULL COMMENT 'El id de la moneda base de cada una de las empresas de las instancias, no se deben de repetir registros en esta tabla con el mismo  id_moneda_base.',
+  `codigo_moneda_base` varchar(3) NOT NULL COMMENT 'codigo ISO de la moneda ejemplo: MXN, USD',
+  `json_equivalencias` text NOT NULL COMMENT 'un json que contenga la equivalencia de la moneda base en las demás monedas activadas en el sistema.',
+  PRIMARY KEY (`id_tipo_cambio`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Guardara los tipos de cambio de todas las monedas base que haya en las instancia' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `users`
 --
 

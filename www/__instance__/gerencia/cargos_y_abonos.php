@@ -72,11 +72,11 @@
 	$page->addComponent( new TitleComponent( "Nuevo Gasto" , 3 ) );
 	$form = new DAOFormComponent(array(
 		new Gasto( ),
-		new ConceptoGasto( )
+		//new ConceptoGasto( )
 	));
 
 	$form->hideField( array(
-		"activo",
+		//"activo",
 		"cancelado",
 		"id_usuario",
 		"id_gasto",
@@ -85,7 +85,7 @@
 		"id_sucursal",
 		"id_caja",
 		"id_orden_de_servicio",
-		"nombre"
+		//"nombre"
 	));
 
 	$form->createComboBoxJoin( "id_empresa", "razon_social", EmpresaDAO::getAll( ) );
@@ -145,11 +145,11 @@
 
 	$form = new DAOFormComponent( array(
 		new Ingreso( ),
-		new ConceptoIngreso( )
+		//new ConceptoIngreso( )
 	));
 
 	$form->hideField( array(
-		"activo",
+		//"activo",
 		"cancelado",
 		"id_usuario",
 		"id_ingreso",
@@ -207,12 +207,21 @@
 	/*
 	 * Conceptos de ingresos
 	 **/
+	$gastos = ContabilidadController::ListarCuentasConceptosGastos();
+
+	$ingresos = ContabilidadController::ListarCuentasConceptosIngresos();
+
 	$page->nextTab( "Conceptos" );
 	$page->addComponent( new TitleComponent( "Nuevo concepto de ingreso" , 3 ) );
 	$form = new DAOFormComponent( new ConceptoIngreso() );
 	$form->addApiCall( "api/cargosyabonos/ingreso/concepto/nuevo", "POST" );
+	$form->onApiCallSuccessRedirect("cargos_y_abonos.php");
 	$form->hideField( array( "id_concepto_ingreso" ) );
+	$form->hideField( array( "activo" ) );
+	$form->createComboBoxJoin( "id_cuenta_contable", "nombre_cuenta", $ingresos["resultados"]);
+
 	$form->makeObligatory( array( "nombre" ) );
+	$form->makeObligatory( array( "id_cuenta_contable" ) );
 	$page->addComponent( $form );
 
 	/*
@@ -221,8 +230,13 @@
 	$form = new DAOFormComponent( new ConceptoGasto() );
 	$page->addComponent( new TitleComponent( "Nuevo concepto de gasto" , 3 ) );
 	$form->addApiCall( "api/cargosyabonos/gasto/concepto/nuevo", "POST" );
+	$form->onApiCallSuccessRedirect("cargos_y_abonos.php");
 	$form->hideField( array( "id_concepto_gasto" ) );
+	$form->hideField( array( "activo" ) );
+	$form->createComboBoxJoin( "id_cuenta_contable", "nombre_cuenta", $gastos["resultados"]);
+
 	$form->makeObligatory( array( "nombre" ) );
+	$form->makeObligatory( array( "id_cuenta_contable" ) );
 	$page->addComponent( $form );
 
 	$page->render( );

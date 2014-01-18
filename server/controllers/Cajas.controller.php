@@ -36,6 +36,7 @@ class CajasController extends ValidacionesController{
             try
             {
                 CajaDAO::save($caja);
+                /////////////-editar nombre_cuenta de la cuenta contable asociada
                 //
                 //Si se esta llevando control de lo billetes en la caja
                 //tienen que haber pasado en un arreglo bidimensional los ids

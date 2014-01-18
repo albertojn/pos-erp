@@ -19,6 +19,7 @@
  	 * @param id_sucursal int 
  	 * @param json_impresion string 
  	 * @param nombre string 
+ 	 * @param nombre_plantilla string Indica el nombre del archivo plantilla dentro del servidor
  	 **/
   static function EditarBase
 	(
@@ -28,7 +29,8 @@
 		$id_empresa = null, 
 		$id_sucursal = null, 
 		$json_impresion = null, 
-		$nombre = null
+		$nombre = null, 
+		$nombre_plantilla = null
 	);  
   
   
@@ -46,6 +48,7 @@
  	 * @param foliado json 
  	 * @param id_empresa int Si pertence a una empresa en especifico, o puede realizarse en cualquier empresa.
  	 * @param id_sucursal int Si pertenece a una sucursal en especifico o puede realizarse en cualquier sucursal.
+ 	 * @param nombre_plantilla string Indica el nombre con el cual se va a guardar la plantilla en el servidor
  	 * @return id_documento_base int Id del nuevo documento
  	 **/
   static function NuevoBase
@@ -57,7 +60,8 @@
 		$foliado = "", 
 		$foliado = "", 
 		$id_empresa = null, 
-		$id_sucursal = null
+		$id_sucursal = null, 
+		$nombre_plantilla = null
 	);  
   
   
@@ -143,6 +147,20 @@ Update : La respuesta solo deber?a de contener success :true | false, y en caso 
   static function ImprimirFactura
 	(
 		$id_folio
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Convierte a PDF el documento especificado, junto a su JSON de impresion del documento base.
+ 	 *
+ 	 * @param id_documento int ID del documento a imprimir.
+ 	 **/
+  static function Imprimir
+	(
+		$id_documento
 	);  
   
   

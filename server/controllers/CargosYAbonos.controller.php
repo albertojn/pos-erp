@@ -121,7 +121,7 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
      * Valida los parametros de la tabla conceptoGasto, regresa un string con el error en caso 
      * de haber uno, de lo contrario, regresa true
      */
-    private static function validarParametrosConceptoGasto($id_concepto_gasto = null, $nombre = null, $descripcion = null, $monto = null, $activo = null)
+    private static function validarParametrosConceptoGasto($id_concepto_gasto = null, $nombre = null, $descripcion = null, $id_cuenta_contable = null, $activo = null)
     {
         //valida que el concepto de gasto exista en la base de datos y que este activo
         if (!is_null($id_concepto_gasto)) {
@@ -153,13 +153,12 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
                 return $e;
         }
         
-        //valida el monto
-        if (!is_null($monto)) {
-            $e = self::validarNumero($monto, 1.8e200, "monto");
-            if (is_string($e))
-                return $e;
-        }
-        
+        //valida que exista esa cuenta contable
+
+        $cc = CuentaContableDAO::getByPK($id_cuenta_contable);
+        if (is_null($cc))
+            return "La cuenta contable con id " . $id_cuenta_contable . " no existe";
+
         //valida el boleano activo
         if (!is_null($activo)) {
             $e = self::validarNumero($activo, 1, "activo");
@@ -175,7 +174,7 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
      * Valida los parametros de la tabla concepto_ingreso. Regresa un string con el error
      * si se ha encontrado alguno, en caso contrario regresa verdadero.
      */
-    private static function validarParametrosConceptoIngreso($id_concepto_ingreso = null, $nombre = null, $descripcion = null, $monto = null, $activo = null)
+    private static function validarParametrosConceptoIngreso($id_concepto_ingreso = null, $nombre = null, $descripcion = null, $id_cuenta_contable = null, $activo = null)
     {
         //valida que el concepto de ingreso exista en la base de datos y que este activo
         if (!is_null($id_concepto_ingreso)) {
@@ -207,13 +206,10 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
                 return $e;
         }
         
-        //valida que el monto este en rango
-        if (!is_null($monto)) {
-            $e = self::validarNumero($monto, 1.8e200, "monto");
-            if (is_string($e))
-                return $e;
-        }
-        
+        $cc = CuentaContableDAO::getByPK($id_cuenta_contable);
+        if (is_null($cc))
+            return "La cuenta contable con id " . $id_cuenta_contable . " no existe";
+
         //valida el boleano activo
         if (!is_null($activo)) {
             $e = self::validarNumero($activo, 1, "activo");
@@ -1474,20 +1470,19 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
     /**
      *
      *Registra un nuevo concepto de gasto
-     
-     <br/><br/><b>Update :</b> En la respuesta basta con solo indicar success : true | false, y en caso de fallo indicar el por que.
+     *Update : En la respuesta basta con solo indicar success : true | false, y en caso de fallo indicar el por que.
      *
+     * @param id_cuenta_contable int El id de la cuenta contable a la que se registraran los gastos de este concepto
      * @param nombre string la justificacion que aparecera despues de la leyenda "gasto por concepto de"
      * @param descripcion string Descripcion larga del concepto de gasto
-     * @param monto float Monto fijo del concepto de gasto
-     * @return id_concepto_gasto int Id autogenerado por la inserci�n del nuevo gasto
+     * @return id_concepto_gasto int Id autogenerado por la insercin del nuevo gasto
      **/
-    public static function NuevoConceptoGasto($nombre, $descripcion = null, $monto = null)
+    public static function NuevoConceptoGasto($id_cuenta_contable, $nombre, $descripcion = null)
     {
         Logger::log("Creando concepto de gasto");
         
         //valida los parametros de gasto
-        $validar = self::validarParametrosConceptoGasto(null, $nombre, $descripcion, $monto);
+        $validar = self::validarParametrosConceptoGasto(null, $nombre, $descripcion, $id_cuenta_contable);
         if (is_string($validar)) {
             Logger::error($validar);
             throw new Exception($validar);
@@ -1497,7 +1492,7 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
         $concepto_gasto = new ConceptoGasto();
         $concepto_gasto->setNombre(trim($nombre));
         $concepto_gasto->setDescripcion($descripcion);
-        $concepto_gasto->setMonto($monto);
+        $concepto_gasto->setIdCuentaContable($id_cuenta_contable);
         $concepto_gasto->setActivo(1);
         DAO::transBegin();
         try {
@@ -1510,6 +1505,16 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
         }
         DAO::transEnd();
         Logger::log("Gasto creado exitosamente");
+
+        $cuenta_padre = CuentaContableDAO::getByPK($id_cuenta_contable);
+
+        ContabilidadController::NuevaCuenta($cuenta_padre->getAbonosAumentan(), $cuenta_padre->getCargosAumentan(),
+                                            $cuenta_padre->getClasificacion(), $cuenta_padre->getEsCuentaMayor(),
+                                            $cuenta_padre->getEsCuentaOrden(), $cuenta_padre->getIdCatalogoCuentas(),
+                                            $cuenta_padre->getNaturaleza(), $nombre,
+                                            $cuenta_padre->getTipoCuenta(), $id_cuenta_contable
+                                            );
+
         return array(
             "id_concepto_gasto" => $concepto_gasto->getIdConceptoGasto()
         );
@@ -1517,44 +1522,47 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
     
     /**
      *
-     *Edita la informaci?e un concepto de gasto
-     
-     <br/><br/><b>Update : </b>Se deber?de tomar de la sesi?l id del usuario que hiso la ultima modificaci? la fecha.
+     *Edita la informaci?n de un concepto de gasto
+     * Update : Se deber?a de tomar de la sesi?n el id del usuario que hiso la ultima modificaci?n y la fecha.
      *
-     * @param nombre string Justificacion del concepto de gasto que aparecera despues de la leyenda "gasto por concepto de"
      * @param id_concepto_gasto int Id del concepto de gasto a modificar
-     * @param monto float monto fijo del concepto de gasto
+     * @param id_cuenta_contable int El id de la cuenta contable a la que se va a mover
      * @param descripcion string Descripcion larga del concepto de gasto
+     * @param nombre string Justificacion del concepto de gasto que aparecera despues de la leyenda "gasto por concepto de"
      **/
-    public static function EditarConceptoGasto($id_concepto_gasto, $descripcion = null, $monto = null, $nombre = null)
+    public static function EditarConceptoGasto($id_concepto_gasto, $id_cuenta_contable, $descripcion = null, $nombre = null)
     {
         Logger::log("Editando concepto de gasto");
         
         //valida que se hayan recibido parametros para editar
-        if (!$nombre && !$monto && !$descripcion) {
+        if (!$nombre && !$id_cuenta_contable && !$descripcion) {
             Logger::warn("No se recibieron parametros para editar, no se edita nada");
             throw new Exception("No se recibieron parametros para editar, no se edita nada");
         }
         
         //valida los parametros
-        $validar = self::validarParametrosConceptoGasto($id_concepto_gasto, $nombre, $descripcion, $monto);
+        $validar = self::validarParametrosConceptoGasto($id_concepto_gasto, $nombre, $descripcion, $id_cuenta_contable);
         if (is_string($validar)) {
             Logger::error($validar);
             throw new Exception($validar);
         }
         
         $concepto_gasto = ConceptoGastoDAO::getByPK($id_concepto_gasto);
-        
+        $cuenta = CuentaContableDAO::getByPK($id_cuenta_contable);
+
         //Los parametros que no sean nulos seran tomados como actualizacion
-        if (!is_null($nombre))
+        if (!is_null($nombre)){
             $concepto_gasto->setNombre($nombre);
-        if (!is_null($monto))
-            $concepto_gasto->setMonto($monto);
+            $cuenta->setNombreCuenta($nombre);
+        }
+        if (!is_null($id_cuenta_contable))
+            $concepto_gasto->setIdCuentaContable($id_cuenta_contable);
         if (!is_null($descripcion))
             $concepto_gasto->setDescripcion($descripcion);
         DAO::transBegin();
         try {
             ConceptoGastoDAO::save($concepto_gasto);
+            CuentaContableDAO::save($cuenta);
         }
         catch (Exception $e) {
             DAO::transRollback();
@@ -1569,7 +1577,7 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
     /**
      *
      *Deshabilita un concepto de gasto
-     <br/><br/><b>Update :</b>Se deber?de tomar tambi?de la sesi?l id del usuario y fecha de la ultima modificaci?
+     *<br/><br/><b>Update :</b>Se deber?de tomar tambi?de la sesi?l id del usuario y fecha de la ultima modificaci?
      *
      * @param id_concepto_gasto int Id del concepto que ser eliminado
      **/
@@ -1604,20 +1612,19 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
     /**
      *
      *Crea un nuevo concepto de ingreso
-     
-     <br/><br/><b>Update :</b> En la respuesta basta con solo indicar success : true | false, y en caso de fallo indicar el por que.
+     *Update : En la respuesta basta con solo indicar success : true | false, y en caso de fallo indicar el por que.
      *
+     * @param id_cuenta_contable int El id de la cuenta contable a donde se registraran los ingresos  correspondientes a este concepto
      * @param nombre string Justificacion que aparecer despus de la leyenda "ingreso por concepto de"
-     * @param monto float Monto fijo del concepto de ingreso
      * @param descripcion string Descripcion larga de este concepto de ingreso
      * @return id_concepto_ingreso int Id autogenerado por la creacion del nuevo concepto de ingreso
      **/
-    public static function NuevoConceptoIngreso($nombre, $descripcion = null, $monto = null)
+    public static function NuevoConceptoIngreso($id_cuenta_contable, $nombre, $descripcion = null)
     {
         Logger::log("Creando nuevo concepto de ingreso");
         
         //valida los parametros de concepto ingreso
-        $validar = self::validarParametrosConceptoIngreso(null, $nombre, $descripcion, $monto);
+        $validar = self::validarParametrosConceptoIngreso(null, $nombre, $descripcion, $id_cuenta_contable);
         if (is_string($validar)) {
             Logger::error($validar);
             throw new Exception($validar);
@@ -1626,9 +1633,10 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
         //Inicializa el registro de ingreso
         $concepto_ingreso = new ConceptoIngreso();
         $concepto_ingreso->setNombre(trim($nombre));
-        $concepto_ingreso->setMonto($monto);
+        $concepto_ingreso->setIdCuentaContable($id_cuenta_contable);
         $concepto_ingreso->setDescripcion($descripcion);
         $concepto_ingreso->setActivo(1);
+
         DAO::transBegin();
         try {
             ConceptoIngresoDAO::save($concepto_ingreso);
@@ -1640,6 +1648,16 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
         }
         DAO::transEnd();
         Logger::log("Concepto de ingreso creado exitosamente");
+
+        $cuenta_padre = CuentaContableDAO::getByPK($id_cuenta_contable);
+
+        ContabilidadController::NuevaCuenta($cuenta_padre->getAbonosAumentan(), $cuenta_padre->getCargosAumentan(),
+                                            $cuenta_padre->getClasificacion(), $cuenta_padre->getEsCuentaMayor(),
+                                            $cuenta_padre->getEsCuentaOrden(), $cuenta_padre->getIdCatalogoCuentas(),
+                                            $cuenta_padre->getNaturaleza(), $nombre,
+                                            $cuenta_padre->getTipoCuenta(), $id_cuenta_contable
+                                            );
+
         return array(
             "id_concepto_ingreso" => $concepto_ingreso->getIdConceptoIngreso()
         );
@@ -1649,40 +1667,44 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
      *
      *Edita un concepto de ingreso
      *
-     * @param nombre string Justificacion que aparecera despues de la leyenda "ingreso por concepto de"
      * @param id_concepto_ingreso int Id del concepto de ingreso a modificar
+     * @param id_cuenta_contable int El id de la cuenta contable
      * @param descripcion string Descripcion larga del concepto de ingreso
-     * @param monto float Si este concepto tiene un monto fijo, se debe mostrar aqui. Si no hay un monto fijo, dejar esto como null.
+     * @param nombre string Justificacion que aparecera despues de la leyenda "ingreso por concepto de"
      **/
-    public static function EditarConceptoIngreso($id_concepto_ingreso, $descripcion = null, $monto = null, $nombre = null)
+    public static function EditarConceptoIngreso($id_concepto_ingreso, $id_cuenta_contable, $descripcion = null, $nombre = null)
     {
         Logger::log("Editando concepto de ingreso");
         
         //valida si ha recibido algun parametro para la edicion
-        if (!$nombre && !$descripcion && !$monto) {
+        if (!$nombre && !$descripcion && !$id_cuenta_contable) {
             Logger::warn("No se ha recibido un parametro a editar, no hay nada que editar");
             throw new Exception("No se ha recibido un parametro a editar, no hay nada que editar");
         }
         
         //valida los parametros recibidos
-        $validar = self::validarParametrosConceptoIngreso($id_concepto_ingreso, $nombre, $descripcion, $monto);
+        $validar = self::validarParametrosConceptoIngreso($id_concepto_ingreso, $nombre, $descripcion, $id_cuenta_contable);
         if (is_string($validar)) {
             Logger::error($validar);
             throw new Exception($validar);
         }
         
         $concepto_ingreso = ConceptoIngresoDAO::getByPK($id_concepto_ingreso);
-        
+        $cuenta = CuentaContableDAO::getByPK($id_cuenta_contable);
+
         //se toman como actualizacion aquellos parametros que no son null
-        if (!is_null($nombre))
-            $concepto_ingreso->setNombre($nombre);
+        if (!is_null($nombre)){
+            $concepto_gasto->setNombre($nombre);
+            $cuenta->setNombreCuenta($nombre);
+        }
         if (!is_null($descripcion))
             $concepto_ingreso->setDescripcion($descripcion);
         if (!is_null($monto))
-            $concepto_ingreso->setMonto($monto);
+            $concepto_ingreso->setIdCuentaContable($id_cuenta_contable);
         DAO::transBegin();
         try {
             ConceptoIngresoDAO::save($concepto_ingreso);
+            CuentaContableDAO::save($cuenta);
         }
         catch (Exception $e) {
             DAO::transRollback();
@@ -1696,8 +1718,7 @@ class CargosYAbonosController extends ValidacionesController implements ICargosY
     /**
      *
      *Deshabilita un concepto de ingreso
-     
-     <br/><br/><b>Update :</b>Se deber?tambi?obtener de la sesi?l id del usuario y fecha de la ultima modificaci?
+     *<br/><br/><b>Update :</b>Se deber?tambi?obtener de la sesi?l id del usuario y fecha de la ultima modificaci?
      *
      * @param id_concepto_ingreso int Id del ingreso a eliminar
      **/

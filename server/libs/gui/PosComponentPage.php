@@ -41,10 +41,10 @@ class PosComponentPage extends StdComponentPage{
 			$this->parital_head_rendered = true;
 			?>
 			<!DOCTYPE html>
-			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" >
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="es" >
 			<head>
 			<title><?php echo $this->title; ?></title>
-
+			<meta charset=utf-8">
 
 				<link rel="stylesheet" type="text/css" href="http://api.caffeina.mx/ext-4.0.0/resources/css/ext-all.css" /> 
 			    <script type="text/javascript" src="http://api.caffeina.mx/ext-4.0.0/ext-all.js"></script>

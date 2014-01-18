@@ -84,7 +84,7 @@
 	  *
 	  *
 	  **/
-	$page->nextTab("Editar");
+	$page->nextTab("Editar");	
 	$f = new FormComponent( );
 	for( $i = 0 ; $i < sizeof( $values ); $i++ ) {
 		$f->addField(
@@ -135,6 +135,9 @@
                         $DescargaExcel="<input type='button'  class='POS Boton' onclick=\"location.href='../api/formas/excel/generar2?id_documento=" .  $_GET["d"] . "'\" value='Descargar como excel'></input>";//Botón de descarga de excel
                         $page->addComponent($DescargaExcel);
 
+
+    $html = '<iframe src="../api/documento/imprimir?id_documento='.$_GET["d"].'" scrolling="auto" height="500" width="650" ></iframe>';
+    $page->addComponent($html);
 
 	/*
 	$page->addComponent(new TitleComponent("Editar", 3));

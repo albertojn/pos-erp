@@ -91,7 +91,7 @@ class Configuracion extends VO
 	/**
 	  * id_usuario
 	  * 
-	  * id_usuario que realizo la ultima modificación <br>
+	  * id_usuario que realizo la ultima modificaciÃ³n <br>
 	  * @access public
 	  * @var int(11)
 	  */
@@ -100,7 +100,7 @@ class Configuracion extends VO
 	/**
 	  * fecha
 	  * 
-	  * fecha de la ultima modificación, descrita en formato UNIX <br>
+	  * fecha de la ultima modificaciÃ³n, descrita en formato UNIX <br>
 	  * @access public
 	  * @var int(11)
 	  */
@@ -185,7 +185,7 @@ class Configuracion extends VO
 	/**
 	  * getIdUsuario
 	  * 
-	  * Get the <i>id_usuario</i> property for this object. Donde <i>id_usuario</i> es id_usuario que realizo la ultima modificación 
+	  * Get the <i>id_usuario</i> property for this object. Donde <i>id_usuario</i> es id_usuario que realizo la ultima modificaciÃ³n 
 	  * @return int(11)
 	  */
 	final public function getIdUsuario()
@@ -196,7 +196,7 @@ class Configuracion extends VO
 	/**
 	  * setIdUsuario( $id_usuario )
 	  * 
-	  * Set the <i>id_usuario</i> property for this object. Donde <i>id_usuario</i> es id_usuario que realizo la ultima modificación .
+	  * Set the <i>id_usuario</i> property for this object. Donde <i>id_usuario</i> es id_usuario que realizo la ultima modificaciÃ³n .
 	  * Una validacion basica se hara aqui para comprobar que <i>id_usuario</i> es de tipo <i>int(11)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param int(11)
@@ -209,7 +209,7 @@ class Configuracion extends VO
 	/**
 	  * getFecha
 	  * 
-	  * Get the <i>fecha</i> property for this object. Donde <i>fecha</i> es fecha de la ultima modificación, descrita en formato UNIX 
+	  * Get the <i>fecha</i> property for this object. Donde <i>fecha</i> es fecha de la ultima modificaciÃ³n, descrita en formato UNIX 
 	  * @return int(11)
 	  */
 	final public function getFecha()
@@ -220,7 +220,7 @@ class Configuracion extends VO
 	/**
 	  * setFecha( $fecha )
 	  * 
-	  * Set the <i>fecha</i> property for this object. Donde <i>fecha</i> es fecha de la ultima modificación, descrita en formato UNIX .
+	  * Set the <i>fecha</i> property for this object. Donde <i>fecha</i> es fecha de la ultima modificaciÃ³n, descrita en formato UNIX .
 	  * Una validacion basica se hara aqui para comprobar que <i>fecha</i> es de tipo <i>int(11)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param int(11)

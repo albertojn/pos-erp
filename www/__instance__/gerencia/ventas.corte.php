@@ -35,7 +35,7 @@
         exit;
     }
 
-    $page->addComponent( new TitleComponent( "Sucursal " . $sucursal->getRazonSocial( ), 1 ) );
+    $page->addComponent( new TitleComponent( "Sucursal " . $sucursal->getDescripcion( ), 1 ) );
 
     $table = "<table>";
 

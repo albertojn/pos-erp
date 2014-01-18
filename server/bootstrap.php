@@ -17,16 +17,6 @@
 	
 
 	# *******************************
-	# Revision de SubVersion
-	# *******************************
-	exec("svn info", $r_exec);
-	for ($i=0; $i < sizeof($r_exec); $i++) { 
-		if(substr ( $r_exec[$i], 0, 9 ) == "Revision:"){
-			define( "SVN_REV" ,  substr ( $r_exec[$i], 10 ));
-		}
-	}
-
-	# *******************************
 	# Buscar la ruta de /SERVER
 	# *******************************
 	define('POS_PATH_TO_SERVER_ROOT',  __DIR__ );
@@ -112,6 +102,7 @@
 	}
 
 
+	require_once("libs/json2pdf/json2pdf.php");
 	require_once("libs/PHPExcel.php");//Carga la libreria de PHPExcel
 	# *******************************
 	# Cargar las librerias de GUI
@@ -169,11 +160,12 @@
     require_once("controllers/Validaciones.controllers.php");
     require_once("controllers/Instancias.controller.php");
 	require_once("controllers/Clientes.controller.php");
+	require_once("controllers/Contactos.controller.php");
 	require_once("controllers/Sesion.controller.php");
 	require_once("controllers/PersonalYAgentes.controller.php");
 	//require_once("controllers/ImpuestosYRetenciones.controller.php");	//Agregado 18 10 2012
 	require_once("controllers/Empresas.controller.php");
-                       require_once("controllers/FormasPreimpresas.controller.php");
+    require_once("controllers/FormasPreimpresas.controller.php");
 	require_once("controllers/Direcciones.controller.php");
 	require_once("controllers/Sucursales.controller.php");		
 	require_once("controllers/Productos.controller.php");
@@ -268,7 +260,7 @@
 
 	if(count($rs) === 0)
 	{
-		Logger::warn("La instancia para el token {". $_GET["_instance_"] ."} no exite !");
+		Logger::warn("La instancia para el token {". $_GET["_instance_"] ."} no existe !");
 		die(header("HTTP/1.1 404 NOT FOUND"));
 	}
 
