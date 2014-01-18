@@ -649,5 +649,7 @@ $page->nextTab("POS_CLIENT");
 $page->addComponent("<a href='../dl.php?file=client'><div class='POS Boton' >Descargar POS Client</div></a>");
 
 //---------------------------------------------------------
+$page->nextTab("<a href=\"personal.rol.lista.php\">Roles</a>");
+//---------------------------------------------------------
 
 $page->render();

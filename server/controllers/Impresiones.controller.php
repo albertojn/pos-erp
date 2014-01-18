@@ -136,37 +136,33 @@ class ImpresionesController {
 	     **************************/
 
 		$logo = "../static/".IID.".jpg";
-		
-		//Logger::log("existe_logo=".is_file($logo));
-		
-	    if (substr($logo, -3) == "jpg" || substr($logo, -3) == "JPG" || substr($logo, -4) == "jpeg" || substr($logo, -4) == "JPEG") {
-			$pdf->addJpegFromFile($logo, self::puntos_cm(2), self::puntos_cm(24), self::puntos_cm(4.1) );
-			
 
-	    } elseif (substr($logo, -3) == "png" || substr($logo, -3) == "PNG") {
-	        $pdf->addPngFromFile($logo, self::puntos_cm(2), self::puntos_cm(24), self::puntos_cm(4.1));
-			
+		if (file_exists($logo)) {
+				if (substr($logo, -3) == "jpg" || substr($logo, -3) == "JPG" || substr($logo, -4) == "jpeg" || substr($logo, -4) == "JPEG") {
+						$pdf->addJpegFromFile($logo, self::puntos_cm(2), self::puntos_cm(24), self::puntos_cm(4.1) );
 
-	    } else {
-	        Logger::log("Verifique la configuracion del pos_config, la extension de la imagen del logo no es compatible");
-	        
-	    }
+				} elseif (substr($logo, -3) == "png" || substr($logo, -3) == "PNG") {
+						$pdf->addPngFromFile($logo, self::puntos_cm(2), self::puntos_cm(24), self::puntos_cm(4.1));
 
+				} else {
+						Logger::log("Verifique la configuracion del pos_config, la extension de la imagen del logo no es compatible");
+				}
+		}
 
-		 self::roundRect($pdf, self::puntos_cm(14.2), self::puntos_cm(26.8), self::puntos_cm(4), self::puntos_cm(4.25));
-		 self::roundRect($pdf, self::puntos_cm(2), self::puntos_cm(22), self::puntos_cm(16.2), self::puntos_cm(3.2));
-		 self::roundRect($pdf, self::puntos_cm(2), self::puntos_cm(18.6), self::puntos_cm(16.2), self::puntos_cm(13.0));
+		self::roundRect($pdf, self::puntos_cm(14.2), self::puntos_cm(26.8), self::puntos_cm(4), self::puntos_cm(4.25));
+		self::roundRect($pdf, self::puntos_cm(2), self::puntos_cm(22), self::puntos_cm(16.2), self::puntos_cm(3.2));
+		self::roundRect($pdf, self::puntos_cm(2), self::puntos_cm(18.6), self::puntos_cm(16.2), self::puntos_cm(13.0));
 		
-		 self::roundRect($pdf, self::puntos_cm(2), self::puntos_cm(5.4), self::puntos_cm(16.2), self::puntos_cm(3.05));
-		
-		
-		$qr_file_name = self::getQrCodeFromGoogle("http://www.caffeina.mx/pos/");		
+		self::roundRect($pdf, self::puntos_cm(2), self::puntos_cm(5.4), self::puntos_cm(16.2), self::puntos_cm(3.05));
 
-		$pdf->addJpegFromFile("../../../static_content/qr_codes/" . $qr_file_name, 
+		$qr_file_name = self::getQrCodeFromGoogle("http://www.caffeina.mx/pos/");
+		if (!is_null($qr_file_name)) {
+			$pdf->addJpegFromFile("../../../static_content/qr_codes/" . $qr_file_name,
 				self::puntos_cm(2), 
 				self::puntos_cm(2.45),
 				self::puntos_cm(2.8));
-				
+		}
+
 		$pdf->setStrokeColor(0.3359375, 0.578125, 0.89453125);
 		$pdf->line(
 			self::puntos_cm(8.2 + 2), 
@@ -175,11 +171,11 @@ class ImpresionesController {
 			self::puntos_cm(18.751)
 		);
 
- 	    /*     * ************************
+	    /*     * ************************
 	     * notas de abajo
 	     * ************************* */
 	    $pdf->setLineStyle(1);
-	
+
 	    $pdf->setStrokeColor(0.3359375, 0.578125, 0.89453125);
 
 	    $pdf->line( self::puntos_cm(1.9), self::puntos_cm(2.0), self::puntos_cm(18.1), self::puntos_cm(2.0));
@@ -187,6 +183,7 @@ class ImpresionesController {
 	    $pdf->addText( self::puntos_cm(2), self::puntos_cm(1.61), 7, "Generado " . date('H:i:s d/m/Y')  );
 
 	    $pdf->addText( self::puntos_cm(16.70), self::puntos_cm(1.30), 8, "caffeina.mx");	
+
 	}
 
 
@@ -638,7 +635,7 @@ class ImpresionesController {
 
 		self::drawBasicGuide( $pdf );
 
-	    $pdf->ezStream();
+		$pdf->ezStream();
 
 
 	}
@@ -971,35 +968,32 @@ class ImpresionesController {
 	        return null;
 	    }
 
-
 	    Logger::log("Codigo QR no esta en static, sacarlo de google");
 
+		$google_api_call = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chld=H|1&choe=UTF-8&chl=";
 
-	    $google_api_call = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chld=H|1&choe=UTF-8&chl=";
-
+		// Muste have https wrapper: check extension=php_openssl.dll in phpini
 	    $f = file_get_contents($google_api_call . urlencode($string));
 
-	    if ($f == null) {
-		
-			if($retry == 0){
+		if ($f == null) {
+			if ($retry == 0) {
 				Logger::error("Ive tried too long, giving up...");
 				return null;
 			}
-		
-	        //volver a intentar
-	        Logger::log("FALLE AL OBTENER EL QR CODE DE GOOGLE, REINTENTANDO...");
-	
-	        return self::getQrCodeFromGoogle($string, $retry - 1);
-	    }
 
-	    file_put_contents($file_full_path, $f);
+			//volver a intentar
+			Logger::log("FALLE AL OBTENER EL QR CODE DE GOOGLE, REINTENTANDO...");
+			return self::getQrCodeFromGoogle($string, $retry - 1);
+		}
 
-	    //la imagen esta en png, hay que convertirla a jpg para que no haya pedos en el pdf
-	    $image = imagecreatefrompng($file_full_path);
-	    imagejpeg($image, "../../../static_content/qr_codes/" . $file_name . ".jpg", 100);
-	    imagedestroy($image);
+		file_put_contents($file_full_path, $f);
 
-	    return $file_name . ".jpg";
+		//la imagen esta en png, hay que convertirla a jpg para que no haya pedos en el pdf
+		$image = imagecreatefrompng($file_full_path);
+		imagejpeg($image, "../../../static_content/qr_codes/" . $file_name . ".jpg", 100);
+		imagedestroy($image);
+
+		return $file_name . ".jpg";
 	}
 	
 	

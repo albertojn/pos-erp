@@ -33,16 +33,13 @@
  	 *
  	 *Busca las categorias de los productos
  	 *
- 	 * @param id_categoria int Se busca una categoria dado su id_categoria
- 	 * @param id_categoria_padre int Se buscan las categorias pertenecientes a una categoria padre dado su id_categoria_padre. 
- 	 * @param query string Buscar categoria por nombre_producto, codigo_producto, codigo_de_barras
- 	 * @return numero_de_resultados int El numero de resultados obtenido de la busqueda
+ 	 * @param activa bool Se buscan categorias por el estado de estas.
+ 	 * @param query string Buscar categoria por nombre y/o descripcion.
  	 * @return resultados json json con los resultados de la busqueda
  	 **/
   static function BuscarCategoria
 	(
-		$id_categoria = null, 
-		$id_categoria_padre = null, 
+		$activa =  true , 
 		$query = null
 	);  
   
@@ -51,11 +48,12 @@
   
 	/**
  	 *
- 	 *Este metodo desactiva una categoria de tal forma que ya no se vuelva a usar como categoria sobre un producto.
+ 	 *Obtiene una categoria y sus propiedades.
  	 *
- 	 * @param id_categoria int Id de la categoria a desactivar
+ 	 * @param id_categoria int El ID de la categoria a obtener.
+ 	 * @return categoria json El objeto categoria obtenido.
  	 **/
-  static function DesactivarCategoria
+  static function DetallesCategoria
 	(
 		$id_categoria
 	);  
@@ -67,14 +65,16 @@
  	 *
  	 *Este metodo cambia la informacion de una categoria de producto
  	 *
- 	 * @param id_categoria int Id de la categoria del producto
+ 	 * @param id_clasificacion_producto int Id de la categoria del producto
+ 	 * @param activa bool Estado de la categoria.
  	 * @param descripcion string Descripcion larga de la categoria
  	 * @param id_categoria_padre int Id de la categora padre en caso de tenerla
  	 * @param nombre string Nombre de la categoria del producto
  	 **/
   static function EditarCategoria
 	(
-		$id_categoria, 
+		$id_clasificacion_producto, 
+		$activa = null, 
 		$descripcion = null, 
 		$id_categoria_padre = null, 
 		$nombre = null
@@ -88,6 +88,7 @@
  	 *Crea una nueva categoria de producto, la categoria de un producto se relaciona con los meses de garantia del mismo, las unidades en las que se almacena entre, si se es suceptible a devoluciones, entre otros.
  	 *
  	 * @param nombre string Nombre de la categoria
+ 	 * @param activa bool Estado de la nueva categoria.
  	 * @param descripcion string Descripcion larga de la categoria
  	 * @param id_categoria_padre int Id de la categora padre, en caso de que tuviera un padre
  	 * @return id_categoria int Id atogenerado por la insercion de la categoria
@@ -95,6 +96,7 @@
   static function NuevaCategoria
 	(
 		$nombre, 
+		$activa =  true , 
 		$descripcion = null, 
 		$id_categoria_padre = null
 	);  
@@ -251,21 +253,16 @@ NOTA: Se crea un producto tipo = 1 que es para productos.
   
 	/**
  	 *
- 	 *Lista las categor?as de unidades
+ 	 *Lista las categor?as de unidades.
  	 *
- 	 * @param limit int Indica el registro final del conjunto de datos que se desea mostrar
- 	 * @param page int Indica en que pagina se encuentra dentro del conjunto de resultados que coincidieron en la bsqueda
- 	 * @param query string El texto a buscar
- 	 * @param start int Indica el registro inicial del conjunto de datos que se desea mostrar
- 	 * @return numero_de_resultados int 
- 	 * @return resultados json Objeto que contendr la lista de categoras de unidades
+ 	 * @param activa bool Status de las categorías a buscar.Si es null busca tanto activas como inactivas.
+ 	 * @param query string Cadena de texto a buscar en descripción.Si es null, las devuelve todas.
+ 	 * @return resultados json Lista de categoras obtenidas.
  	 **/
   static function BuscarCategoriaUdm
 	(
-		$limit =  50 , 
-		$page = null, 
-		$query = null, 
-		$start =  0 
+		$activa =  true , 
+		$query = null
 	);  
   
   
@@ -273,11 +270,26 @@ NOTA: Se crea un producto tipo = 1 que es para productos.
   
 	/**
  	 *
- 	 *Edita una categor?a de unidades
+ 	 *Obtener las propiedades de una categor?a.
  	 *
- 	 * @param id_categoria_unidad_medida int Id de la categora que se desea editar
- 	 * @param activo int Indica si la categora esta activa
- 	 * @param descripcion string Descripcin de la categora
+ 	 * @param id_categoria_unidad_medida int ID de la categoría a mostrar.
+ 	 * @return categoria json Objeto con las propiedades de la categoría.
+ 	 **/
+  static function DetallesCategoriaUdm
+	(
+		$id_categoria_unidad_medida
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Edita una categor?a de unidades.
+ 	 *
+ 	 * @param id_categoria_unidad_medida int ID de la categora a editar.
+ 	 * @param activo int Nuevo status de la categora.Si es null no se editar.
+ 	 * @param descripcion string Nueva descripcin de la categora.Si es null no se editar. Lanza excepción si ya existe otra con la misma descripción.
  	 **/
   static function EditarCategoriaUdm
 	(
@@ -291,16 +303,16 @@ NOTA: Se crea un producto tipo = 1 que es para productos.
   
 	/**
  	 *
- 	 *Crea una nueva categor?a para unidades
+ 	 *Crea una nueva categor?a para unidades.
  	 *
- 	 * @param descripcion string Descripcin de la categora
- 	 * @param activo int Indica si la categora esta activa, en caso de no indicarlo se tomara como activo
- 	 * @return id_categoria int Id de la categoria
+ 	 * @param descripcion string Descripción de la nueva categoría. Lanza excepción si ya existe otra con la misma descripción.
+ 	 * @param activo bool Status de la nueva categora.
+ 	 * @return id_categoria int ID de la nueva categoria.
  	 **/
   static function NuevaCategoriaUdm
 	(
 		$descripcion, 
-		$activo = ""
+		$activo =  true 
 	);  
   
   
@@ -310,19 +322,12 @@ NOTA: Se crea un producto tipo = 1 que es para productos.
  	 *
  	 *Lista las equivalencias existentes. Se puede ordenar por sus atributos
  	 *
- 	 * @param limit int Indica el registro final del conjunto de datos que se desea mostrar
- 	 * @param page int Indica en que pagina se encuentra dentro del conjunto de resultados que coincidieron en la bsqueda
- 	 * @param query string El texto a buscar
- 	 * @param start int Indica el registro inicial del conjunto de datos que se desea mostrar
- 	 * @return numero_de_resultados int Lista de unidades
+ 	 * @param query string Cadena de texto a buscar en abreviación  y descripción. Si es null, las devuelve todas.
  	 * @return resultados json Objeto que contendra la lista de udm
  	 **/
   static function BuscarUnidadUdm
 	(
-		$limit =  50 , 
-		$page = null, 
-		$query = null, 
-		$start =  0 
+		$query = null
 	);  
   
   
@@ -330,22 +335,49 @@ NOTA: Se crea un producto tipo = 1 que es para productos.
   
 	/**
  	 *
- 	 *Este metodo modifica la informacion de una unidad
+ 	 *Desactivar una unidad de medida
  	 *
- 	 * @param id_categoria_unidad_medida int Id de la categora a la cual pertenece la unidad
- 	 * @param id_unidad_medida int Id de la unidad de medida que se desea editar
- 	 * @param abreviatura string Descripcin corta de la unidad, normalmente sera empelada en ticket de venta
- 	 * @param activa int Indica si la unidad esta activa
- 	 * @param descripcion string Descripcin de la unidad de medida
- 	 * @param factor_conversion float  Equivalencia de esta unidad con respecto a la unidad de medida base obtenida de la categora a la cual pertenece esta unidad. En caso de que se seleccione el valor de tipo_unidad_medida = "Referencia UdM para esta categoria" este valor sera igual a uno automticamente sin posibilidad de ingresar otro valor diferente
- 	 * @param tipo_unidad_medida string  Tipo enum cuyo valores son los siguientes : "Referencia UdM para esta categoria" (define a esta unidad como la unidad base de referencia de esta categora, en caso de seleccionar esta opcin automticamente el factor de conversin sera igual a uno sin posibilidad de ingresar otro valor diferente), "Mayor que la UdM de referencia" (indica que esta unidad de medida sera mayor que la unidad de medida base d la categora que se indique) y "Menor que la UdM de referencia" (indica que esta unidad de medida sera menor que la unidad de medida base de la categora que se indique)
+ 	 * @param id_unidad_medida int ID de la unidad a desactivar.
+ 	 **/
+  static function DesactivarUnidadUdm
+	(
+		$id_unidad_medida
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Obtener un objeto con las propiedades de una unidad.
+ 	 *
+ 	 * @param id_unidad_medida int ID de la unidad a mostrar.
+ 	 * @return unidad_medida json Un objeto con las propiedades de la unidad.
+ 	 **/
+  static function DetallesUnidadUdm
+	(
+		$id_unidad_medida
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
+ 	 *Este metodo modifica la informacion de una unidad.
+ 	 *
+ 	 * @param id_categoria_unidad_medida string Id de la categoria a la cual pertenece la unidad.
+ 	 * @param id_unidad_medida int ID de la unidad de medida que se desea editar.
+ 	 * @param abreviacion string Descripcin corta de la unidad, normalmente sera empelada en ticket de venta. No puede ser vaca y no puede haber otra igual en la misma categora.
+ 	 * @param descripcion string Descripcin de la unidad de medida. No puede ser vaca y no puede haber otra igual en la misma categora.
+ 	 * @param factor_conversion float Equivalencia de esta unidad con respecto a la unidad de medida base obtenida de la categora a la cual pertenece esta unidad. En caso de que se seleccione el valor de tipo_unidad_medida = "Referencia UdM para esta categoria" este valor sera igual a uno automticamente sin posibilidad de ingresar otro valor diferente
+ 	 * @param tipo_unidad_medida string Tipo enum cuyo valores son los siguientes : "Referencia UdM para esta categoria" (define a esta unidad como la unidad base de referencia de esta categora, en caso de seleccionar esta opcin automticamente el factor de conversin sera igual a uno sin posibilidad de ingresar otro valor diferente), "Mayor que la UdM de referencia" (indica que esta unidad de medida sera mayor que la unidad de medida base d la categora que se indique) y "Menor que la UdM de referencia" (indica que esta unidad de medida sera menor que la unidad de medida base de la categora que se indique). Cuando se defina una nueva unidad de referencia las dems unidades de esta categora se modificarn para establecer los nuevos factores de conversin.
  	 **/
   static function EditarUnidadUdm
 	(
-		$id_categoria_unidad_medida, 
 		$id_unidad_medida, 
-		$abreviatura = null, 
-		$activa = null, 
+		$id_categoria_unidad_medida = null,
+		$abreviacion = null, 
 		$descripcion = null, 
 		$factor_conversion = null, 
 		$tipo_unidad_medida = ""
@@ -356,15 +388,14 @@ NOTA: Se crea un producto tipo = 1 que es para productos.
   
 	/**
  	 *
- 	 *Crea una nueva unidad de medida
+ 	 *Crea una nueva unidad de medida.
  	 *
- 	 * @param abreviacion string Descripcin corta de la unidad, normalmente sera empelada en ticket de venta
- 	 * @param descripcion string Descripcin de la unidad de medida
- 	 * @param factor_conversion float Equivalencia de esta unidad con respecto a la unidad de medida base obtenida de la categora a la cual pertenece esta unidad. En caso de que se seleccione el valor de tipo_unidad_medida = "Referencia UdM para esta categoria"  este valor sera igual a uno automticamente sin posibilidad de ingresar otro valor diferente
- 	 * @param id_categoria_unidad_medida int Id de la categora a la cual pertenece la unidad
- 	 * @param tipo_unidad_medida string Tipo enum cuyo valores son los siguientes : "Referencia UdM para esta categoria" (define a esta unidad como la unidad base de referencia de esta categora, en caso de seleccionar esta opcin automticamente el factor de conversin sera igual a uno sin posibilidad de ingresar otro valor diferente), "Mayor que la UdM de referencia" (indica que esta unidad de medida sera mayor que la unidad de medida base d la categora que se indique) y "Menor que la UdM de referencia" (indica que esta unidad de medida sera menor que la unidad de medida base de la categora que se indique)
- 	 * @param activa string Indica si la unidad esta activa, en caso de no indicarse este valor se considera como que si esta activa la unidad
- 	 * @return id_unidad_medida int 
+ 	 * @param abreviacion string Descripción corta de la unidad, normalmente sera empleada en ticket de venta. No debe ser vacía. No puede haber dos iguales en la misma categoría.
+ 	 * @param descripcion string Descripción o nombre de la unidad de medida. No debe ser vacía. No puede haber dos iguales en la misma categoría.
+ 	 * @param factor_conversion float Equivalencia de esta unidad con respecto a la unidad de medida base obtenida de la categora a la cual pertenece esta unidad. En caso de que se seleccione el valor de tipo_unidad_medida = "Referencia UdM para esta categoría"  este valor sera igual a uno automáticamente sin posibilidad de ingresar otro valor diferente. Debe ser mayor que cero.
+ 	 * @param id_categoria_unidad_medida int Id de la categora a la cual pertenece la unidad. La categoría debe existir.
+ 	 * @param tipo_unidad_medida enum Tipo enum cuyo valores son los siguientes : "Referencia UdM para esta categoria" (define a esta unidad como la unidad base de referencia de esta categora, en caso de seleccionar esta opción automticamente el factor de conversin sera igual a uno sin posibilidad de ingresar otro valor diferente), "Mayor que la UdM de referencia" (indica que esta unidad de medida sera mayor que la unidad de medida base d la categora que se indique) y "Menor que la UdM de referencia" (indica que esta unidad de medida sera menor que la unidad de medida base de la categora que se indique). Cuando se defina una nueva unidad de referencia las demás unidades de esta categoría se modificarán para establecer los nuevos factores de conversión.
+ 	 * @return id_unidad_medida int ID de la unidad de medida recién creada.
  	 **/
   static function NuevaUnidadUdm
 	(
@@ -372,8 +403,7 @@ NOTA: Se crea un producto tipo = 1 que es para productos.
 		$descripcion, 
 		$factor_conversion, 
 		$id_categoria_unidad_medida, 
-		$tipo_unidad_medida, 
-		$activa = ""
+		$tipo_unidad_medida
 	);  
   
   

@@ -20,49 +20,35 @@ require_once("interfaces/Ventas.interface.php");
                 throw new InvalidDataException("Esta venta no existe");
             }
 
-
             //iniciar valores
-            
             $subtotal = 0;
 
-
-
-
-            //buscar los productos
-            $vp = VentaProductoDAO::search( new VentaProducto( array ( "id_venta" =>$id_venta )) );
-            for ($i=0; $i < sizeof($vp); $i++) { 
-                Logger::log( "prioducto". $vp[$i]->getPrecio() );
-                $subtotal  += ($vp[$i]->getPrecio() *  $vp[$i]->getCantidad());
-            }
-
-
+			//buscar los productos
+			$vp = VentaProductoDAO::search( new VentaProducto( array ( "id_venta" =>$id_venta )) );
+			for ($i=0; $i < sizeof($vp); $i++) {
+				Logger::log( "prioducto". $vp[$i]->getPrecio());
+				$subtotal  += ($vp[$i]->getPrecio() *  $vp[$i]->getCantidad());
+			}
 
             //buscar los servicios
-            $vo = VentaOrdenDAO::search( new VentaOrden( array (  "id_venta" =>$id_venta)) );
-            for ($i=0; $i < sizeof($vo); $i++) { 
-                $subtotal  += $vo[$i]->getPrecio();
-                Logger::log( "servicio". $vo[$i]->getPrecio() );   
-            }
-
+			$vo = VentaOrdenDAO::search( new VentaOrden( array (  "id_venta" =>$id_venta)) );
+			for ($i=0; $i < sizeof($vo); $i++) {
+				$subtotal  += $vo[$i]->getPrecio();
+				Logger::log("servicio". $vo[$i]->getPrecio());
+			}
 
             //buscar los ipouestos
-            $im = ImpuestoDAO::search(new Impuesto( array( "activo" =>  1)));
+            $im = ImpuestoDAO::search(new Impuesto( array( )));
             $iporcentaje = 0;
 
-            for ($i=0; $i < sizeof($im); $i++) { 
-                $iporcentaje += $im[$i]->getMontoPorcentaje();
+            for ($i=0; $i < sizeof($im); $i++) {
+                $iporcentaje += $im[$i]->getImporte();
             }
 
-            //$subtotal -= $v->getDescuento();
-            Logger::log( "subtotal". $subtotal );
-
             $itotal = $subtotal * $iporcentaje;
-
-            Logger::log( "impuesto". $itotal );
             $total = $itotal + $subtotal;
 
             //itotal, total, subtotal
-
             $v->setSubtotal($subtotal);
             $v->setImpuesto($itotal);
             $v->setTotal($total);

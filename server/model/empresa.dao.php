@@ -59,4 +59,74 @@ class EmpresaDAO extends EmpresaDAOBase
         return $a;
     }
 
+    /**
+     * getMonedaBase($id_empresa)
+     *
+     * Obtiene la moneda base de una empresa
+     *
+     * @author Juan Manuel Garc&iacute;a Carmona <manuel@caffeina.mx>
+     * @param params array Contiene lso parametros que se desean pasar a la consulta
+     * @return array Arreglo aosciatico con las propiedades de la moneda base
+     **/
+    public function getMonedaBase($id_empresa)
+	{
+		global $conn;
+
+		$params = array("id_moneda_base", $id_empresa);
+
+		$sql = "SELECT" 
+			 . "	moneda.id_moneda, moneda.nombre, moneda.simbolo "
+			 . "FROM"
+			 . "	empresa JOIN configuracion_empresa ON (empresa.id_empresa = configuracion_empresa.id_empresa) "
+			 . "	JOIN configuracion ON (configuracion_empresa.id_configuracion = configuracion.id_configuracion  AND configuracion.descripcion = ?) "
+			 . "	JOIN moneda ON (moneda.id_moneda = configuracion.valor) "
+			 . "WHERE"
+			 . "	empresa.id_empresa = ?";
+
+		$res = $conn->Execute($sql, $params);
+
+		$a = array();
+
+		foreach ($res as $v) {
+			array_push($a, $v);
+		}
+
+		return $a[0];
+	}
+
+	/**
+     * getEjercicioActual($id_empresa)
+     *
+     * Obtiene informacion sobre el ejercicio de una empresa
+     *
+     * @author Juan Manuel Garc&iacute;a Carmona <manuel@caffeina.mx>
+     * @param params array Contiene lso parametros que se desean pasar a la consulta
+     * @return array Arreglo aosciatico con las propiedades de la moneda base
+     **/
+    public function getEjercicioActual($id_empresa)
+	{
+		global $conn;
+
+		$params = array($id_empresa);
+
+		$sql = "SELECT "
+			 . "	ejercicio.id_ejercicio, ejercicio.anio, ejercicio.id_periodo, ejercicio.inicio as 'ejercicio_inicio', ejercicio.fin as 'ejercicio_fin', ejercicio.vigente, "
+			 . "	periodo.periodo, periodo.inicio as 'periodo_inicio', periodo.fin as 'periodo_fin'"
+			 . "FROM "
+			 . "	empresa JOIN ejercicio_empresa "
+			 . "		ON (empresa.id_empresa = ejercicio_empresa.id_empresa AND empresa.id_empresa = ?) "
+			 . "	JOIN ejercicio ON (ejercicio_empresa.id_ejercicio = ejercicio.id_ejercicio) "
+			 . "	JOIN periodo ON (periodo.id_periodo = ejercicio.id_periodo)";
+
+		$res = $conn->Execute($sql, $params);
+
+		$a = array();
+
+		foreach ($res as $v) {
+			array_push($a, $v);
+		}
+
+		return $a[0];
+	}
+
 }

@@ -2134,25 +2134,24 @@ class SucursalesController extends ValidacionesController implements ISucursales
   
 	/**
  	 *
- 	 *Lista las sucursales relacionadas con esta instancia. Se puede filtrar por empresa,  saldo inferior o superior a, fecha de apertura, ordenar por fecha de apertura u ordenar por saldo. Se agregar?n link en cada una para poder acceder a su detalle.
+ 	 *Lista las sucursales relacionadas con esta instancia. 
  	 *
  	 * @param activo bool Si este valor no es pasado, se listaran sucursales tanto activas como inactivas, si su valor es true, solo se mostrarn las sucursales activas, si es false, solo se mostraran las sucursales inactivas.
- 	 * @param id_empresa int Id de la empresa de la cual se listaran sus sucursales.
- 	 * @param saldo_inferior_que float Si este valor es obtenido, se mostrar�n las sucursales que tengan un saldo inferior a este
- 	 * @param saldo_igual_que float Si este valor es obtenido, se mostrar�n las sucursales que tengan un saldo igual a este
- 	 * @param saldo_superior_que float Si este valor es obtenido, se mostrar�n las sucursales que tengan un saldo superior a este
- 	 * @param fecha_apertura_inferior_que string Si este valor es pasado, se mostraran las sucursales cuya fecha de apertura sea inferior a esta.
- 	 * @param fecha_apertura_igual_que string Si este valor es pasado, se mostraran las sucursales cuya fecha de apertura sea igual a esta.
- 	 * @param fecha_apertura_superior_que string Si este valor es pasado, se mostraran las sucursales cuya fecha de apertura sea superior a esta.
- 	 * @return sucursales json Objeto que contendra la lista de sucursales.
+ 	 * @param limit int Indica hasta que registro se desea obtener a partir del conjunto de resultados productos de la bsqueda.
+ 	 * @param order string Indica si se ordenan los registros de manera Ascendente ASC, o descendente DESC.
+ 	 * @param order_by string Indica por que campo se ordenan los resultados.
+ 	 * @param query string Valor que se buscara en la consulta
+ 	 * @param start int Indica desde que registro se desea obtener a partir del conjunto de resultados productos de la busqueda.
+ 	 * @return resultados json Objeto que contendra la lista de sucursales.
+ 	 * @return numero_de_resultados int 
  	 **/
-	public static function Buscar
+  static function Buscar
 	(
 		$activo = null, 
-		$id_empresa = null, 
 		$limit = null, 
+		$order = null, 
+		$order_by = null, 
 		$query = null, 
-		$sort = null, 
 		$start = null
 	)
 	{
@@ -2165,7 +2164,7 @@ class SucursalesController extends ValidacionesController implements ISucursales
         //y cuando solo es pasado alguno de ellos, el otro objeto almacena el mayor o menor posible
         //para conseguir la mejor comparacion.
 
-        if(!is_null($id_empresa))
+        /*if(!is_null($id_empresa))
         {
             $sucursales_empresa = SucursalEmpresaDAO::search( new SucursalEmpresa( array( "id_empresa" => $id_empresa ) ) );
             foreach ( $sucursales_empresa as $sucursal_empresa )
@@ -2174,9 +2173,9 @@ class SucursalesController extends ValidacionesController implements ISucursales
             }
         }
         else
-        {
+        {*/
             $sucursales=SucursalDAO::getAll( );
-        }
+        //}
 
         return array(
             "resultados" => $sucursales,
@@ -2298,92 +2297,115 @@ class SucursalesController extends ValidacionesController implements ISucursales
  	 *
  	 * Metodo que crea una nueva sucursal
  	 *
+	 * @author Juan Manuel Garc&iacute;a Carmona <manuel@caffeina.mx>
+ 	 * @param descripcion string Descripcion de la sucursal
+ 	 * @param direccion json Objeto que contiene la informacin sobre al direccin 
+	 * @param id_tarifa int Id de la tarifa por default que tendra esa sucursal
+ 	 * @param activo bool Si esta sucursal estara activa inmediatamente despues de ser creada
+ 	 * @param id_gerente int ID del usuario que sera gerente de esta sucursal. Para que sea valido este usuario debe tener el nivel de acceso apropiado.
+ 	 * @return id_sucursal int Id autogenerado de la sucursal que se creo.
  	 **/
-	public static function Nueva(
-        $direccion, 
-        $razon_social, 
-        $activo =  1 , 
-        $descripcion = null, 
-        $empresas = null, 
-        $id_gerente = null, 
-        $saldo_a_favor = null
-        )
-    {
+	public static function Nueva
+	(
+		$descripcion, 
+		$direccion, 
+		$id_tarifa, 
+		$activo =  1 , 
+		$id_gerente = null
+	)
+	{
+		//validamos si la descripcion de la sucursal es valida
+		$descripcion = trim($descripcion);
+		if ($descripcion === "") {
+			Logger::error("Error : Verifique la descripcion de la sucursal");
+			throw new InvalidDataException("Error : Verifique la descripcion de la sucursal");
+		}
 
-        Logger::log("Creando nueva sucursal `$razon_social` ...");
+		//buscamos si una sucursal ya existe
+		/*if (!empty()) {
+			Logger::log("Ya existe una sucursal con la misma descripcion");
+			throw new BusinessLogicException("Ya existe una sucursal con la misma descripcion");
+		}*/
+		
+		$sucursales = SucursalDAO::search(new Sucursal(array("descripcion" => $descripcion)));
 
-        //buscamos si una sucursal ya existe
-        if ( count( SucursalDAO::search( new Sucursal( array( "razon_social" => $razon_social ) ) ) ) > 0 )
-        {
-            Logger::log( "Ya existe una sucursal con el mismo nombre" );
-            throw new BusinessLogicException("Ya existe una sucursal con el mismo nombre");
-        }
+		if (!empty($sucursales)) {
+			Logger::log("Ya existe una sucursal con la misma descripcion");
+			throw new BusinessLogicException("Ya existe una sucursal con la misma descripcion");
+		}
 
-        if ( is_null( $saldo_a_favor ) )
-        {
-            $saldo_a_favor = 0;
-        }
+		//verificamos si la tarifa existe
+		$tarifas = TarifaDAO::search(new Tarifa(array("id_tarifa" => $id_tarifa)));
+		if (empty($tarifas)) {
+			Logger::log("No se tiene registro de la tarifa indicada");
+			throw new BusinessLogicException("No se tiene registro de la tarifa indicada");
+		}
 
-        //Se inicializa el objeto sucursal con los parametros obtenidos
-        $sucursal=new Sucursal( );
-        $sucursal->setActiva( $activo );
-        $sucursal->setRazonSocial( trim( $razon_social ) );
-        $sucursal->setSaldoAFavor( $saldo_a_favor );
-        $sucursal->setIdGerente( $id_gerente );
-        $sucursal->setDescripcion( $descripcion );
-        $sucursal->setFechaApertura	( time( ) );
+		//verificamos si se especifico un gerente y si este existe
+		$usuarios = UsuarioDAO::search(new Usuario(array("id_usuario" => $id_gerente)));
+		if (!is_null($id_gerente) && empty($usuarios)) {
+			Logger::log("No se tiene registro del gerente indicado");
+			throw new BusinessLogicException("No se tiene registro del gerente indicado");
+		}
 
-        DAO::transBegin();
+		DAO::transBegin();
+		
+		//creamos la direccion
+		{
+			if (is_null($direccion)) {
+				Logger::log("Missing direccion");
+				throw new InvalidDataException("Missing direccion");
+			}
 
-        //Se crea la nueva direccion y se le asigna a la nueva sucursal
-        if ( !is_null( $direccion ) )
-        {
-            $direccion = object_to_array($direccion);
+			if (!is_array($direccion)) {
+				$direccion = object_to_array($direccion);
+			} 
 
-            //test missing params inside $direccion
+			$id_direccion = DireccionController::NuevaDireccion(
+				isset($direccion["calle"])           ? $direccion["calle"]           : null,
+				isset($direccion["numero_exterior"]) ? $direccion["numero_exterior"] : null,
+				isset($direccion["colonia"])         ? $direccion["colonia"]         : null,
+				isset($direccion["id_ciudad"])       ? $direccion["id_ciudad"]       : null,
+				isset($direccion["codigo_postal"])   ? $direccion["codigo_postal"]   : null,
+				isset($direccion["numero_interior"]) ? $direccion["numero_interior"] : null,
+				isset($direccion["referencia"])      ? $direccion["referencia"]      : null,
+				isset($direccion["telefono1"])       ? $direccion["telefono1"]       : null,
+				isset($direccion["telefono2"])       ? $direccion["telefono2"]       : null
+			);
+		}
 
-            $id_direccion = DireccionController::NuevaDireccion(
-                                $direccion["calle"],
-                                $direccion["numero_exterior"],
-                                $direccion["colonia"],
-                                $direccion["id_ciudad"],
-                                $direccion["codigo_postal"],
-                                $direccion["numero_interior"],
-                                $direccion["referencia"],
-                                $direccion["telefono1"],
-                                $direccion["telefono2"] 
-                                );
-            $sucursal->setIdDireccion( $id_direccion );
-        }
+		//Se inicializa el objeto sucursal con los parametros obtenidos
+		$sucursal = new Sucursal();
+		$sucursal->setActiva($activo);
+		$sucursal->setIdGerente($id_gerente);
+		$sucursal->setDescripcion($descripcion);
+		$sucursal->setFechaApertura(time());
+		$sucursal->setIdDireccion($id_direccion);
+		$sucursal->setIdTarifa($id_tarifa);
 
-        try
-        {
-            SucursalDAO::save( $sucursal );
-        }
-        catch(Exception $e)
-        {
+		try {
+			SucursalDAO::save($sucursal);
+		}catch (Exception $e) {
+			DAO::transRollback( );
+			throw new InvalidDatabaseOperationException($e);
+		}
 
-            DAO::transRollback( );
-            throw new InvalidDatabaseOperationException( $e );
-        }
-
-        DAO::transEnd( );
-        Logger::log( "Sucursal {$sucursal->getIdSucursal()} creada." );
-        return array( "id_sucursal" => (int)$sucursal->getIdSucursal( ) );
+		DAO::transEnd( );
+		Logger::log( "Sucursal {$sucursal->getIdSucursal()} creada." );
+		return array( "id_sucursal" => (int)$sucursal->getIdSucursal( ) );
     }
 
 	/**
  	 *
  	 *Edita los datos de una sucursal
  	 *
+	 * @author Juan Manuel Garc&iacute;a Carmona <manuel@caffeina.mx>
  	 * @param id_sucursal int Id de la sucursal a modificar
+ 	 * @param id_tarifa int Id de la tarifa por default de la sucursal
  	 * @param activo bool Indica si esta sucursal estar activa
  	 * @param descripcion string Descripcion de la sucursal
- 	 * @param direccion json Arreglo de direcciones de la sucursal, pueden ser direcciones de tipo fiscal, postal, de envo, etc. En caso de no mandar el id_direccion dentro del objeto direccion, se debe de generar una nueva direccion
- 	 * @param empresas json (DE ESTO ES LO QUE VEREMOS EL MARTES CON IRATZIO) Objeto que contendra los ids de las empresas a las que esta sucursal pertenece, por lo menos tiene que haber una empresa. En este JSON, opcionalmente junto con el id de la empresa, aapreceran dos campos que seran margen_utilidad y descuento, que indicaran que todos los productos de esa empresa ofrecidos en esta sucursal tendran un margen de utilidad y/o un descuento con los valores en esos campos
+ 	 * @param direccion json Objeto que contiene la informacin sobre al direccion
  	 * @param id_gerente int Id del gerente de la sucursal
- 	 * @param razon_social string Razon social de la sucursal
- 	 * @param saldo_a_favor float Saldo a favor de la sucursal
  	 **/
 	public static function Editar
 	(
@@ -2391,201 +2413,118 @@ class SucursalesController extends ValidacionesController implements ISucursales
 		$activo = null, 
 		$descripcion = null, 
 		$direccion = null, 
-		$empresas = null, 
 		$id_gerente = null, 
-		$razon_social = null, 
-		$saldo_a_favor = null
+		$id_tarifa = null
 	)
 	{
-            Logger::log("Editando sucursal ".$id_sucursal . " ...");
 
-            DAO::transBegin();
+		DAO::transBegin();
 
-            //Se obtiene la sucursal a editar y se valida que exista
-            if( !$sucursal = SucursalDAO::getByPK($id_sucursal) )
-            {
-                Logger::error("La sucursal con id : {$id_sucursal} no existe");
-                throw new InvalidDataException("La sucursal con id : {$id_sucursal} no existe");
-            }
+		//Se obtiene la sucursal a editar y se valida que exista
+		if (!$sucursal = SucursalDAO::getByPK($id_sucursal)) {
+			Logger::error("La sucursal con id : {$id_sucursal} no existe");
+			throw new InvalidDataException("La sucursal con id : {$id_sucursal} no existe");
+		}
 
+		//verificamos si la sucursal esta activa en caso de no estarlo solo permitira activarla
+		if ($activo !== NULL) {
+			$val = null;
+			if ($activo == 1){
+				$val = true;
+			} elseif ($activo == "") {
+				$val = false;
+			}
+			$sucursal->setActiva($val);
+		}
 
-            //verificamos la razon social
-            if(!is_null($razon_social)){
-				Logger::log("	Editando razon social ...");
-                $sucursal->setRazonSocial(trim($razon_social));
-            }
+		//editamos solo la direccion
+		if (!is_null($direccion)) {
 
-			//lógica para manejar la edicion o agregado de una direccion
-            //verificamos si se cambiaron las direcciones
-            if( !is_null($direccion) )
-            {
-            	Logger::log("	Editando direccion ...");
+			if (!is_array($direccion)) {
+				$direccion = object_to_array($direccion);
+			}
 
- 
-                if( !is_array( $direccion ) ){
-                    //Logger::error("Verifique el formato de los datos de las direcciones, se esperaba un array ");
-                    //throw new Exception("Verifique el formato de los datos de las empresas, se esperaba un array ");
-					$direccion = object_to_array($direccion);
-                }
+			//varificamos si la direccion que tiene la sucursal existe si no creamos una
+			if (!$_direccion = DireccionDAO::getByPK($sucursal->getIdDireccion())) {
+				//no existe, etonces creamos una nueva direccion
+				DireccionController::NuevaDireccion(
+					isset($direccion['calle'])				?	$direccion['calle']				: "",
+					isset($direccion['numero_exterior'])	?	$direccion['numero_exterior']	: "",
+					isset($direccion['colonia'])			?	$direccion['colonia']			: "",
+					isset($direccion['id_ciudad'])			?	$direccion['id_ciudad']			: "",
+					isset($direccion['codigo_postal'])		?	$direccion['codigo_postal']		: "",
+					isset($direccion['numero_interior'])	?	$direccion['numero_interior']	: "",
+					isset($direccion['referencia'])			?	$direccion['referencia']		: "",
+					isset($direccion['telefono1'])			?	$direccion['telefono1']			: "",
+					isset($direccion['telefono2'])			?	$direccion['telefono2']			: ""
+				);
+			} else {
+				//la direccion existe, hay que editarla
+				$_direccion->setCalle(			isset($direccion['calle'])				?	$direccion['calle']				: "" );
+				$_direccion->setNumeroExterior(	isset($direccion['numero_exterior'])	?	$direccion['numero_exterior']	: "" );
+				$_direccion->setNumeroInterior(	isset($direccion['numero_interior'])	?	$direccion['numero_interior']	: "");
+				$_direccion->setReferencia(		isset($direccion['referencia'])			?	$direccion['referencia']		: "");
+				$_direccion->setColonia(		isset($direccion['colonia'])			?	$direccion['colonia']			: "");
+				$_direccion->setIdCiudad(		isset($direccion['id_ciudad'])			?	$direccion['id_ciudad']			: "");
+				$_direccion->setCodigoPostal(	isset($direccion['codigo_postal'])		?	$direccion['codigo_postal']		: "");
+				$_direccion->setTelefono(		isset($direccion['telefono1'])			?	$direccion['telefono1']			: "");
+				$_direccion->setTelefono2(		isset($direccion['telefono2'])			?	$direccion['telefono2']			: "");
 
+				try {
+					DireccionDAO::save($_direccion);
+				} catch (Exception $e) {
+					DAO::transRollback();
+					Logger::error("Error al modificar la direccion : {$e}");
+					throw new Exception("Ocurrio un error al modificar la direccion");
+				}
+			}
+		}
 
+		//verificamos si cambio el gerente
+		if (!is_null($id_gerente)){
+            $usuario_gerente = UsuarioDAO::getByPK($id_gerente);
+            if(!$usuario_gerente){
+                Logger::error("No se tiene registro del gerente con id : {$id_gerente}");
+                throw new Exception("No se tiene registro del gerente con id : {$id_gerente}");
+            } else {
+			$sucursal->setIdGerente($usuario_gerente->getIdUsuario());
+		}}
 
-           		$_direccion = new Direccion($direccion);
+		//
+		if (!is_null($id_tarifa) && !$tarifa = TarifaDAO::getByPK($id_tarifa)) {
+			Logger::error("No se tiene registro de la tarifa con id : {$id_gerente}");
+			throw new Exception("No se tiene registro de la tarifa indicada");
+		}else{
+			$sucursal->setIdTarifa($id_tarifa);
+		}
 
-                $d = DireccionDAO::getByPK( $sucursal->getIdDireccion() ); 
-				
-                //verificamos si se va a editar una direccion o se va a crear una nueva
-                if( isset($d->id_direccion) ){
+		//verificamos si cambio la descripcion
+		$descripcion = trim($descripcion);
+		if ($descripcion !== $sucursal->getDescripcion()) {
+			//verificamos si hay una sucursal con esa misma descripcion
+			$sucursales = SucursalDAO::search(new Sucursal(array("descripcion" => $descripcion)));
+			if (!empty($sucursales)) {
+				DAO::transRollback();
+				Logger::error("Ya existe una sucursal con esa descripcion");
+				throw new Exception("Ya existe una sucursal con esa descripcion");
+			}else{
+				$sucursal->setDescripcion($descripcion);
+			}
+		}
 
-                	//se edita la direccion
-                	if( !$_direccion = DireccionDAO::getByPK( $d->id_direccion ) ){
-                    	DAO::transRollback();
-                    	Logger::error("No se tiene registro de la dirección con id : {$direccion->id_direccion}");
-                        throw new InvalidDataException("No se tiene registro de la dirección con id : {$direccion->id_direccion}");
-                 	}
-                    $_direccion->setIdDireccion($d->id_direccion);
+		try {
+			SucursalDAO::save($sucursal);
+		} catch(Exception $e) {
+			DAO::transRollback();
+			Logger::error("No se pudo actualizar la sucursal: ".$e);
+			if($e->getCode()==901){
+				throw new Exception("No se pudo actualizar la sucursal: ".$e->getMessage(),901);
+			}
+			throw new Exception("No se pudo actualizar la sucursal",901);
+		}
 
-                 	//bandera que indica si cambia algun parametro de la direccion
-                    $cambio_direccion = false;
-                            
-                    //calle
-                    if( isset( $d->calle ) ){
-                    	$cambio_direccion = true;
-                        $_direccion->setCalle( $direccion['calle'] );
-                 	}
-                            
-                  	//numero_exterior
-                    if( isset( $d->numero_exterior ) ){
-                    	$cambio_direccion = true;
-                        $_direccion->setNumeroExterior( $direccion['numero_exterior'] );
-                	}
-                            
-                	//numero_interior
-                	if( isset( $d->numero_interior ) ){
-                    	$cambio_direccion = true;
-                        $_direccion->setNumeroInterior( $direccion['numero_interior'] );
-                	}                        
-                	//referencia
-                    if( isset($direccion['referencia'] )){                        
-                    	$cambio_direccion = true;
-                        $_direccion->setReferencia( $direccion['referencia'] );
-                 	}
-                            
-                 	//colonia
-                 	if( isset( $d->colonia ) ){
-                    	$cambio_direccion = true;
-                    	$_direccion->setColonia( $direccion['colonia'] );
-                	}
-                            
-                    //id_ciudad
-                    if( isset( $d->id_ciudad ) ){
-                    	$cambio_direccion = true;
-                        $_direccion->setIdCiudad( $direccion['id_ciudad'] );
-                  	}
-                            
-                  	//codigo_postal
-                  	if( isset( $d->codigo_postal ) ){
-                    	$cambio_direccion = true;
-                        $_direccion->setCodigoPostal( $direccion['codigo_postal'] );
-                 	}
-                            
-                 	//telefono
-                 	if( isset( $d->telefono ) ){
-                    	$cambio_direccion = true;
-                       	$_direccion->setTelefono( $direccion['telefono1'] );
-               		}
-                            
-               		//telefono2
-               		if( isset( $d->telefono2 ) ){
-                    	$cambio_direccion = true;
-                        $_direccion->setTelefono2( $direccion['telefono2'] );
-               		}
-
-               		//Si cambio algun parametro de direccion, se actualiza el usuario que modifica y la fecha
-                	if($cambio_direccion)
-                    {
-						DireccionController::EditarDireccion($_direccion );
-                  	}
-					else{
-                                                
-                    	DireccionController::NuevaDireccion(
-															$calle = isset($d->calle)				?$d->calle : "",
-															$numero_exterior = isset($d->numero_exterior)	?$d->numero_exterior : "",
-															$colonia = isset($d->colonia)			?$d->colonia : "",
-															$id_ciudad = isset($d->id_ciudad)			?$d->id_ciudad : "",
-															$codigo_postal = isset($d->codigo_postal)		?$d->codigo_postal : "",
-															$numero_interior = isset($d->numero_interior)	?$d->numero_interior : "",
-															$referencia = isset($d->referencia)		?$d->referencia : "",
-															$telefono = isset($d->telefono)			?$d->telefono : "",
-															$telefono2=  isset($d->telefono2)			?$d->telefono2 : ""
-															);
-                    }
-                }
-            }// !is_null
-            //fin logica editar o agregar una direccion
-
-            //verificamos si cambio el saldo a favor
-            if(!is_null($saldo_a_favor))
-            {
-                $sucursal->setSaldoAFavor($saldo_a_favor);
-            }                        
-
-            //verificamos si cambio el gerente
-            if(!is_null($id_gerente))
-            {
-
-                if(!$usuario_gerente = UsuarioDAO::getByPK($id_gerente))
-                {
-                    Logger::error("No se tiene registro del gerente con id : {$id_gerente}");
-                    throw new Exception("No se tiene registro del gerente con id : {$id_gerente}");
-                }else
-                {
-                    $sucursal->setIdGerente($usuario_gerente->getIdUsuario());
-                }
-                
-            }
-
-            //verificamos si se cambiaron las empresas
-            if( !is_null($empresas) )
-            {
-				
-				foreach($empresas as $id_empresa)
-                {
-                    if(!EmpresaDAO::getByPK($id_empresa)){
-                        Logger::error("No se tiene registro de la empresa con id : {$id_empresa}");
-                        throw new InvalidDataException("No se tiene registro de la empresa con id : {$id_empresa}");
-                    }
-
-					try{
-						Logger::log("Vinculando con con empresa " . $id_empresa);
-						SucursalEmpresaDAO::save( new SucursalEmpresa ( array( "id_sucursal" => $id_sucursal, "id_empresa" => $id_empresa ) )  );
-
-					}catch(Exception $idbo){
-						throw new InvalidDatabaseOperationException($idbo);
-					}
-                }
-            }
-
-            //verificamos si cambio la descripcion
-            if(!is_null($descripcion))
-            {
-                $sucursal->setDescripcion($descripcion);
-            }            
-           
-            try
-            {
-                SucursalDAO::save($sucursal);
-            }
-            catch(Exception $e)
-            {
-                DAO::transRollback();
-                Logger::error("No se pudo actualizar la sucursal: ".$e);
-                if($e->getCode()==901)
-                    throw new Exception("No se pudo actualizar la sucursal: ".$e->getMessage(),901);
-                throw new Exception("No se pudo actualizar la sucursal",901);
-            }
-            DAO::transEnd();
-            Logger::log("Sucursal actualizada exitosamente");
+		DAO::transEnd();
+		Logger::log("Sucursal actualizada exitosamente");
 	}
   
 	/**
@@ -2849,6 +2788,25 @@ class SucursalesController extends ValidacionesController implements ISucursales
                 $control_billetes = 0;
             }
             
+            $caja = ContabilidadController::BuscarCuenta(1, $afectable = "", $clasificacion = "Activo Circulante",
+                                                    $clave = "", $consecutivo_en_nivel = "", $es_cuenta_mayor = "",
+                                                    $es_cuenta_orden = "", $id_cuenta_contable = "", $id_cuenta_padre = "",
+                                                    $naturaleza = "Deudora", $nivel = "", $nombre_cuenta = "Caja", $tipo_cuenta = "Balance"
+                                                );
+            if(count($caja["resultados"])<1)
+            {
+                Logger::Log("Debe de existir la cuenta contable 'Caja' para dar de alta una caja");
+                throw new BusinessLogicException("Debe de existir la cuenta contable 'Caja' para dar de alta una caja");
+            }
+
+            //se inserta la cuenta contable
+            $res = ContabilidadController::NuevaCuenta($caja["resultados"][0]->getAbonosAumentan(), $caja["resultados"][0]->getCargosAumentan(),
+                                            $caja["resultados"][0]->getClasificacion(), $caja["resultados"][0]->getEsCuentaMayor(),
+                                            $caja["resultados"][0]->getEsCuentaOrden(), $caja["resultados"][0]->getIdCatalogoCuentas(),
+                                            $caja["resultados"][0]->getNaturaleza(), $descripcion,
+                                            $caja["resultados"][0]->getTipoCuenta(), $caja["resultados"][0]->getIdCuentaContable()
+                                            );
+
             //Se inicializa el registro de caja
             $caja = new Caja();
             $caja->setIdSucursal($id_sucursal);
@@ -2859,12 +2817,15 @@ class SucursalesController extends ValidacionesController implements ISucursales
             $caja->setIdSucursal($id_sucursal);
             $caja->setSaldo(0);
             $caja->setToken($token);
+            $caja->setIdCuentaContable($res["id_cuenta_contable"]);
+
             DAO::transBegin();
             try
             {
                 //Se guarda el registro de caja y si se recibieron impresoras se registran con la caja
                 //en la tabla impresora_caja.
                 CajaDAO::save($caja);
+
                 if(!is_null($impresoras))
                 {
                     $impresoras = object_to_array($impresoras);
@@ -3098,7 +3059,24 @@ class SucursalesController extends ValidacionesController implements ISucursales
             if(!is_null($descripcion))
             {
                 $caja->setDescripcion($descripcion);
-            }
+                $cc = CuentaContableDAO::getByPK($caja->getIdCuentaContable());
+                if(count($cc)>0){
+                    $cc->setNombreCuenta($descripcion);
+                    DAO::transBegin();
+                    try
+                    {
+                        CuentaContableDAO::save($cc);
+                    }
+                    catch(Exception $e)
+                    {
+                        DAO::transRollback();
+                        Logger::error("No se pudo editar la cuenta contable de la caja $descripcion: ".$e);
+                        throw new Exception("No se pudo editar la cuenta contable de la caja $descripcion");
+                    }
+                    DAO::transEnd();
+                    Logger::log("Cuenta contable de la caja: $descripcion editada correctamente");
+                }
+            }//fin if $descripcion
             if(!is_null($token))
             {
                 $caja->setToken($token);
@@ -3125,7 +3103,7 @@ class SucursalesController extends ValidacionesController implements ISucursales
   
 	/**
  	 *
- 	 *Desactiva una caja, para que la caja pueda ser desactivada, tieneq ue estar cerrada
+ 	 *Desactiva una caja, para que la caja pueda ser desactivada, tiene que estar cerrada
  	 *
  	 * @param id_caja int Id de la caja a eliminar
  	 **/
@@ -3182,6 +3160,7 @@ class SucursalesController extends ValidacionesController implements ISucursales
  	 *
  	 *Desactiva una sucursal. Para poder desactivar una sucursal su saldo a favor tiene que ser mayor a cero y sus almacenes tienen que estar vacios.
  	 *
+	 * @author Juan Manuel Garc&iacute;a Carmona <manuel@caffeina.mx>
  	 * @param id_sucursal int Id de la sucursal a desactivar
  	 **/
 	public static function Eliminar
@@ -3189,97 +3168,51 @@ class SucursalesController extends ValidacionesController implements ISucursales
 		$id_sucursal
 	)
 	{
-            Logger::log("Eliminando sucursal ".$id_sucursal);
-            
-            //verifica que la caja exista y este activa
-            $sucursal=SucursalDAO::getByPK($id_sucursal);
-            if(is_null($sucursal))
-            {
-                Logger::error("La sucursal con id :".$id_sucursal." no existe");
-                throw new Exception("La sucursal con id :".$id_sucursal." no existe");
-            }
-            if(!$sucursal->getActiva())
-            {
-                Logger::warn("La sucursal ya ha sido eliminada");
-                throw new Exception("La sucursal ya ha sido eliminada");
-            }
-            
-            //Si el saldo a favor de la sucursal no es cero, no se puede eliminar
-            if($sucursal->getSaldoAFavor()!=0)
-            {
-                Logger::error("La sucursal no tiene un saldo de 0 y no puede ser eliminada");
-                throw new Exception("La sucursal no tiene un saldo de 0 y no puede ser eliminada");
-            }
-            
-            $almacenes = AlmacenDAO::search( new Almacen( array( "id_sucursal" => $id_sucursal ) ) );
-            
-            $sucursal->setFechaBaja(time());
-            $sucursal->setActiva(0);
-            DAO::transBegin();
-            try
-            {
-                SucursalDAO::save($sucursal);
-                
-                //busca las cajas asociadas con esta sucursal y las cierra con el metodo EliminarCaja,
-                //si alguna presenta un error habra un rollback y no se eliminara la sucursal
-                $cajas=CajaDAO::search(new Caja(array( "id_sucursal" => $id_sucursal )));
-                foreach($cajas as $c)
-                {
-                    self::EliminarCaja($c->getIdCaja());
-                }
-                
-                //Elimina la relacion con los impuestos, paquetes, retenciones y servicios referidos a esta sucursal
-                $impuestos_sucursal=ImpuestoSucursalDAO::search(new ImpuestoSucursal(array( "id_sucursal" => $id_sucursal )));
-                foreach($impuestos_sucursal as $i_e)
-                {
-                    ImpuestoSucursalDAO::delete($i_e);
-                }
-                $paquetes_sucursal=PaqueteSucursalDAO::search(new PaqueteSucursal(array( "id_sucursal" => $id_sucursal )));
-                foreach($paquetes_sucursal as $p_s)
-                {
-                    PaqueteSucursalDAO::delete($p_s);
-                }
-                $retencion_sucursal=RetencionSucursalDAO::search(new RetencionSucursal(array( "id_sucursal" => $id_sucursal )));
-                foreach($retencion_sucursal as $r_s)
-                {
-                    RetencionSucursalDAO::delete($r_s);
-                }
-                $servicio_sucursal=ServicioSucursalDAO::search(new ServicioSucursal(array( "id_sucursal" => $id_sucursal )));
-                foreach($servicio_sucursal as $s_s)
-                {
-                    ServicioSucursalDAO::delete($s_s);
-                }
-                
-                //Se eliminan los almacenes de esta sucursal
-                foreach($almacenes as $almacen)
-                {
-                    if($almacen->getActivo())
-                    {
-                         $flag = false;
-                        if($almacen->getIdTipoAlmacen()==2)
-                        {
-                            $flag=true;
-                            $almacen->setIdTipoAlmacen(1);
-                            AlmacenDAO::save($almacen);
-                        }
-                        self::EliminarAlmacen($almacen->getIdAlmacen());
-                        if($flag)
-                        {
-                            $flag = false;
-                            $almacen->setIdTipoAlmacen(2);
-                            AlmacenDAO::save($almacen);
-                        }
-                    }
-                }
-            }
-            catch(Exception $e)
-            {
-                DAO::transRollback();
-                Logger::error("La sucursal no pudo ser eliminada ".$e);
-                throw new Exception("La sucursal no pudo ser eliminada");
-            }
-            DAO::transEnd();
-            Logger::log("Sucursal eliminada exitosamente");
+		//verifica que la caja exista y este activa
+		if (!$sucursal = SucursalDAO::getByPK($id_sucursal)) {
+			Logger::error("La sucursal con id :".$id_sucursal." no existe");
+			throw new Exception("La sucursal con id :".$id_sucursal." no existe");
+		}
+
+		if (!$sucursal->getActiva()) {
+			Logger::error("La sucursal actualmente esta desactivada");
+			throw new Exception("La sucursal actualmente esta desactivada");
+		}
+
+		//verificamos si los almacenes de la sucursal ya han sido previamente desactivados
+		$almacenes = AlmacenDAO::search(new Almacen(array("id_sucursal" => $id_sucursal)));
+
+		//Se eliminan los almacenes de esta sucursal
+		foreach ($almacenes as $almacen) {
+			if ($almacen->getActivo() == true) {
+				Logger::error("No se puede desactivar la sucursal dado que el almacen" . $almacen->getNombre() . " sigue activo");
+				throw new Exception("No se puede desactivar la sucursal dado que el almacen" . $almacen->getNombre() . " sigue activo");
+			}
+		}
+
+		//verificamos si hay cajas abiertas
+		$cajas = CajaDAO::search(new Caja(array("id_sucursal" => $id_sucursal)));
+
+		foreach ($cajas as $c) {
+			if ($c->getAbierta == true) {
+				Logger::error("No se puede desactivar la sucursal dado que la caja" . $c->getDescripcion() . " sigue abierta");
+				throw new Exception("No se puede desactivar la sucursal dado que la caja" . $c->getDescripcion() . " sigue abierta");
+			}
+		}
+
+		$sucursal->setFechaBaja(time());
+		$sucursal->setActiva(0);
+
+		DAO::transBegin();
+		try {
+			SucursalDAO::save($sucursal);
+		} catch(Exception $e) {
+			DAO::transRollback();
+			Logger::error("La sucursal no pudo ser desactivada: ".$e);
+			throw new Exception("La sucursal no pudo ser desactivada");
+		}
+		DAO::transEnd();
+		Logger::log("Sucursal desactivada exitosamente");
 	}
   
 	/**
@@ -4034,6 +3967,19 @@ class SucursalesController extends ValidacionesController implements ISucursales
 
         return array ( "id_corte_sucursal" => $corte->getIdCorteSucursal( ) );
     }
+	
+	/**
+ 	 *
+ 	 *Muestra los detalles de una sucursal en espec?fico.
+ 	 *
+ 	 * @param id_sucursal int Id de la sucursal
+ 	 **/
+	public static function Detalles
+		(
+			$id_sucursal
+		){
+
+	}
 
 
 

@@ -31,11 +31,11 @@ class ConceptoIngreso extends VO
 			if( isset($data['descripcion']) ){
 				$this->descripcion = $data['descripcion'];
 			}
-			if( isset($data['monto']) ){
-				$this->monto = $data['monto'];
-			}
 			if( isset($data['activo']) ){
 				$this->activo = $data['activo'];
+			}
+			if( isset($data['id_cuenta_contable']) ){
+				$this->id_cuenta_contable = $data['id_cuenta_contable'];
 			}
 		}
 	}
@@ -53,8 +53,8 @@ class ConceptoIngreso extends VO
 			"id_concepto_ingreso" => $this->id_concepto_ingreso,
 			"nombre" => $this->nombre,
 			"descripcion" => $this->descripcion,
-			"monto" => $this->monto,
-			"activo" => $this->activo
+			"activo" => $this->activo,
+			"id_cuenta_contable" => $this->id_cuenta_contable
 		); 
 	return json_encode($vec); 
 	}
@@ -89,15 +89,6 @@ class ConceptoIngreso extends VO
 	public $descripcion;
 
 	/**
-	  * monto
-	  * 
-	  * Si el concepto tienen un monto fijo<br>
-	  * @access public
-	  * @var float
-	  */
-	public $monto;
-
-	/**
 	  * activo
 	  * 
 	  * Si este concepto de ingreso esta activo<br>
@@ -105,6 +96,15 @@ class ConceptoIngreso extends VO
 	  * @var tinyint(1)
 	  */
 	public $activo;
+
+	/**
+	  * id_cuenta_contable
+	  * 
+	  * El id de la cuenta contable a la que apunta este concepto<br>
+	  * @access public
+	  * @var int(11)
+	  */
+	public $id_cuenta_contable;
 
 	/**
 	  * getIdConceptoIngreso
@@ -183,30 +183,6 @@ class ConceptoIngreso extends VO
 	}
 
 	/**
-	  * getMonto
-	  * 
-	  * Get the <i>monto</i> property for this object. Donde <i>monto</i> es Si el concepto tienen un monto fijo
-	  * @return float
-	  */
-	final public function getMonto()
-	{
-		return $this->monto;
-	}
-
-	/**
-	  * setMonto( $monto )
-	  * 
-	  * Set the <i>monto</i> property for this object. Donde <i>monto</i> es Si el concepto tienen un monto fijo.
-	  * Una validacion basica se hara aqui para comprobar que <i>monto</i> es de tipo <i>float</i>. 
-	  * Si esta validacion falla, se arrojara... algo. 
-	  * @param float
-	  */
-	final public function setMonto( $monto )
-	{
-		$this->monto = $monto;
-	}
-
-	/**
 	  * getActivo
 	  * 
 	  * Get the <i>activo</i> property for this object. Donde <i>activo</i> es Si este concepto de ingreso esta activo
@@ -228,6 +204,30 @@ class ConceptoIngreso extends VO
 	final public function setActivo( $activo )
 	{
 		$this->activo = $activo;
+	}
+
+	/**
+	  * getIdCuentaContable
+	  * 
+	  * Get the <i>id_cuenta_contable</i> property for this object. Donde <i>id_cuenta_contable</i> es El id de la cuenta contable a la que apunta este concepto
+	  * @return int(11)
+	  */
+	final public function getIdCuentaContable()
+	{
+		return $this->id_cuenta_contable;
+	}
+
+	/**
+	  * setIdCuentaContable( $id_cuenta_contable )
+	  * 
+	  * Set the <i>id_cuenta_contable</i> property for this object. Donde <i>id_cuenta_contable</i> es El id de la cuenta contable a la que apunta este concepto.
+	  * Una validacion basica se hara aqui para comprobar que <i>id_cuenta_contable</i> es de tipo <i>int(11)</i>. 
+	  * Si esta validacion falla, se arrojara... algo. 
+	  * @param int(11)
+	  */
+	final public function setIdCuentaContable( $id_cuenta_contable )
+	{
+		$this->id_cuenta_contable = $id_cuenta_contable;
 	}
 
 }

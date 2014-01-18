@@ -34,9 +34,11 @@ class ConfiguracionDAO extends ConfiguracionDAOBase
         $campos = array_keys(get_class_vars('Producto'));
 
         // if propiedades_array NO es subconjunto de campos
-        if (!array_intersect($propiedades, $campos) == $propiedades)
-        {
-            throw new InvalidArgumentException("Conjunto de propiedades inválido");
+        if (is_array($propiedades)) {
+            if (!array_intersect($propiedades, $campos) == $propiedades)
+            {
+                throw new InvalidArgumentException("Conjunto de propiedades inválido");
+            }
         }
 
         $valor = array("mostrar" => $mostrar, "propiedades" => $propiedades);

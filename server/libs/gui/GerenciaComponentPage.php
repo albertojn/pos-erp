@@ -45,8 +45,8 @@ class GerenciaComponentPage extends PosComponentPage{
 		            "url": "clientes.php",
 		            "children": [
 		                {
-		                    "title": "Clasificaciones",
-		                    "url": "clientes.lista.clasificacion.php"
+		                    "title": "Categorias",
+		                    "url": "contactos.categorias.php"
 		                }
 		            ]
 		        },
@@ -85,8 +85,8 @@ class GerenciaComponentPage extends PosComponentPage{
 		                    "url": "efectivo.lista.moneda.php"
 		                },
 		                {
-		                    "title": "Nueva moneda",
-		                    "url": "efectivo.nueva.moneda.php"
+		                    "title": "Tipos Cambio",
+		                    "url": "efectivo.lista.tipo_cambio.php"
 		                }
 		            ]
 		        },
@@ -153,8 +153,8 @@ class GerenciaComponentPage extends PosComponentPage{
 		                    "url": "productos.php#Lista"
 		                },
 		                {
-		                    "title": "Categoria",
-		                    "url": "productos.php#Categorias"
+		                    "title": "Categorias",
+		                    "url": "productos.categoria.lista.php"
 		                },
 		                {
 		                    "title": "Nuevo producto",
@@ -171,12 +171,16 @@ class GerenciaComponentPage extends PosComponentPage{
 		            "url": "personal.lista.usuario.php",
 		            "children": [
 		                {
-		                    "title": "Lista de usuarios",
+		                    "title": "Usuarios",
 		                    "url": "personal.lista.usuario.php"
 		                },
 		                {
 		                    "title": "Nuevo usuario",
 		                    "url": "personal.nuevo.usuario.php"
+		                },
+						{
+		                    "title": "Roles",
+		                    "url": "personal.rol.lista.php"
 		                }
 		            ]
 		        },
@@ -193,12 +197,8 @@ class GerenciaComponentPage extends PosComponentPage{
 			                "url"   : "proveedores.nuevo.php"
 			        },
 	                {
-	                        "title" : "Clasificacion",
-	                        "url"   : "proveedores.lista.clasificacion.php"
-	                },
-	                {
-	                        "title" : "Nueva clasificacion",
-	                        "url"   : "proveedores.nueva.clasificacion.php"
+	                        "title": "Categorias",
+		                    "url": "contactos.categorias.php"
 	                }
 	            ]
 	        },    {

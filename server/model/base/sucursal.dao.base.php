@@ -131,14 +131,9 @@ abstract class SucursalDAOBase extends DAO
 			array_push( $val, $sucursal->getIdDireccion() );
 		}
 
-		if( ! is_null( $sucursal->getRfc() ) ){
-			$sql .= " `rfc` = ? AND";
-			array_push( $val, $sucursal->getRfc() );
-		}
-
-		if( ! is_null( $sucursal->getRazonSocial() ) ){
-			$sql .= " `razon_social` = ? AND";
-			array_push( $val, $sucursal->getRazonSocial() );
+		if( ! is_null( $sucursal->getIdTarifa() ) ){
+			$sql .= " `id_tarifa` = ? AND";
+			array_push( $val, $sucursal->getIdTarifa() );
 		}
 
 		if( ! is_null( $sucursal->getDescripcion() ) ){
@@ -149,11 +144,6 @@ abstract class SucursalDAOBase extends DAO
 		if( ! is_null( $sucursal->getIdGerente() ) ){
 			$sql .= " `id_gerente` = ? AND";
 			array_push( $val, $sucursal->getIdGerente() );
-		}
-
-		if( ! is_null( $sucursal->getSaldoAFavor() ) ){
-			$sql .= " `saldo_a_favor` = ? AND";
-			array_push( $val, $sucursal->getSaldoAFavor() );
 		}
 
 		if( ! is_null( $sucursal->getFechaApertura() ) ){
@@ -193,7 +183,7 @@ abstract class SucursalDAOBase extends DAO
 	  *	
 	  * Este metodo es un metodo de ayuda para uso interno. Se ejecutara todas las manipulaciones
 	  * en la base de datos que estan dadas en el objeto pasado.No se haran consultas SELECT 
-	  * aqui, sin embargo. El valor de retorno indica cuántas filas se vieron afectadas.
+	  * aqui, sin embargo. El valor de retorno indica cuÃ¡ntas filas se vieron afectadas.
 	  *	
 	  * @internal private information for advanced developers only
 	  * @return Filas afectadas o un string con la descripcion del error
@@ -201,14 +191,12 @@ abstract class SucursalDAOBase extends DAO
 	  **/
 	private static final function update( $sucursal )
 	{
-		$sql = "UPDATE sucursal SET  `id_direccion` = ?, `rfc` = ?, `razon_social` = ?, `descripcion` = ?, `id_gerente` = ?, `saldo_a_favor` = ?, `fecha_apertura` = ?, `activa` = ?, `fecha_baja` = ? WHERE  `id_sucursal` = ?;";
+		$sql = "UPDATE sucursal SET  `id_direccion` = ?, `id_tarifa` = ?, `descripcion` = ?, `id_gerente` = ?, `fecha_apertura` = ?, `activa` = ?, `fecha_baja` = ? WHERE  `id_sucursal` = ?;";
 		$params = array( 
 			$sucursal->getIdDireccion(), 
-			$sucursal->getRfc(), 
-			$sucursal->getRazonSocial(), 
+			$sucursal->getIdTarifa(), 
 			$sucursal->getDescripcion(), 
 			$sucursal->getIdGerente(), 
-			$sucursal->getSaldoAFavor(), 
 			$sucursal->getFechaApertura(), 
 			$sucursal->getActiva(), 
 			$sucursal->getFechaBaja(), 
@@ -235,15 +223,13 @@ abstract class SucursalDAOBase extends DAO
 	  **/
 	private static final function create( &$sucursal )
 	{
-		$sql = "INSERT INTO sucursal ( `id_sucursal`, `id_direccion`, `rfc`, `razon_social`, `descripcion`, `id_gerente`, `saldo_a_favor`, `fecha_apertura`, `activa`, `fecha_baja` ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO sucursal ( `id_sucursal`, `id_direccion`, `id_tarifa`, `descripcion`, `id_gerente`, `fecha_apertura`, `activa`, `fecha_baja` ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
 		$params = array( 
 			$sucursal->getIdSucursal(), 
 			$sucursal->getIdDireccion(), 
-			$sucursal->getRfc(), 
-			$sucursal->getRazonSocial(), 
+			$sucursal->getIdTarifa(), 
 			$sucursal->getDescripcion(), 
 			$sucursal->getIdGerente(), 
-			$sucursal->getSaldoAFavor(), 
 			$sucursal->getFechaApertura(), 
 			$sucursal->getActiva(), 
 			$sucursal->getFechaBaja(), 
@@ -317,23 +303,12 @@ abstract class SucursalDAOBase extends DAO
 			
 		}
 
-		if( ( !is_null (($a = $sucursalA->getRfc()) ) ) & ( ! is_null ( ($b = $sucursalB->getRfc()) ) ) ){
-				$sql .= " `rfc` >= ? AND `rfc` <= ? AND";
+		if( ( !is_null (($a = $sucursalA->getIdTarifa()) ) ) & ( ! is_null ( ($b = $sucursalB->getIdTarifa()) ) ) ){
+				$sql .= " `id_tarifa` >= ? AND `id_tarifa` <= ? AND";
 				array_push( $val, min($a,$b)); 
 				array_push( $val, max($a,$b)); 
 		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
-			$sql .= " `rfc` = ? AND"; 
-			$a = is_null ( $a ) ? $b : $a;
-			array_push( $val, $a);
-			
-		}
-
-		if( ( !is_null (($a = $sucursalA->getRazonSocial()) ) ) & ( ! is_null ( ($b = $sucursalB->getRazonSocial()) ) ) ){
-				$sql .= " `razon_social` >= ? AND `razon_social` <= ? AND";
-				array_push( $val, min($a,$b)); 
-				array_push( $val, max($a,$b)); 
-		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
-			$sql .= " `razon_social` = ? AND"; 
+			$sql .= " `id_tarifa` = ? AND"; 
 			$a = is_null ( $a ) ? $b : $a;
 			array_push( $val, $a);
 			
@@ -356,17 +331,6 @@ abstract class SucursalDAOBase extends DAO
 				array_push( $val, max($a,$b)); 
 		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
 			$sql .= " `id_gerente` = ? AND"; 
-			$a = is_null ( $a ) ? $b : $a;
-			array_push( $val, $a);
-			
-		}
-
-		if( ( !is_null (($a = $sucursalA->getSaldoAFavor()) ) ) & ( ! is_null ( ($b = $sucursalB->getSaldoAFavor()) ) ) ){
-				$sql .= " `saldo_a_favor` >= ? AND `saldo_a_favor` <= ? AND";
-				array_push( $val, min($a,$b)); 
-				array_push( $val, max($a,$b)); 
-		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
-			$sql .= " `saldo_a_favor` = ? AND"; 
 			$a = is_null ( $a ) ? $b : $a;
 			array_push( $val, $a);
 			

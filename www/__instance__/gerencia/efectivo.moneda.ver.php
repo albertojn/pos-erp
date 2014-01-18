@@ -28,7 +28,7 @@
                 if($esta_moneda->getActiva())
                 {
                     $menu = new MenuComponent();
-                    $menu->addItem("Editar esta moneda", "efectivo.editar.moneda.php?mid=".$_GET["mid"]);
+                    //$menu->addItem("Editar esta moneda", "efectivo.editar.moneda.php?mid=".$_GET["mid"]);
                     //$menu->addItem("Desactivar este producto", null);
 
                     $btn_eliminar = new MenuItem("Desactivar esta moneda", null);
@@ -54,6 +54,35 @@
                     $menu->addMenuItem($btn_eliminar);
 
                     $page->addComponent( $menu);
+
+                } else {
+
+                	$menu = new MenuComponent();
+
+                    $btn_activar = new MenuItem("Activar esta moneda", null);
+                    $btn_activar->addApiCall("api/efectivo/moneda/editar", "GET");
+                    $btn_activar->onApiCallSuccessRedirect("efectivo.lista.moneda.php");
+                    $btn_activar->addName("activar");
+
+                    $funcion_activar = " function activar_moneda(btn){".
+                                "if(btn == 'yes')".
+                                "{".
+                                    "var m = {};".
+                                    "m.id_moneda = ".$_GET["mid"]."; m.activa=1;".
+                                    "sendToApi_activar(m);".
+                                "}".
+                            "}".
+                            "      ".
+                            "function confirmar(){".
+                            " Ext.MessageBox.confirm('Activar', 'Desea activar esta moneda?', activar_moneda );".
+                            "}";
+
+                    $btn_activar->addOnClick("confirmar", $funcion_activar);
+
+                    $menu->addMenuItem($btn_activar);
+
+                    $page->addComponent( $menu);
+
                 }
 		
 		//

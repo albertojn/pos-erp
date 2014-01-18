@@ -154,7 +154,7 @@ abstract class PermisoRolDAOBase extends DAO
 	  *	
 	  * Este metodo es un metodo de ayuda para uso interno. Se ejecutara todas las manipulaciones
 	  * en la base de datos que estan dadas en el objeto pasado.No se haran consultas SELECT 
-	  * aqui, sin embargo. El valor de retorno indica cuántas filas se vieron afectadas.
+	  * aqui, sin embargo. El valor de retorno indica cuÃ¡ntas filas se vieron afectadas.
 	  *	
 	  * @internal private information for advanced developers only
 	  * @return Filas afectadas o un string con la descripcion del error
@@ -267,31 +267,5 @@ abstract class PermisoRolDAOBase extends DAO
 		}
 		return $ar;
 	}
-
-
-	/**
-	  *	Eliminar registros.
-	  *	
-	  * Este metodo eliminara la informacion de base de datos identificados por la clave primaria
-	  * en el objeto PermisoRol suministrado. Una vez que se ha suprimido un objeto, este no 
-	  * puede ser restaurado llamando a save(). save() al ver que este es un objeto vacio, creara una nueva fila 
-	  * pero el objeto resultante tendra una clave primaria diferente de la que estaba en el objeto eliminado. 
-	  * Si no puede encontrar eliminar fila coincidente a eliminar, Exception sera lanzada.
-	  *	
-	  *	@throws Exception Se arroja cuando el objeto no tiene definidas sus llaves primarias.
-	  *	@return int El numero de filas afectadas.
-	  * @param PermisoRol [$permiso_rol] El objeto de tipo PermisoRol a eliminar
-	  **/
-	public static final function delete( &$permiso_rol )
-	{
-		if( is_null( self::getByPK($permiso_rol->getIdPermiso(), $permiso_rol->getIdRol()) ) ) throw new Exception('Campo no encontrado.');
-		$sql = "DELETE FROM permiso_rol WHERE  id_permiso = ? AND id_rol = ?;";
-		$params = array( $permiso_rol->getIdPermiso(), $permiso_rol->getIdRol() );
-		global $conn;
-
-		$conn->Execute($sql, $params);
-		return $conn->Affected_Rows();
-	}
-
 
 }

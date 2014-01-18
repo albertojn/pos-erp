@@ -46,6 +46,9 @@ class Caja extends VO
 			if( isset($data['activa']) ){
 				$this->activa = $data['activa'];
 			}
+			if( isset($data['id_cuenta_contable']) ){
+				$this->id_cuenta_contable = $data['id_cuenta_contable'];
+			}
 		}
 	}
 
@@ -66,7 +69,8 @@ class Caja extends VO
 			"abierta" => $this->abierta,
 			"saldo" => $this->saldo,
 			"control_billetes" => $this->control_billetes,
-			"activa" => $this->activa
+			"activa" => $this->activa,
+			"id_cuenta_contable" => $this->id_cuenta_contable
 		); 
 	return json_encode($vec); 
 	}
@@ -144,6 +148,15 @@ class Caja extends VO
 	  * @var tinyint(1)
 	  */
 	public $activa;
+
+	/**
+	  * id_cuenta_contable
+	  * 
+	  * El id de la cuenta contable a la que apunta esta caja<br>
+	  * @access public
+	  * @var int(11)
+	  */
+	public $id_cuenta_contable;
 
 	/**
 	  * getIdCaja
@@ -339,6 +352,30 @@ class Caja extends VO
 	final public function setActiva( $activa )
 	{
 		$this->activa = $activa;
+	}
+
+	/**
+	  * getIdCuentaContable
+	  * 
+	  * Get the <i>id_cuenta_contable</i> property for this object. Donde <i>id_cuenta_contable</i> es El id de la cuenta contable a la que apunta esta caja
+	  * @return int(11)
+	  */
+	final public function getIdCuentaContable()
+	{
+		return $this->id_cuenta_contable;
+	}
+
+	/**
+	  * setIdCuentaContable( $id_cuenta_contable )
+	  * 
+	  * Set the <i>id_cuenta_contable</i> property for this object. Donde <i>id_cuenta_contable</i> es El id de la cuenta contable a la que apunta esta caja.
+	  * Una validacion basica se hara aqui para comprobar que <i>id_cuenta_contable</i> es de tipo <i>int(11)</i>. 
+	  * Si esta validacion falla, se arrojara... algo. 
+	  * @param int(11)
+	  */
+	final public function setIdCuentaContable( $id_cuenta_contable )
+	{
+		$this->id_cuenta_contable = $id_cuenta_contable;
 	}
 
 }

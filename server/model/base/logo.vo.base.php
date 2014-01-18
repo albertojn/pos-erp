@@ -67,7 +67,7 @@ class Logo extends VO
 	  * 
 	  *  [Campo no documentado]<br>
 	  * @access public
-	  * @var varchar(2048)
+	  * @var text
 	  */
 	public $imagen;
 
@@ -112,7 +112,7 @@ class Logo extends VO
 	  * getImagen
 	  * 
 	  * Get the <i>imagen</i> property for this object. Donde <i>imagen</i> es  [Campo no documentado]
-	  * @return varchar(2048)
+	  * @return text
 	  */
 	final public function getImagen()
 	{
@@ -123,9 +123,9 @@ class Logo extends VO
 	  * setImagen( $imagen )
 	  * 
 	  * Set the <i>imagen</i> property for this object. Donde <i>imagen</i> es  [Campo no documentado].
-	  * Una validacion basica se hara aqui para comprobar que <i>imagen</i> es de tipo <i>varchar(2048)</i>. 
+	  * Una validacion basica se hara aqui para comprobar que <i>imagen</i> es de tipo <i>text</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
-	  * @param varchar(2048)
+	  * @param text
 	  */
 	final public function setImagen( $imagen )
 	{

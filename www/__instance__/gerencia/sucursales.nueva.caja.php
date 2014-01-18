@@ -18,7 +18,8 @@
 			"id_caja",
                         "abierta",
                         "saldo",
-                        "activa"
+                        "activa",
+                        "id_cuenta_contable"
 		 ));
 
 	
@@ -26,7 +27,9 @@
         $form->onApiCallSuccessRedirect("sucursales.lista.caja.php");
 	
 	$form->makeObligatory(array( 
-			"token"
+			"token",
+			"descripcion",
+			"id_sucursal"
 		));
         
         $form->createComboBoxJoin("control_billetes", "control_billetes", 
@@ -36,7 +39,7 @@
                             )
                         );
 	
-	$form->createComboBoxJoin( "id_sucursal", "razon_social", SucursalDAO::search( new Sucursal( array( "activa" => 1 ) ) ) );
+	$form->createComboBoxJoin( "id_sucursal", "descripcion", SucursalDAO::search( new Sucursal( array( "activa" => 1 ) ) ) );
 	
 	$page->addComponent( $form );
 

@@ -113,7 +113,7 @@ class CierreCaja extends VO
 	/**
 	  * saldo_esperado
 	  * 
-	  * Saldo que deberÃƒÂ­a de haber en la caja despuÃƒÂ©s de todos los movimientos del dÃƒÂ­a<br>
+	  * Saldo que deberÃƒÆ’Ã‚Â­a de haber en la caja despuÃƒÆ’Ã‚Â©s de todos los movimientos del dÃƒÆ’Ã‚Â­a<br>
 	  * @access public
 	  * @var float
 	  */
@@ -246,7 +246,7 @@ class CierreCaja extends VO
 	/**
 	  * getSaldoEsperado
 	  * 
-	  * Get the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que deberÃƒÂ­a de haber en la caja despuÃƒÂ©s de todos los movimientos del dÃƒÂ­a
+	  * Get the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que deberÃƒÆ’Ã‚Â­a de haber en la caja despuÃƒÆ’Ã‚Â©s de todos los movimientos del dÃƒÆ’Ã‚Â­a
 	  * @return float
 	  */
 	final public function getSaldoEsperado()
@@ -257,7 +257,7 @@ class CierreCaja extends VO
 	/**
 	  * setSaldoEsperado( $saldo_esperado )
 	  * 
-	  * Set the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que deberÃƒÂ­a de haber en la caja despuÃƒÂ©s de todos los movimientos del dÃƒÂ­a.
+	  * Set the <i>saldo_esperado</i> property for this object. Donde <i>saldo_esperado</i> es Saldo que deberÃƒÆ’Ã‚Â­a de haber en la caja despuÃƒÆ’Ã‚Â©s de todos los movimientos del dÃƒÆ’Ã‚Â­a.
 	  * Una validacion basica se hara aqui para comprobar que <i>saldo_esperado</i> es de tipo <i>float</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param float

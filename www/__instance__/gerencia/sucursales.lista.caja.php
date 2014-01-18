@@ -12,7 +12,7 @@
 
     $tabla = new TableComponent(
         array(
-            "id_sucursal" => "Sucursal",
+            //"id_sucursal" => "Sucursal",
             "descripcion"=> "Descripcion",
             "saldo"=> "Saldo",
             "control_billetes" => "Control de Billetes",
@@ -23,10 +23,13 @@
     );
 
 
-    $tabla->addColRender("id_sucursal", "funcion_sucursal");
-    $tabla->addColRender("control_billetes", "funcion_control_billetes");
-    $tabla->addColRender("abierta", "funcion_abierta");
-    $tabla->addColRender("activa", "funcion_activa");
+    function funcion_bool_to_string($valor){
+            return ($valor===true || $valor==="1" || $valor===1) ? "<strong>Si</strong>" : "No";
+        }
+
+        $tabla->addColRender("activa", "funcion_bool_to_string");
+        $tabla->addColRender("abierta", "funcion_bool_to_string");
+        $tabla->addColRender("control_billetes", "funcion_bool_to_string");
 
     $tabla->addOnClick( "id_caja", "(function(a){window.location = 'sucursales.caja.ver.php?cid='+a;})" );
 

@@ -100,7 +100,7 @@ class AperturaCaja extends VO
 	/**
 	  * id_cajero
 	  * 
-	  * Id del usuario que realizarÃƒÂ¡ las funciones de cajero<br>
+	  * Id del usuario que realizarÃƒÆ’Ã‚Â¡ las funciones de cajero<br>
 	  * @access public
 	  * @var int(11)
 	  */
@@ -209,7 +209,7 @@ class AperturaCaja extends VO
 	/**
 	  * getIdCajero
 	  * 
-	  * Get the <i>id_cajero</i> property for this object. Donde <i>id_cajero</i> es Id del usuario que realizarÃƒÂ¡ las funciones de cajero
+	  * Get the <i>id_cajero</i> property for this object. Donde <i>id_cajero</i> es Id del usuario que realizarÃƒÆ’Ã‚Â¡ las funciones de cajero
 	  * @return int(11)
 	  */
 	final public function getIdCajero()
@@ -220,7 +220,7 @@ class AperturaCaja extends VO
 	/**
 	  * setIdCajero( $id_cajero )
 	  * 
-	  * Set the <i>id_cajero</i> property for this object. Donde <i>id_cajero</i> es Id del usuario que realizarÃƒÂ¡ las funciones de cajero.
+	  * Set the <i>id_cajero</i> property for this object. Donde <i>id_cajero</i> es Id del usuario que realizarÃƒÆ’Ã‚Â¡ las funciones de cajero.
 	  * Una validacion basica se hara aqui para comprobar que <i>id_cajero</i> es de tipo <i>int(11)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param int(11)

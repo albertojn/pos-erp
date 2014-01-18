@@ -10,21 +10,23 @@
   
 	/**
  	 *
- 	 *Lista las sucursales relacionadas con esta instancia. Se puede filtrar por empresa,  saldo inferior o superior a, fecha de apertura, ordenar por fecha de apertura u ordenar por saldo. Se agregar? un link en cada una para poder acceder a su detalle.
+ 	 *Lista las sucursales relacionadas con esta instancia. 
  	 *
  	 * @param activo bool Si este valor no es pasado, se listaran sucursales tanto activas como inactivas, si su valor es true, solo se mostrarn las sucursales activas, si es false, solo se mostraran las sucursales inactivas.
- 	 * @param id_empresa int Id de la empresa de la cual se listaran sus sucursales.
  	 * @param limit int Indica hasta que registro se desea obtener a partir del conjunto de resultados productos de la bsqueda.
+ 	 * @param order string Indica si se ordenan los registros de manera Ascendente ASC, o descendente DESC.
+ 	 * @param order_by string Indica por que campo se ordenan los resultados.
  	 * @param query string Valor que se buscara en la consulta
- 	 * @param start int Indica desde que registro se desea obtener a partir del conjunto de resultados productos de la bsqueda.
+ 	 * @param start int Indica desde que registro se desea obtener a partir del conjunto de resultados productos de la busqueda.
  	 * @return resultados json Objeto que contendra la lista de sucursales.
  	 * @return numero_de_resultados int 
  	 **/
   static function Buscar
 	(
 		$activo = null, 
-		$id_empresa = null, 
 		$limit = null, 
+		$order = null, 
+		$order_by = null, 
 		$query = null, 
 		$start = null
 	);  
@@ -297,16 +299,28 @@
   
 	/**
  	 *
+ 	 *Muestra los detalles de una sucursal en espec?fico.
+ 	 *
+ 	 * @param id_sucursal int Id de la sucursal
+ 	 **/
+  static function Detalles
+	(
+		$id_sucursal
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
  	 *Edita los datos de una sucursal
  	 *
  	 * @param id_sucursal int Id de la sucursal a modificar
  	 * @param activo bool Indica si esta sucursal estar activa
  	 * @param descripcion string Descripcion de la sucursal
- 	 * @param direccion json Arreglo de direcciones de la sucursal, pueden ser direcciones de tipo fiscal, postal, de envio, etc
- 	 * @param empresas json (DE ESTO ES LO QUE VEREMOS EL MARTES CON IRATZIO) Objeto que contendra los ids de las empresas a las que esta sucursal pertenece, por lo menos tiene que haber una empresa. En este JSON, opcionalmente junto con el id de la empresa, aapreceran dos campos que seran margen_utilidad y descuento, que indicaran que todos los productos de esa empresa ofrecidos en esta sucursal tendran un margen de utilidad y/o un descuento con los valores en esos campos
+ 	 * @param direccion json Objeto que contiene la informacin sobre al direccion
  	 * @param id_gerente int Id del gerente de la sucursal
- 	 * @param razon_social string Razon social de la sucursal
- 	 * @param saldo_a_favor float Saldo a favor de la sucursal
+ 	 * @param id_tarifa int Id de la tarifa por default de la sucursal
  	 **/
   static function Editar
 	(
@@ -314,10 +328,8 @@
 		$activo = null, 
 		$descripcion = null, 
 		$direccion = null, 
-		$empresas = null, 
 		$id_gerente = null, 
-		$razon_social = null, 
-		$saldo_a_favor = null
+		$id_tarifa = null
 	);  
   
   
@@ -357,24 +369,20 @@
  	 *
  	 *M?todo que crea una nueva sucursal
  	 *
- 	 * @param direccion json Arreglo de direcciones de la sucursal, pueden ser direcciones de tipo fiscal, postal, de envo, etc. En caso de no mandar el id_direccion dentro del objeto direccion, se debe de generar una nueva direccion
- 	 * @param razon_social string Razon social de la sucursal, este valor no se debe de poder repetir.
- 	 * @param activo bool Si esta sucursal estara activa inmediatamente despues de ser creada
  	 * @param descripcion string Descripcion de la sucursal
- 	 * @param empresas json Arreglo de `id_empresa` de las empresas a las que pertenece esta sucursal.
+ 	 * @param direccion json Objeto que contiene la informacin sobre al direccin 
+ 	 * @param id_tarifa int Id de la tarifa por default que tendra esa sucursal
+ 	 * @param activo bool Si esta sucursal estara activa inmediatamente despues de ser creada
  	 * @param id_gerente int ID del usuario que sera gerente de esta sucursal. Para que sea valido este usuario debe tener el nivel de acceso apropiado.
- 	 * @param saldo_a_favor float Saldo a favor de la sucursal.
  	 * @return id_sucursal int Id autogenerado de la sucursal que se creo.
  	 **/
   static function Nueva
 	(
+		$descripcion, 
 		$direccion, 
-		$razon_social, 
+		$id_tarifa, 
 		$activo =  1 , 
-		$descripcion = null, 
-		$empresas = null, 
-		$id_gerente = null, 
-		$saldo_a_favor = "0"
+		$id_gerente = null
 	);  
   
   

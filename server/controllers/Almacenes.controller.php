@@ -100,53 +100,46 @@ class AlmacenesController extends ValidacionesController implements IAlmacenes{
 	(
 		$id_almacen
 	){
-            Logger::log("Eliminando almacen");
             $almacen=AlmacenDAO::getByPK($id_almacen);
-            
+
             //verifica que el almacen exista, que este activo y que su tipo no sea de consignacion
-            if(is_null($almacen))
-            {
+            if(is_null($almacen)) {
                 Logger::error("El almacen con id: ".$id_almacen." no existe");
                 throw new InvalidDataException("El almacen con id: ".$id_almacen." no existe");
-            }
-            if(!$almacen->getActivo())
-            {
+			}
+
+			if (!$almacen->getActivo()) {
                 Logger::warn("El almacen ya esta inactivo");
                 throw new BusinessLogicException("El almacen ya esta inactivo");
-            }
+			}
+
             if($almacen->getIdTipoAlmacen()==2)
             {
                 Logger::error("No se puede eliminar con este metodo un almacen de tipo consignacion");
                 throw new BusinessLogicException("No se puede eliminar con este metodo un almacen de tipo consignacion");
             }
-           
-            //verificamos que se hayan terminado todos los productos de los lotes de esta sucursal
 
+			//verificamos que se hayan terminado todos los productos de los lotes de esta sucursal
             $lotes_almacen = LoteDAO::search( new Lote( array(
                 "id_almacen" => $id_almacen
             )));
-
+			Logger::log("El almacen a desactivar tiene " . sizeof($lotes_almacen) . " lotes.");
             foreach( $lotes_almacen as $lote_almacen ){
 
                 $lote_producto = LoteProductoDAO::search( new LoteProducto( array(
                     "id_lote" => $lote_almacen->getIdLote()
                 ) ) );
 
-                foreach( $lote_producto as $lote ){
-
-                    if( $lote->getCantidad() > 0 ){
-                        Logger::error("No se puede el almacen ya que el lote {$lote->getIdLote()} no esta terminado");
-                        throw new BusinessLogicException("No se puede el almacen ya que el lote {$lote->getIdLote()} no esta terminado");
-                    }                    
-
+                foreach ($lote_producto as $lote) {
+                    if ($lote->getCantidad() > 0) {
+                        Logger::error("El lote {$lote->getIdLote()} tiene cantidad > 0 (" . $lote->getCantidad() . ") ");
+                        throw new BusinessLogicException("El lote {$lote->getIdLote()} no esta vacio.");
+                    }
                 }
-
             }
-            
             //TODO : Revisar como se manejaran los traspasos ya que por ahora se estan omitiendo
 
             $almacen->setActivo(0);
-            
             DAO::transBegin();
             try
             {
@@ -418,8 +411,6 @@ Creo que este metodo tiene que estar bajo sucursal.
 		$nombre, 
 		$descripcion = null
 	){
-            Logger::log("Creando nuevo almacen");
-            
             //verificamos que exista la empresa
             if( !is_null($id_empresa) && !$empresa = EmpresaDAO::getByPK( $id_empresa ) ){
                 throw new Exception("No se tiene registro de la empresa {$id_empresa}");
@@ -480,7 +471,6 @@ Creo que este metodo tiene que estar bajo sucursal.
             DAO::transBegin();
             try
             {
-                //Se guarda el almacen
                 AlmacenDAO::save($almacen);
             }
             catch(Exception $e)
@@ -490,7 +480,7 @@ Creo que este metodo tiene que estar bajo sucursal.
                 throw new Exception("No se pudo crear el nuevo almacen");
             }
             DAO::transEnd();
-            Logger::log("Almacen creado exitosamente");
+            Logger::log("Almacen ".  $almacen->getIdAlmacen() . " creado exitosamente");
             return array( "id_almacen" => (int) $almacen->getIdAlmacen());
 	}
   
@@ -987,12 +977,8 @@ Creo que este metodo tiene que estar bajo sucursal.
             throw new InvalidDataException("este lote no existe");
         }
 
-        
-
-        //validemos los productos
+		//validemos los productos
         if(!is_array( $productos ) && !is_array( $productos = object_to_array( $productos ) )){
-
-
             throw new InvalidDataException("productos no es un array");
         }
 
@@ -1052,16 +1038,11 @@ Creo que este metodo tiene que estar bajo sucursal.
                         //no es igual, hay que convertir
                         $r = UnidadMedidaDAO::convertir($_p->getIdUnidad(), $lp->getIdUnidad(), $productos[$i]["cantidad"] );
                         $lp->setCantidad( $lp->getCantidad() +  $r  );    
-                    }
-                    
+					}
 
-                }else{
+                } else {
 
                     Logger::log("primera vez que se pone este producto en este lote");
-
-                   
-
-                    
 
                     $lp = new LoteProducto( array(
                         "id_lote" => $id_lote,
@@ -1070,7 +1051,6 @@ Creo que este metodo tiene que estar bajo sucursal.
                         "id_unidad" => $_p->getIdUnidad()
                     ));
                 }
-                
 
                 LoteProductoDAO::save($lp);
 
@@ -1081,16 +1061,17 @@ Creo que este metodo tiene que estar bajo sucursal.
                         "cantidad"  => $productos[$i]["cantidad"]
                     )));
 
-
+				Logger::log("Removiendo qty=" . $productos[$i]["cantidad"] . "; prod=" . $productos[$i]["id_producto"] . "; lote=" . $id_lote );
             }catch(Exception $e){
                 Logger::error($e);
+        		DAO::transRollback();
                 throw new InvalidDatabaseOperationException($e);
             }
 
         }
 
         DAO::transEnd();
-
+		Logger::log( "Entrada a lote " .$_lote->getIdLoteEntrada(). " exitosa." );
         return array("id_entrada_lote" => $_lote->getIdLoteEntrada());
 
     }
@@ -1157,14 +1138,10 @@ Creo que este metodo tiene que estar bajo sucursal.
 		$productos, 
 		$motivo = null
 	){
-
-
-        //existe el lote?
         if(is_null(LoteDAO::getByPK( $id_lote ))){
             throw new InvalidDataException("este lote no existe");
         }
 
-        //validemos los productos
         if(!is_array( $productos )){
             throw new InvalidDataException("productos no es un array");
         }
@@ -1205,32 +1182,29 @@ Creo que este metodo tiene que estar bajo sucursal.
                 throw new InvalidDataException("El producto " . $productos[$i]["id_producto"] . " no existe.");
             }
 
-            //vamos a ver existencias
-            if(is_null( $lp = LoteProductoDAO::getByPK( $id_lote,  $productos[$i]["id_producto"]))){
+			$lp = LoteProductoDAO::getByPK( $id_lote,  $productos[$i]["id_producto"]);
+
+            if (is_null($lp)) {
                 throw new InvalidDataException("El lote $id_lote no tiene el producto " . $productos[$i]["id_producto"]);
             }
 
-            //TODO : ALAN falto considerar unas cosas al hacer esta comparacion
-            /*if($productos[$i]["cantidad"] > $lp->getCantidad()){
-                throw new InvalidDataException("Estas intentando sacar mas de lo que hay en el lote.");
-            }*/
-            
-            //------- CODIGO DE MANUEL -------
-            
-            $equivalencia = UnidadMedidaDAO::convertir($productos[$i]["id_unidad"], $lp->getIdUnidad(), $productos[$i]["cantidad"]);
-            
-            if($equivalencia > $lp->getCantidad()){
-                
-                Logger::log("Se Comparara {$equivalencia} > {$lp->getCantidad()}");
-                
+            if($productos[$i]["cantidad"] > $lp->getCantidad()){
                 throw new InvalidDataException("Estas intentando sacar mas de lo que hay en el lote.");
             }
-            
-            //---------------
+
+			if (!isset($productos[$i]["id_unidad"])) {
+					throw new InvalidDataException("El producto " . $productos[$i]["id_producto"]
+													. " proporcionado no tiene id_unidad");
+			}
+            $equivalencia = UnidadMedidaDAO::convertir($productos[$i]["id_unidad"], $lp->getIdUnidad(), $productos[$i]["cantidad"]);
+
+            if ($equivalencia > $lp->getCantidad()) {
+                Logger::log("Se Comparara {$equivalencia} > {$lp->getCantidad()}");
+                throw new InvalidDataException("Estas intentando sacar mas de lo que hay en el lote.");
+            }
 
             $lp->setCantidad( $lp->getCantidad() - $productos[$i]["cantidad"]);
 
-            
             try{
                 LoteProductoDAO::save($lp);
 
@@ -1239,8 +1213,9 @@ Creo que este metodo tiene que estar bajo sucursal.
                         "id_producto"   => $productos[$i]["id_producto"],
                         "id_unidad" => $productos[$i]["id_unidad"],
                         "cantidad"  => $productos[$i]["cantidad"]
-                    )));
+				)));
 
+				Logger::log("Removiendo qty=" . $productos[$i]["cantidad"] . "; prod=" . $productos[$i]["id_producto"] . "; lote=" . $id_lote );
 
             }catch(Exception $e){
                 Logger::error($e);

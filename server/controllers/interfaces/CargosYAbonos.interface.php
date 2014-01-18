@@ -146,15 +146,15 @@
 Update : Se deber?a de tomar de la sesi?n el id del usuario que hiso la ultima modificaci?n y la fecha.
  	 *
  	 * @param id_concepto_gasto int Id del concepto de gasto a modificar
+ 	 * @param id_cuenta_contable int El id de la cuenta contable a la que se va a mover
  	 * @param descripcion string Descripcion larga del concepto de gasto
- 	 * @param monto float monto fijo del concepto de gasto
  	 * @param nombre string Justificacion del concepto de gasto que aparecera despues de la leyenda "gasto por concepto de"
  	 **/
   static function EditarConceptoGasto
 	(
 		$id_concepto_gasto, 
+		$id_cuenta_contable, 
 		$descripcion = null, 
-		$monto = null, 
 		$nombre = null
 	);  
   
@@ -200,16 +200,16 @@ Update : Falta especificar los parametros y el ejemplo de envio.
 
 Update : En la respuesta basta con solo indicar success : true | false, y en caso de fallo indicar el por que.
  	 *
+ 	 * @param id_cuenta_contable int El id de la cuenta contable a la que se registraran los gastos de este concepto
  	 * @param nombre string la justificacion que aparecera despues de la leyenda "gasto por concepto de"
  	 * @param descripcion string Descripcion larga del concepto de gasto
- 	 * @param monto float Monto fijo del concepto de gasto
  	 * @return id_concepto_gasto int Id autogenerado por la insercin del nuevo gasto
  	 **/
   static function NuevoConceptoGasto
 	(
+		$id_cuenta_contable, 
 		$nombre, 
-		$descripcion = null, 
-		$monto = null
+		$descripcion = null
 	);  
   
   
@@ -340,15 +340,15 @@ Update :Ademas deber?a tambi?n de tomar la fecha de ingreso del gasto del servid
  	 *Edita un concepto de ingreso
  	 *
  	 * @param id_concepto_ingreso int Id del concepto de ingreso a modificar
+ 	 * @param id_cuenta_contable int El id de la cuenta contable
  	 * @param descripcion string Descripcion larga del concepto de ingreso
- 	 * @param monto float Si este concepto tiene un monto fijo, se debe mostrar aqui. Si no hay un monto fijo, dejar esto como null.
  	 * @param nombre string Justificacion que aparecera despues de la leyenda "ingreso por concepto de"
  	 **/
   static function EditarConceptoIngreso
 	(
 		$id_concepto_ingreso, 
+		$id_cuenta_contable, 
 		$descripcion = null, 
-		$monto = null, 
 		$nombre = null
 	);  
   
@@ -396,16 +396,16 @@ Update :Falta especificar la estructura del JSON que se env?a como parametro
 
 Update : En la respuesta basta con solo indicar success : true | false, y en caso de fallo indicar el por que.
  	 *
+ 	 * @param id_cuenta_contable int El id de la cuenta contable a donde se registraran los ingresos  correspondientes a este concepto
  	 * @param nombre string Justificacion que aparecer despus de la leyenda "ingreso por concepto de"
  	 * @param descripcion string Descripcion larga de este concepto de ingreso
- 	 * @param monto float Monto fijo del concepto de ingreso
  	 * @return id_concepto_ingreso int Id autogenerado por la creacion del nuevo concepto de ingreso
  	 **/
   static function NuevoConceptoIngreso
 	(
+		$id_cuenta_contable, 
 		$nombre, 
-		$descripcion = null, 
-		$monto = null
+		$descripcion = null
 	);  
   
   

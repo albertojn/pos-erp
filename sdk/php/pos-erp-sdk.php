@@ -15,7 +15,7 @@ Class PosErp{
     private $instance_token;
     private $url;
     private $incoming_login_results;
-    private $at;
+    private $auth_token;
 
   /**
    *
@@ -27,16 +27,17 @@ Class PosErp{
 			CURLOPT_CONNECTTIMEOUT => 10,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_TIMEOUT        => 60,
-			CURLOPT_USERAGENT      => 'caffeina-sdk-php-0.1',
+			CURLOPT_USERAGENT      => 'caffeina-sdk-php-0.2',
 		);
 
 
     private function __construct($i_token){
         $this->waiting = false;
         $this->instance_token = $i_token;
-        $this->url = "http://pos-nightly.labs2.caffeina.mx/pos/";
-        $this->incoming_login_results = false;
-        $this->at = null;
+		$this->url = "http://pos-nightly.labs2.caffeina.mx/pos/";
+
+	$this->incoming_login_results = false;
+        $this->auth_token = null;
     }
 
     function __clone(){
@@ -56,23 +57,24 @@ Class PosErp{
     }
 
     private function BeforeCall( $api_name, $toSendParams ){
-        if($api_name == "api/sesion/iniciar"){
+        if ($api_name == "api/sesion/iniciar") {
             $this->incoming_login_results = true;
 
-        } elseif( !is_null($this->at)){
+		} elseif (!is_null($this->auth_token)) {
 
             //there is an `at` associated with this session
             //lets check if there is at defined in the params
-            if(array_key_exists("at", $toSendParams)){
+            if(array_key_exists("auth_token", $toSendParams)){
                 //he has his own at, send that one
-
+				$toSendParams["at"] = $toSendParams["auth_token"];
             }else{
                 //lets use the one we have
-                $toSendParams["at"] = $this->at; 
-
+                $toSendParams["at"] = $this->auth_token; 
             }
-        }
+        } else {
+			throw new Exception("You are not logged in.");
 
+		}
         return $toSendParams;
     }
 
@@ -84,7 +86,7 @@ Class PosErp{
 		//params were sent
 		if($this->incoming_login_results && isset($response->login_succesful)){
 			if(!is_null($response) && $response->login_succesful){
-				$this->at = $response->auth_token;
+				$this->auth_token = $response->auth_token;
 			}
 		}
 
@@ -98,13 +100,15 @@ Class PosErp{
 		}
 
 		$opts = self::$CURL_OPTS;
-		if($method == "POST"){
+		$opts[CURLOPT_URL] = $url;
+
+		if ($method == "POST") {
 			$opts[CURLOPT_POST] = 1;
 			$opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
 		} else {
 			$opts[CURLOPT_HTTPGET] = true;
+			$opts[CURLOPT_URL] = $url . "?" . http_build_query($params, null, '&');
 		}
-		$opts[CURLOPT_URL] = $url;
 
 		// disable the 'Expect: 100-continue' behaviour. This causes CURL to wait
 		// for 2 seconds if the server does not support this header.
@@ -123,6 +127,10 @@ Class PosErp{
 	}
 
 	private function ApiCall($method, $address, $params ){
+		if (is_null($params)) {
+			$params = array();
+		}
+
 		$params = $this->BeforeCall($address, $params );
 
 		if(is_null($this->instance_token)){
@@ -137,7 +145,7 @@ Class PosErp{
         return $this->ApiCall( "POST", $api_name, $parameters );
     }
 
-    public function GET($api_name, $parameters){
+    public function GET($api_name, $parameters = null){
         return $this->ApiCall( "GET", $api_name, $parameters );
     }
 }

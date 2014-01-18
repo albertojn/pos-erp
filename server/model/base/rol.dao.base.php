@@ -126,6 +126,11 @@ abstract class RolDAOBase extends DAO
 			array_push( $val, $rol->getIdRol() );
 		}
 
+		if( ! is_null( $rol->getIdRolPadre() ) ){
+			$sql .= " `id_rol_padre` = ? AND";
+			array_push( $val, $rol->getIdRolPadre() );
+		}
+
 		if( ! is_null( $rol->getNombre() ) ){
 			$sql .= " `nombre` = ? AND";
 			array_push( $val, $rol->getNombre() );
@@ -151,6 +156,11 @@ abstract class RolDAOBase extends DAO
 			array_push( $val, $rol->getIdTarifaVenta() );
 		}
 
+		if( ! is_null( $rol->getIdPerfil() ) ){
+			$sql .= " `id_perfil` = ? AND";
+			array_push( $val, $rol->getIdPerfil() );
+		}
+
 		if(sizeof($val) == 0){return self::getAll(/* $pagina = NULL, $columnas_por_pagina = NULL, $orden = NULL, $tipo_de_orden = 'ASC' */);}
 		$sql = substr($sql, 0, -3) . " )";
 		if( ! is_null ( $orderBy ) ){
@@ -173,7 +183,7 @@ abstract class RolDAOBase extends DAO
 	  *	
 	  * Este metodo es un metodo de ayuda para uso interno. Se ejecutara todas las manipulaciones
 	  * en la base de datos que estan dadas en el objeto pasado.No se haran consultas SELECT 
-	  * aqui, sin embargo. El valor de retorno indica cuántas filas se vieron afectadas.
+	  * aqui, sin embargo. El valor de retorno indica cuÃ¡ntas filas se vieron afectadas.
 	  *	
 	  * @internal private information for advanced developers only
 	  * @return Filas afectadas o un string con la descripcion del error
@@ -181,13 +191,15 @@ abstract class RolDAOBase extends DAO
 	  **/
 	private static final function update( $rol )
 	{
-		$sql = "UPDATE rol SET  `nombre` = ?, `descripcion` = ?, `salario` = ?, `id_tarifa_compra` = ?, `id_tarifa_venta` = ? WHERE  `id_rol` = ?;";
+		$sql = "UPDATE rol SET  `id_rol_padre` = ?, `nombre` = ?, `descripcion` = ?, `salario` = ?, `id_tarifa_compra` = ?, `id_tarifa_venta` = ?, `id_perfil` = ? WHERE  `id_rol` = ?;";
 		$params = array( 
+			$rol->getIdRolPadre(), 
 			$rol->getNombre(), 
 			$rol->getDescripcion(), 
 			$rol->getSalario(), 
 			$rol->getIdTarifaCompra(), 
 			$rol->getIdTarifaVenta(), 
+			$rol->getIdPerfil(), 
 			$rol->getIdRol(), );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -211,14 +223,16 @@ abstract class RolDAOBase extends DAO
 	  **/
 	private static final function create( &$rol )
 	{
-		$sql = "INSERT INTO rol ( `id_rol`, `nombre`, `descripcion`, `salario`, `id_tarifa_compra`, `id_tarifa_venta` ) VALUES ( ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO rol ( `id_rol`, `id_rol_padre`, `nombre`, `descripcion`, `salario`, `id_tarifa_compra`, `id_tarifa_venta`, `id_perfil` ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
 		$params = array( 
 			$rol->getIdRol(), 
+			$rol->getIdRolPadre(), 
 			$rol->getNombre(), 
 			$rol->getDescripcion(), 
 			$rol->getSalario(), 
 			$rol->getIdTarifaCompra(), 
 			$rol->getIdTarifaVenta(), 
+			$rol->getIdPerfil(), 
 		 );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -278,6 +292,17 @@ abstract class RolDAOBase extends DAO
 			
 		}
 
+		if( ( !is_null (($a = $rolA->getIdRolPadre()) ) ) & ( ! is_null ( ($b = $rolB->getIdRolPadre()) ) ) ){
+				$sql .= " `id_rol_padre` >= ? AND `id_rol_padre` <= ? AND";
+				array_push( $val, min($a,$b)); 
+				array_push( $val, max($a,$b)); 
+		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
+			$sql .= " `id_rol_padre` = ? AND"; 
+			$a = is_null ( $a ) ? $b : $a;
+			array_push( $val, $a);
+			
+		}
+
 		if( ( !is_null (($a = $rolA->getNombre()) ) ) & ( ! is_null ( ($b = $rolB->getNombre()) ) ) ){
 				$sql .= " `nombre` >= ? AND `nombre` <= ? AND";
 				array_push( $val, min($a,$b)); 
@@ -328,6 +353,17 @@ abstract class RolDAOBase extends DAO
 				array_push( $val, max($a,$b)); 
 		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
 			$sql .= " `id_tarifa_venta` = ? AND"; 
+			$a = is_null ( $a ) ? $b : $a;
+			array_push( $val, $a);
+			
+		}
+
+		if( ( !is_null (($a = $rolA->getIdPerfil()) ) ) & ( ! is_null ( ($b = $rolB->getIdPerfil()) ) ) ){
+				$sql .= " `id_perfil` >= ? AND `id_perfil` <= ? AND";
+				array_push( $val, min($a,$b)); 
+				array_push( $val, max($a,$b)); 
+		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
+			$sql .= " `id_perfil` = ? AND"; 
 			$a = is_null ( $a ) ? $b : $a;
 			array_push( $val, $a);
 			

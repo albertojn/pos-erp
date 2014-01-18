@@ -10,10 +10,28 @@
   
 	/**
  	 *
+ 	 *Muestra los detalles de un Rol especifico
+ 	 *
+ 	 * @param id_rol int Id del rol
+ 	 * @return detalles json objeto con los detalles del rol
+ 	 * @return perfil json objeto con la descripcion del perfil
+ 	 **/
+  static function DetallesRol
+	(
+		$id_rol
+	);  
+  
+  
+	
+  
+	/**
+ 	 *
  	 *Edita la informacion de un grupo, puede usarse para editar los permisos del mismo
  	 *
  	 * @param id_rol int Id del rol a editar
  	 * @param descripcion string Descripcion larga del grupo
+ 	 * @param id_perfil int Id del perfil de usuario en el sistema
+ 	 * @param id_rol_padre int Id del rol padre
  	 * @param id_tarifa_compra int Id de la tarifa de compora por default que aplicara a los usuarios de este rol. Si un usuario tiene otra tarifa de compra, no sera sobreescrita
  	 * @param id_tarifa_venta int Id de la tarifa de venta por default que aplicara a los usuarios de este rol . Si un usuario ya tiene otra tarifa de venta, no sera sobreescrita.
  	 * @param nombre string Nombre del grupo
@@ -23,6 +41,8 @@
 	(
 		$id_rol, 
 		$descripcion = null, 
+		$id_perfil = null, 
+		$id_rol_padre = null, 
 		$id_tarifa_compra = null, 
 		$id_tarifa_venta = null, 
 		$nombre = null, 
@@ -34,9 +54,9 @@
   
 	/**
  	 *
- 	 *Este metodo desactiva un grupo, solo se podra desactivar un grupo si no hay ningun usuario que pertenezca a ?l.
+ 	 *Este m?todo desactiva un rol, solo se podr? desactivar un rol si no hay ning?n usuario que pertenezca a ?l.
  	 *
- 	 * @param id_rol int Id del grupo a eliminar
+ 	 * @param id_rol int Id del rol a eliminar
  	 **/
   static function EliminarRol
 	(
@@ -48,14 +68,25 @@
   
 	/**
  	 *
- 	 *Lista los roles, se puede filtrar por empresa y ordenar por sus atributos
+ 	 *Lista los roles, se puede filtrar y ordenar por sus atributos
  	 *
- 	 * @param orden string Nombre de la columna por la cual se ordenaran
- 	 * @return roles json Objeto que contendra la lista de los roles
+ 	 * @param activa bool Verdadero para mostrar solo los roles activos. En caso de false, se mostraran ambas.
+ 	 * @param limit string Indica hasta que registro se desea obtener a partir del conjunto de resultados productos de la busqueda.
+ 	 * @param order string Indica si se ordenan los registros de manera Ascendente ASC, o descendente DESC.
+ 	 * @param order_by string Indica por que campo se ordenan los resultados.
+ 	 * @param query string Valor que se buscara en la consulta
+ 	 * @param start string Indica desde que registro se desea obtener a partir del conjunto de resultados productos de la busqueda.
+ 	 * @return resultados json Arreglo de objetos que contendr las empresas de la instancia
+ 	 * @return numero_de_resultados int Numero de resultados obtenidos
  	 **/
   static function ListaRol
 	(
-		$orden = null
+		$activa =  false , 
+		$limit = null, 
+		$order = null, 
+		$order_by = null, 
+		$query = null, 
+		$start = null
 	);  
   
   
@@ -67,6 +98,8 @@
  	 *
  	 * @param nombre string Nombre del grupo. Este no puede existir en el sistema, no puede ser una cadena vacia y no puede ser mayor a 30 caracteres.
  	 * @param descripcion string Descripcion larga del grupo. La descripcion no puede ser una cadena vacia ni mayor a 256 caracteres.
+ 	 * @param id_perfil int Id del perfil de usuario en el sistema
+ 	 * @param id_rol_padre int Id del rol padre
  	 * @param id_tarifa_compra int Id de la tarifa de compra por default que aplicara a los usuario de este rol
  	 * @param id_tarifa_venta int Id de la tarifa de venta por default que aplicara a los suarios de este rol
  	 * @param salario float El salario de este rol.
@@ -76,6 +109,8 @@
 	(
 		$nombre, 
 		$descripcion = null, 
+		$id_perfil = null, 
+		$id_rol_padre = null, 
 		$id_tarifa_compra = null, 
 		$id_tarifa_venta = null, 
 		$salario = "0"

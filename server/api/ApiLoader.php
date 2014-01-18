@@ -461,7 +461,7 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"id_cliente" => new ApiExposedProperty("id_cliente", true, GET, array( "int" )),
+			"id_cliente" => new ApiExposedProperty("id_cliente", true, POST, array( "int" )),
 		);
 	}
 
@@ -470,7 +470,7 @@
  		$this->response = ClientesController::Detalle( 
  			
 			
-			isset($_GET['id_cliente'] ) ? $_GET['id_cliente'] : null
+			isset($_POST['id_cliente'] ) ? $_POST['id_cliente'] : null
 			
 			);
 		}catch(Exception $e){
@@ -1455,6 +1455,8 @@
 		$this->request = array(	
 			"nombre" => new ApiExposedProperty("nombre", true, POST, array( "string" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
+			"id_perfil" => new ApiExposedProperty("id_perfil", false, POST, array( "int" )),
+			"id_rol_padre" => new ApiExposedProperty("id_rol_padre", false, POST, array( "int" )),
 			"id_tarifa_compra" => new ApiExposedProperty("id_tarifa_compra", false, POST, array( "int" )),
 			"id_tarifa_venta" => new ApiExposedProperty("id_tarifa_venta", false, POST, array( "int" )),
 			"salario" => new ApiExposedProperty("salario", false, POST, array( "float" )),
@@ -1468,6 +1470,8 @@
 			
 			isset($_POST['nombre'] ) ? $_POST['nombre'] : null,
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
+			isset($_POST['id_perfil'] ) ? $_POST['id_perfil'] :  null,
+			isset($_POST['id_rol_padre'] ) ? $_POST['id_rol_padre'] :  null,
 			isset($_POST['id_tarifa_compra'] ) ? $_POST['id_tarifa_compra'] :  null,
 			isset($_POST['id_tarifa_venta'] ) ? $_POST['id_tarifa_venta'] :  null,
 			isset($_POST['salario'] ) ? $_POST['salario'] :  "0"
@@ -1491,6 +1495,8 @@
 		$this->request = array(	
 			"id_rol" => new ApiExposedProperty("id_rol", true, POST, array( "int" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
+			"id_perfil" => new ApiExposedProperty("id_perfil", false, POST, array( "int" )),
+			"id_rol_padre" => new ApiExposedProperty("id_rol_padre", false, POST, array( "int" )),
 			"id_tarifa_compra" => new ApiExposedProperty("id_tarifa_compra", false, POST, array( "int" )),
 			"id_tarifa_venta" => new ApiExposedProperty("id_tarifa_venta", false, POST, array( "int" )),
 			"nombre" => new ApiExposedProperty("nombre", false, POST, array( "string" )),
@@ -1505,6 +1511,8 @@
 			
 			isset($_POST['id_rol'] ) ? $_POST['id_rol'] : null,
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
+			isset($_POST['id_perfil'] ) ? $_POST['id_perfil'] :  null,
+			isset($_POST['id_rol_padre'] ) ? $_POST['id_rol_padre'] :  null,
 			isset($_POST['id_tarifa_compra'] ) ? $_POST['id_tarifa_compra'] :  null,
 			isset($_POST['id_tarifa_venta'] ) ? $_POST['id_tarifa_venta'] :  null,
 			isset($_POST['nombre'] ) ? $_POST['nombre'] :  null,
@@ -1583,7 +1591,12 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"orden" => new ApiExposedProperty("orden", false, GET, array( "string" )),
+			"activa" => new ApiExposedProperty("activa", false, POST, array( "bool" )),
+			"limit" => new ApiExposedProperty("limit", false, POST, array( "string" )),
+			"order" => new ApiExposedProperty("order", false, POST, array( "string" )),
+			"order_by" => new ApiExposedProperty("order_by", false, POST, array( "string" )),
+			"query" => new ApiExposedProperty("query", false, POST, array( "string" )),
+			"start" => new ApiExposedProperty("start", false, POST, array( "string" )),
 		);
 	}
 
@@ -1592,7 +1605,12 @@
  		$this->response = PersonalYAgentesController::ListaRol( 
  			
 			
-			isset($_GET['orden'] ) ? $_GET['orden'] :  null
+			isset($_POST['activa'] ) ? $_POST['activa'] :  false ,
+			isset($_POST['limit'] ) ? $_POST['limit'] :  null,
+			isset($_POST['order'] ) ? $_POST['order'] :  null,
+			isset($_POST['order_by'] ) ? $_POST['order_by'] :  null,
+			isset($_POST['query'] ) ? $_POST['query'] :  null,
+			isset($_POST['start'] ) ? $_POST['start'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -1844,6 +1862,34 @@
   
   
 
+  class ApiPersonalRolDetalles extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_rol" => new ApiExposedProperty("id_rol", true, POST, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = PersonalYAgentesController::DetallesRol( 
+ 			
+			
+			isset($_POST['id_rol'] ) ? $_POST['id_rol'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
   class ApiCargosyabonosGastoConceptoNuevo extends ApiHandler {
   
 
@@ -1851,9 +1897,9 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
+			"id_cuenta_contable" => new ApiExposedProperty("id_cuenta_contable", true, POST, array( "int" )),
 			"nombre" => new ApiExposedProperty("nombre", true, POST, array( "string" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
-			"monto" => new ApiExposedProperty("monto", false, POST, array( "float" )),
 		);
 	}
 
@@ -1862,9 +1908,9 @@
  		$this->response = CargosYAbonosController::NuevoConceptoGasto( 
  			
 			
+			isset($_POST['id_cuenta_contable'] ) ? $_POST['id_cuenta_contable'] : null,
 			isset($_POST['nombre'] ) ? $_POST['nombre'] : null,
-			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
-			isset($_POST['monto'] ) ? $_POST['monto'] :  null
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -1884,8 +1930,8 @@
 	{
 		$this->request = array(	
 			"id_concepto_gasto" => new ApiExposedProperty("id_concepto_gasto", true, GET, array( "int" )),
+			"id_cuenta_contable" => new ApiExposedProperty("id_cuenta_contable", true, GET, array( "int" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, GET, array( "string" )),
-			"monto" => new ApiExposedProperty("monto", false, GET, array( "float" )),
 			"nombre" => new ApiExposedProperty("nombre", false, GET, array( "string" )),
 		);
 	}
@@ -1896,8 +1942,8 @@
  			
 			
 			isset($_GET['id_concepto_gasto'] ) ? $_GET['id_concepto_gasto'] : null,
+			isset($_GET['id_cuenta_contable'] ) ? $_GET['id_cuenta_contable'] : null,
 			isset($_GET['descripcion'] ) ? $_GET['descripcion'] :  null,
-			isset($_GET['monto'] ) ? $_GET['monto'] :  null,
 			isset($_GET['nombre'] ) ? $_GET['nombre'] :  null
 			
 			);
@@ -1945,9 +1991,9 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
+			"id_cuenta_contable" => new ApiExposedProperty("id_cuenta_contable", true, POST, array( "int" )),
 			"nombre" => new ApiExposedProperty("nombre", true, POST, array( "string" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
-			"monto" => new ApiExposedProperty("monto", false, POST, array( "float" )),
 		);
 	}
 
@@ -1956,9 +2002,9 @@
  		$this->response = CargosYAbonosController::NuevoConceptoIngreso( 
  			
 			
+			isset($_POST['id_cuenta_contable'] ) ? $_POST['id_cuenta_contable'] : null,
 			isset($_POST['nombre'] ) ? $_POST['nombre'] : null,
-			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
-			isset($_POST['monto'] ) ? $_POST['monto'] :  null
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -1978,8 +2024,8 @@
 	{
 		$this->request = array(	
 			"id_concepto_ingreso" => new ApiExposedProperty("id_concepto_ingreso", true, POST, array( "int" )),
+			"id_cuenta_contable" => new ApiExposedProperty("id_cuenta_contable", true, POST, array( "int" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
-			"monto" => new ApiExposedProperty("monto", false, POST, array( "float" )),
 			"nombre" => new ApiExposedProperty("nombre", false, POST, array( "string" )),
 		);
 	}
@@ -1990,8 +2036,8 @@
  			
 			
 			isset($_POST['id_concepto_ingreso'] ) ? $_POST['id_concepto_ingreso'] : null,
+			isset($_POST['id_cuenta_contable'] ) ? $_POST['id_cuenta_contable'] : null,
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
-			isset($_POST['monto'] ) ? $_POST['monto'] :  null,
 			isset($_POST['nombre'] ) ? $_POST['nombre'] :  null
 			
 			);
@@ -2741,11 +2787,12 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"activo" => new ApiExposedProperty("activo", false, GET, array( "bool" )),
-			"id_empresa" => new ApiExposedProperty("id_empresa", false, GET, array( "int" )),
-			"limit" => new ApiExposedProperty("limit", false, GET, array( "int" )),
-			"query" => new ApiExposedProperty("query", false, GET, array( "string" )),
-			"start" => new ApiExposedProperty("start", false, GET, array( "int" )),
+			"activo" => new ApiExposedProperty("activo", false, POST, array( "bool" )),
+			"limit" => new ApiExposedProperty("limit", false, POST, array( "int" )),
+			"order" => new ApiExposedProperty("order", false, POST, array( "string" )),
+			"order_by" => new ApiExposedProperty("order_by", false, POST, array( "string" )),
+			"query" => new ApiExposedProperty("query", false, POST, array( "string" )),
+			"start" => new ApiExposedProperty("start", false, POST, array( "int" )),
 		);
 	}
 
@@ -2754,11 +2801,12 @@
  		$this->response = SucursalesController::Buscar( 
  			
 			
-			isset($_GET['activo'] ) ? $_GET['activo'] :  null,
-			isset($_GET['id_empresa'] ) ? $_GET['id_empresa'] :  null,
-			isset($_GET['limit'] ) ? $_GET['limit'] :  null,
-			isset($_GET['query'] ) ? $_GET['query'] :  null,
-			isset($_GET['start'] ) ? $_GET['start'] :  null
+			isset($_POST['activo'] ) ? $_POST['activo'] :  null,
+			isset($_POST['limit'] ) ? $_POST['limit'] :  null,
+			isset($_POST['order'] ) ? $_POST['order'] :  null,
+			isset($_POST['order_by'] ) ? $_POST['order_by'] :  null,
+			isset($_POST['query'] ) ? $_POST['query'] :  null,
+			isset($_POST['start'] ) ? $_POST['start'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -2815,13 +2863,11 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
+			"descripcion" => new ApiExposedProperty("descripcion", true, POST, array( "string" )),
 			"direccion" => new ApiExposedProperty("direccion", true, POST, array( "json" )),
-			"razon_social" => new ApiExposedProperty("razon_social", true, POST, array( "string" )),
+			"id_tarifa" => new ApiExposedProperty("id_tarifa", true, POST, array( "int" )),
 			"activo" => new ApiExposedProperty("activo", false, POST, array( "bool" )),
-			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
-			"empresas" => new ApiExposedProperty("empresas", false, POST, array( "json" )),
 			"id_gerente" => new ApiExposedProperty("id_gerente", false, POST, array( "int" )),
-			"saldo_a_favor" => new ApiExposedProperty("saldo_a_favor", false, POST, array( "float" )),
 		);
 	}
 
@@ -2830,13 +2876,11 @@
  		$this->response = SucursalesController::Nueva( 
  			
 			
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] : null,
 			isset($_POST['direccion'] ) ? json_decode($_POST['direccion']) : null,
-			isset($_POST['razon_social'] ) ? $_POST['razon_social'] : null,
+			isset($_POST['id_tarifa'] ) ? $_POST['id_tarifa'] : null,
 			isset($_POST['activo'] ) ? $_POST['activo'] :  1 ,
-			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
-			isset($_POST['empresas'] ) ? json_decode($_POST['empresas']) : null,
-			isset($_POST['id_gerente'] ) ? $_POST['id_gerente'] :  null,
-			isset($_POST['saldo_a_favor'] ) ? $_POST['saldo_a_favor'] :  "0"
+			isset($_POST['id_gerente'] ) ? $_POST['id_gerente'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -2855,14 +2899,12 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"id_sucursal" => new ApiExposedProperty("id_sucursal", true, GET, array( "int" )),
-			"activo" => new ApiExposedProperty("activo", false, GET, array( "bool" )),
-			"descripcion" => new ApiExposedProperty("descripcion", false, GET, array( "string" )),
-			"direccion" => new ApiExposedProperty("direccion", false, GET, array( "json" )),
-			"empresas" => new ApiExposedProperty("empresas", false, GET, array( "json" )),
-			"id_gerente" => new ApiExposedProperty("id_gerente", false, GET, array( "int" )),
-			"razon_social" => new ApiExposedProperty("razon_social", false, GET, array( "string" )),
-			"saldo_a_favor" => new ApiExposedProperty("saldo_a_favor", false, GET, array( "float" )),
+			"id_sucursal" => new ApiExposedProperty("id_sucursal", true, POST, array( "int" )),
+			"activo" => new ApiExposedProperty("activo", false, POST, array( "bool" )),
+			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
+			"direccion" => new ApiExposedProperty("direccion", false, POST, array( "json" )),
+			"id_gerente" => new ApiExposedProperty("id_gerente", false, POST, array( "int" )),
+			"id_tarifa" => new ApiExposedProperty("id_tarifa", false, POST, array( "int" )),
 		);
 	}
 
@@ -2871,14 +2913,12 @@
  		$this->response = SucursalesController::Editar( 
  			
 			
-			isset($_GET['id_sucursal'] ) ? $_GET['id_sucursal'] : null,
-			isset($_GET['activo'] ) ? $_GET['activo'] :  null,
-			isset($_GET['descripcion'] ) ? $_GET['descripcion'] :  null,
-			isset($_GET['direccion'] ) ? json_decode($_GET['direccion']) : null,
-			isset($_GET['empresas'] ) ? json_decode($_GET['empresas']) : null,
-			isset($_GET['id_gerente'] ) ? $_GET['id_gerente'] :  null,
-			isset($_GET['razon_social'] ) ? $_GET['razon_social'] :  null,
-			isset($_GET['saldo_a_favor'] ) ? $_GET['saldo_a_favor'] :  null
+			isset($_POST['id_sucursal'] ) ? $_POST['id_sucursal'] : null,
+			isset($_POST['activo'] ) ? $_POST['activo'] :  null,
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
+			isset($_POST['direccion'] ) ? json_decode($_POST['direccion']) : null,
+			isset($_POST['id_gerente'] ) ? $_POST['id_gerente'] :  null,
+			isset($_POST['id_tarifa'] ) ? $_POST['id_tarifa'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -3101,7 +3141,7 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"id_sucursal" => new ApiExposedProperty("id_sucursal", true, GET, array( "int" )),
+			"id_sucursal" => new ApiExposedProperty("id_sucursal", true, POST, array( "int" )),
 		);
 	}
 
@@ -3110,7 +3150,7 @@
  		$this->response = SucursalesController::Eliminar( 
  			
 			
-			isset($_GET['id_sucursal'] ) ? $_GET['id_sucursal'] : null
+			isset($_POST['id_sucursal'] ) ? $_POST['id_sucursal'] : null
 			
 			);
 		}catch(Exception $e){
@@ -3173,6 +3213,34 @@
 			isset($_POST['fecha_final'] ) ? $_POST['fecha_final'] : null,
 			isset($_POST['id_sucursal'] ) ? $_POST['id_sucursal'] : null,
 			isset($_POST['total_efectivo'] ) ? $_POST['total_efectivo'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiSucursalDetalles extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_sucursal" => new ApiExposedProperty("id_sucursal", true, POST, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = SucursalesController::Detalles( 
+ 			
+			
+			isset($_POST['id_sucursal'] ) ? $_POST['id_sucursal'] : null
 			
 			);
 		}catch(Exception $e){
@@ -5951,6 +6019,162 @@
   
   
 
+  class ApiPosConfiguracionPerfilNuevo extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"configuracion" => new ApiExposedProperty("configuracion", true, POST, array( "json" )),
+			"descripcion" => new ApiExposedProperty("descripcion", true, POST, array( "string" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = POSController::NuevoPerfilConfiguracion( 
+ 			
+			
+			isset($_POST['configuracion'] ) ? json_decode($_POST['configuracion']) : null,
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiPosConfiguracionPerfilEditar extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_perfil" => new ApiExposedProperty("id_perfil", true, POST, array( "int" )),
+			"configuracion" => new ApiExposedProperty("configuracion", false, POST, array( "json" )),
+			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = POSController::EditarPerfilConfiguracion( 
+ 			
+			
+			isset($_POST['id_perfil'] ) ? $_POST['id_perfil'] : null,
+			isset($_POST['configuracion'] ) ? json_decode($_POST['configuracion']) : null,
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  ""
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiPosConfiguracionPerfilLista extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"activo" => new ApiExposedProperty("activo", false, POST, array( "bool" )),
+			"limit" => new ApiExposedProperty("limit", false, POST, array( "string" )),
+			"order" => new ApiExposedProperty("order", false, POST, array( "string" )),
+			"order_by" => new ApiExposedProperty("order_by", false, POST, array( "string" )),
+			"query" => new ApiExposedProperty("query", false, POST, array( "string" )),
+			"start" => new ApiExposedProperty("start", false, POST, array( "string" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = POSController::ListaPerfilConfiguracion( 
+ 			
+			
+			isset($_POST['activo'] ) ? $_POST['activo'] :  false ,
+			isset($_POST['limit'] ) ? $_POST['limit'] :  null,
+			isset($_POST['order'] ) ? $_POST['order'] :  null,
+			isset($_POST['order_by'] ) ? $_POST['order_by'] :  null,
+			isset($_POST['query'] ) ? $_POST['query'] :  null,
+			isset($_POST['start'] ) ? $_POST['start'] :  null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiPosConfiguracionPerfilEliminar extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_perfil" => new ApiExposedProperty("id_perfil", true, POST, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = POSController::EliminarPerfilConfiguracion( 
+ 			
+			
+			isset($_POST['id_perfil'] ) ? $_POST['id_perfil'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiPosConfiguracionPerfilDetalles extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_perfil" => new ApiExposedProperty("id_perfil", true, POST, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = POSController::DetallesPerfilConfiguracion( 
+ 			
+			
+			isset($_POST['id_perfil'] ) ? $_POST['id_perfil'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
   class ApiDocumentoBuscar extends ApiHandler {
   
 
@@ -6031,6 +6255,7 @@
 			"id_sucursal" => new ApiExposedProperty("id_sucursal", false, POST, array( "int" )),
 			"json_impresion" => new ApiExposedProperty("json_impresion", false, POST, array( "string" )),
 			"nombre" => new ApiExposedProperty("nombre", false, POST, array( "string" )),
+			"nombre_plantilla" => new ApiExposedProperty("nombre_plantilla", false, POST, array( "string" )),
 		);
 	}
 
@@ -6045,7 +6270,8 @@
 			isset($_POST['id_empresa'] ) ? $_POST['id_empresa'] :  null,
 			isset($_POST['id_sucursal'] ) ? $_POST['id_sucursal'] :  null,
 			isset($_POST['json_impresion'] ) ? $_POST['json_impresion'] :  null,
-			isset($_POST['nombre'] ) ? $_POST['nombre'] :  null
+			isset($_POST['nombre'] ) ? $_POST['nombre'] :  null,
+			isset($_POST['nombre_plantilla'] ) ? $_POST['nombre_plantilla'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -6158,6 +6384,7 @@
 			"foliado" => new ApiExposedProperty("foliado", false, POST, array( "json" )),
 			"id_empresa" => new ApiExposedProperty("id_empresa", false, POST, array( "int" )),
 			"id_sucursal" => new ApiExposedProperty("id_sucursal", false, POST, array( "int" )),
+			"nombre_plantilla" => new ApiExposedProperty("nombre_plantilla", false, POST, array( "string" )),
 		);
 	}
 
@@ -6173,7 +6400,8 @@
 			isset($_POST['foliado'] ) ? json_decode($_POST['foliado']) : null,
 			isset($_POST['foliado'] ) ? json_decode($_POST['foliado']) : null,
 			isset($_POST['id_empresa'] ) ? $_POST['id_empresa'] :  null,
-			isset($_POST['id_sucursal'] ) ? $_POST['id_sucursal'] :  null
+			isset($_POST['id_sucursal'] ) ? $_POST['id_sucursal'] :  null,
+			isset($_POST['nombre_plantilla'] ) ? $_POST['nombre_plantilla'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -6204,6 +6432,34 @@
 			
 			isset($_POST['extra_params'] ) ? json_decode($_POST['extra_params']) : null,
 			isset($_POST['id_documento'] ) ? $_POST['id_documento'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiDocumentoImprimir extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_documento" => new ApiExposedProperty("id_documento", true, GET, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = DocumentosController::Imprimir( 
+ 			
+			
+			isset($_GET['id_documento'] ) ? $_GET['id_documento'] : null
 			
 			);
 		}catch(Exception $e){
@@ -6927,6 +7183,7 @@
 	{
 		$this->request = array(	
 			"nombre" => new ApiExposedProperty("nombre", true, POST, array( "string" )),
+			"activa" => new ApiExposedProperty("activa", false, POST, array( "bool" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
 			"id_categoria_padre" => new ApiExposedProperty("id_categoria_padre", false, POST, array( "int" )),
 		);
@@ -6938,6 +7195,7 @@
  			
 			
 			isset($_POST['nombre'] ) ? $_POST['nombre'] : null,
+			isset($_POST['activa'] ) ? $_POST['activa'] :  true ,
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
 			isset($_POST['id_categoria_padre'] ) ? $_POST['id_categoria_padre'] :  null
 			
@@ -6958,7 +7216,8 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"id_categoria" => new ApiExposedProperty("id_categoria", true, POST, array( "int" )),
+			"id_clasificacion_producto" => new ApiExposedProperty("id_clasificacion_producto", true, POST, array( "int" )),
+			"activa" => new ApiExposedProperty("activa", false, POST, array( "bool" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
 			"id_categoria_padre" => new ApiExposedProperty("id_categoria_padre", false, POST, array( "int" )),
 			"nombre" => new ApiExposedProperty("nombre", false, POST, array( "string" )),
@@ -6970,38 +7229,11 @@
  		$this->response = ProductosController::EditarCategoria( 
  			
 			
-			isset($_POST['id_categoria'] ) ? $_POST['id_categoria'] : null,
+			isset($_POST['id_clasificacion_producto'] ) ? $_POST['id_clasificacion_producto'] : null,
+			isset($_POST['activa'] ) ? $_POST['activa'] :  null,
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
 			isset($_POST['id_categoria_padre'] ) ? $_POST['id_categoria_padre'] :  null,
 			isset($_POST['nombre'] ) ? $_POST['nombre'] :  null
-			
-			);
-		}catch(Exception $e){
- 			//Logger::error($e);
-			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
-		}
- 	}
-  }
-  
-  
-
-  class ApiProductoCategoriaDesactivar extends ApiHandler {
-  
-
-	protected function DeclareAllowedRoles(){  return BYPASS;  }
-	protected function GetRequest()
-	{
-		$this->request = array(	
-			"id_categoria" => new ApiExposedProperty("id_categoria", true, GET, array( "int" )),
-		);
-	}
-
-	protected function GenerateResponse() {		
-		try{
- 		$this->response = ProductosController::DesactivarCategoria( 
- 			
-			
-			isset($_GET['id_categoria'] ) ? $_GET['id_categoria'] : null
 			
 			);
 		}catch(Exception $e){
@@ -7020,12 +7252,11 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"id_categoria_unidad_medida" => new ApiExposedProperty("id_categoria_unidad_medida", true, POST, array( "int" )),
 			"id_unidad_medida" => new ApiExposedProperty("id_unidad_medida", true, POST, array( "int" )),
-			"abreviatura" => new ApiExposedProperty("abreviatura", false, POST, array( "string" )),
-			"activa" => new ApiExposedProperty("activa", false, POST, array( "int" )),
+			"abreviacion" => new ApiExposedProperty("abreviacion", false, POST, array( "string" )),
 			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
 			"factor_conversion" => new ApiExposedProperty("factor_conversion", false, POST, array( "float" )),
+			"id_categoria_unidad_medida" => new ApiExposedProperty("id_categoria_unidad_medida", false, POST, array( "string" )),
 			"tipo_unidad_medida" => new ApiExposedProperty("tipo_unidad_medida", false, POST, array( "string" )),
 		);
 	}
@@ -7035,12 +7266,11 @@
  		$this->response = ProductosController::EditarUnidadUdm( 
  			
 			
-			isset($_POST['id_categoria_unidad_medida'] ) ? $_POST['id_categoria_unidad_medida'] : null,
 			isset($_POST['id_unidad_medida'] ) ? $_POST['id_unidad_medida'] : null,
-			isset($_POST['abreviatura'] ) ? $_POST['abreviatura'] :  null,
-			isset($_POST['activa'] ) ? $_POST['activa'] :  null,
+			isset($_POST['abreviacion'] ) ? $_POST['abreviacion'] :  null,
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
 			isset($_POST['factor_conversion'] ) ? $_POST['factor_conversion'] :  null,
+			isset($_POST['id_categoria_unidad_medida'] ) ? $_POST['id_categoria_unidad_medida'] :  null,
 			isset($_POST['tipo_unidad_medida'] ) ? $_POST['tipo_unidad_medida'] :  ""
 			
 			);
@@ -7060,10 +7290,7 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"limit" => new ApiExposedProperty("limit", false, GET, array( "int" )),
-			"page" => new ApiExposedProperty("page", false, GET, array( "int" )),
 			"query" => new ApiExposedProperty("query", false, GET, array( "string" )),
-			"start" => new ApiExposedProperty("start", false, GET, array( "int" )),
 		);
 	}
 
@@ -7072,10 +7299,7 @@
  		$this->response = ProductosController::BuscarUnidadUdm( 
  			
 			
-			isset($_GET['limit'] ) ? $_GET['limit'] :  50 ,
-			isset($_GET['page'] ) ? $_GET['page'] :  null,
-			isset($_GET['query'] ) ? $_GET['query'] :  null,
-			isset($_GET['start'] ) ? $_GET['start'] :  0 
+			isset($_GET['query'] ) ? $_GET['query'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -7130,8 +7354,7 @@
 			"descripcion" => new ApiExposedProperty("descripcion", true, POST, array( "string" )),
 			"factor_conversion" => new ApiExposedProperty("factor_conversion", true, POST, array( "float" )),
 			"id_categoria_unidad_medida" => new ApiExposedProperty("id_categoria_unidad_medida", true, POST, array( "int" )),
-			"tipo_unidad_medida" => new ApiExposedProperty("tipo_unidad_medida", true, POST, array( "string" )),
-			"activa" => new ApiExposedProperty("activa", false, POST, array( "string" )),
+			"tipo_unidad_medida" => new ApiExposedProperty("tipo_unidad_medida", true, POST, array( "enum" )),
 		);
 	}
 
@@ -7144,8 +7367,7 @@
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] : null,
 			isset($_POST['factor_conversion'] ) ? $_POST['factor_conversion'] : null,
 			isset($_POST['id_categoria_unidad_medida'] ) ? $_POST['id_categoria_unidad_medida'] : null,
-			isset($_POST['tipo_unidad_medida'] ) ? $_POST['tipo_unidad_medida'] : null,
-			isset($_POST['activa'] ) ? $_POST['activa'] :  ""
+			isset($_POST['tipo_unidad_medida'] ) ? $_POST['tipo_unidad_medida'] : null
 			
 			);
 		}catch(Exception $e){
@@ -7165,7 +7387,7 @@
 	{
 		$this->request = array(	
 			"descripcion" => new ApiExposedProperty("descripcion", true, POST, array( "string" )),
-			"activo" => new ApiExposedProperty("activo", false, POST, array( "int" )),
+			"activo" => new ApiExposedProperty("activo", false, POST, array( "bool" )),
 		);
 	}
 
@@ -7175,7 +7397,7 @@
  			
 			
 			isset($_POST['descripcion'] ) ? $_POST['descripcion'] : null,
-			isset($_POST['activo'] ) ? $_POST['activo'] :  ""
+			isset($_POST['activo'] ) ? $_POST['activo'] :  true 
 			
 			);
 		}catch(Exception $e){
@@ -7226,10 +7448,8 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"limit" => new ApiExposedProperty("limit", false, GET, array( "int" )),
-			"page" => new ApiExposedProperty("page", false, GET, array( "int" )),
+			"activa" => new ApiExposedProperty("activa", false, GET, array( "bool" )),
 			"query" => new ApiExposedProperty("query", false, GET, array( "string" )),
-			"start" => new ApiExposedProperty("start", false, GET, array( "int" )),
 		);
 	}
 
@@ -7238,10 +7458,8 @@
  		$this->response = ProductosController::BuscarCategoriaUdm( 
  			
 			
-			isset($_GET['limit'] ) ? $_GET['limit'] :  50 ,
-			isset($_GET['page'] ) ? $_GET['page'] :  null,
-			isset($_GET['query'] ) ? $_GET['query'] :  null,
-			isset($_GET['start'] ) ? $_GET['start'] :  0 
+			isset($_GET['activa'] ) ? $_GET['activa'] :  true ,
+			isset($_GET['query'] ) ? $_GET['query'] :  null
 			
 			);
 		}catch(Exception $e){
@@ -7260,8 +7478,7 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"id_categoria" => new ApiExposedProperty("id_categoria", false, GET, array( "int" )),
-			"id_categoria_padre" => new ApiExposedProperty("id_categoria_padre", false, GET, array( "int" )),
+			"activa" => new ApiExposedProperty("activa", false, GET, array( "bool" )),
 			"query" => new ApiExposedProperty("query", false, GET, array( "string" )),
 		);
 	}
@@ -7271,8 +7488,7 @@
  		$this->response = ProductosController::BuscarCategoria( 
  			
 			
-			isset($_GET['id_categoria'] ) ? $_GET['id_categoria'] :  null,
-			isset($_GET['id_categoria_padre'] ) ? $_GET['id_categoria_padre'] :  null,
+			isset($_GET['activa'] ) ? $_GET['activa'] :  true ,
 			isset($_GET['query'] ) ? $_GET['query'] :  null
 			
 			);
@@ -7302,6 +7518,118 @@
  			
 			
 			isset($_POST['raw_content'] ) ? $_POST['raw_content'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiProductoCategoriaDetalles extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_categoria" => new ApiExposedProperty("id_categoria", true, GET, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ProductosController::DetallesCategoria( 
+ 			
+			
+			isset($_GET['id_categoria'] ) ? $_GET['id_categoria'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiProductoUdmCategoriaDetalles extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_categoria_unidad_medida" => new ApiExposedProperty("id_categoria_unidad_medida", true, GET, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ProductosController::DetallesCategoriaUdm( 
+ 			
+			
+			isset($_GET['id_categoria_unidad_medida'] ) ? $_GET['id_categoria_unidad_medida'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiProductoUdmUnidadDetalles extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_unidad_medida" => new ApiExposedProperty("id_unidad_medida", true, GET, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ProductosController::DetallesUnidadUdm( 
+ 			
+			
+			isset($_GET['id_unidad_medida'] ) ? $_GET['id_unidad_medida'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiProductoUdmUnidadDesactivar extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_unidad_medida" => new ApiExposedProperty("id_unidad_medida", true, GET, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ProductosController::DesactivarUnidadUdm( 
+ 			
+			
+			isset($_GET['id_unidad_medida'] ) ? $_GET['id_unidad_medida'] : null
 			
 			);
 		}catch(Exception $e){
@@ -7863,6 +8191,7 @@
 	{
 		$this->request = array(	
 			"id_moneda" => new ApiExposedProperty("id_moneda", true, GET, array( "int" )),
+			"activa" => new ApiExposedProperty("activa", false, GET, array( "bool" )),
 			"nombre" => new ApiExposedProperty("nombre", false, GET, array( "string" )),
 			"simbolo" => new ApiExposedProperty("simbolo", false, GET, array( "string" )),
 		);
@@ -7874,6 +8203,7 @@
  			
 			
 			isset($_GET['id_moneda'] ) ? $_GET['id_moneda'] : null,
+			isset($_GET['activa'] ) ? $_GET['activa'] :  null,
 			isset($_GET['nombre'] ) ? $_GET['nombre'] :  null,
 			isset($_GET['simbolo'] ) ? $_GET['simbolo'] :  null
 			
@@ -7934,6 +8264,124 @@
 			
 			isset($_GET['activo'] ) ? $_GET['activo'] :  null,
 			isset($_GET['orden'] ) ? $_GET['orden'] :  null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiEfectivoServicioEquivalenciasObtener extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_moneda_base" => new ApiExposedProperty("id_moneda_base", true, POST, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = EfectivoController::ObtenerEquivalenciasServicio( 
+ 			
+			
+			isset($_POST['id_moneda_base'] ) ? $_POST['id_moneda_base'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiEfectivoActualizarEquivalenciasMostrar extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = EfectivoController::MostrarEquivalenciasActualizar( 
+ 			
+		
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiEfectivoCambioTiposActualizar extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_empresa" => new ApiExposedProperty("id_empresa", true, POST, array( "int" )),
+			"monedas" => new ApiExposedProperty("monedas", true, POST, array( "json" )),
+			"moneda_base" => new ApiExposedProperty("moneda_base", true, POST, array( "string" )),
+			"servicios" => new ApiExposedProperty("servicios", true, POST, array( "string" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = EfectivoController::ActualizarTiposCambio( 
+ 			
+			
+			isset($_POST['id_empresa'] ) ? $_POST['id_empresa'] : null,
+			isset($_POST['monedas'] ) ? json_decode($_POST['monedas']) : null,
+			isset($_POST['moneda_base'] ) ? $_POST['moneda_base'] : null,
+			isset($_POST['servicios'] ) ? $_POST['servicios'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiEfectivoMonedaEquivalenciaObtener extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_empresa" => new ApiExposedProperty("id_empresa", true, POST, array( "int" )),
+			"id_moneda" => new ApiExposedProperty("id_moneda", true, POST, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = EfectivoController::ObtenerEquivalenciaMoneda( 
+ 			
+			
+			isset($_POST['id_empresa'] ) ? $_POST['id_empresa'] : null,
+			isset($_POST['id_moneda'] ) ? $_POST['id_moneda'] : null
 			
 			);
 		}catch(Exception $e){
@@ -8567,23 +9015,23 @@
   
   
 
-  class ApiFormasPdfGenerico extends ApiHandler {
+  class ApiFormasPdfGenerar extends ApiHandler {
   
 
 	protected function DeclareAllowedRoles(){  return BYPASS;  }
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"formato" => new ApiExposedProperty("formato", true, POST, array( "json" )),
+			"documento" => new ApiExposedProperty("documento", true, POST, array( "json" )),
 		);
 	}
 
 	protected function GenerateResponse() {		
 		try{
- 		$this->response = FormasPreimpresasController::GenericoPdf( 
+ 		$this->response = FormasPreimpresasController::GenerarPdf( 
  			
 			
-			isset($_POST['formato'] ) ? json_decode($_POST['formato']) : null
+			isset($_POST['documento'] ) ? json_decode($_POST['documento']) : null
 			
 			);
 		}catch(Exception $e){
@@ -8602,9 +9050,9 @@
 	protected function GetRequest()
 	{
 		$this->request = array(	
-			"datos" => new ApiExposedProperty("datos", true, POST, array( "json" )),
-			"archivo_plantilla" => new ApiExposedProperty("archivo_plantilla", false, POST, array( "string" )),
-			"imagenes" => new ApiExposedProperty("imagenes", false, POST, array( "json" )),
+			"datos" => new ApiExposedProperty("datos", true, GET, array( "json" )),
+			"archivo_plantilla" => new ApiExposedProperty("archivo_plantilla", false, GET, array( "string" )),
+			"imagenes" => new ApiExposedProperty("imagenes", false, GET, array( "json" )),
 		);
 	}
 
@@ -8613,9 +9061,9 @@
  		$this->response = FormasPreimpresasController::GenerarExcel( 
  			
 			
-			isset($_POST['datos'] ) ? json_decode($_POST['datos']) : null,
-			isset($_POST['archivo_plantilla'] ) ? $_POST['archivo_plantilla'] :  "",
-			isset($_POST['imagenes'] ) ? json_decode($_POST['imagenes']) : null
+			isset($_GET['datos'] ) ? json_decode($_GET['datos']) : null,
+			isset($_GET['archivo_plantilla'] ) ? $_GET['archivo_plantilla'] :  "",
+			isset($_GET['imagenes'] ) ? json_decode($_GET['imagenes']) : null
 			
 			);
 		}catch(Exception $e){
@@ -8672,6 +9120,134 @@
  			
 			
 			isset($_GET['id_documento'] ) ? $_GET['id_documento'] : null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiContactosCategoriaNuevo extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"nombre" => new ApiExposedProperty("nombre", true, POST, array( "string" )),
+			"activa" => new ApiExposedProperty("activa", false, POST, array( "bool" )),
+			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
+			"id_padre" => new ApiExposedProperty("id_padre", false, POST, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ContactosController::NuevoCategoria( 
+ 			
+			
+			isset($_POST['nombre'] ) ? $_POST['nombre'] : null,
+			isset($_POST['activa'] ) ? $_POST['activa'] :  true ,
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
+			isset($_POST['id_padre'] ) ? $_POST['id_padre'] :  null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiContactosCategoriaEditar extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id" => new ApiExposedProperty("id", true, POST, array( "int" )),
+			"activa" => new ApiExposedProperty("activa", false, POST, array( "bool" )),
+			"descripcion" => new ApiExposedProperty("descripcion", false, POST, array( "string" )),
+			"id_padre" => new ApiExposedProperty("id_padre", false, POST, array( "int" )),
+			"nombre" => new ApiExposedProperty("nombre", false, POST, array( "string" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ContactosController::EditarCategoria( 
+ 			
+			
+			isset($_POST['id'] ) ? $_POST['id'] : null,
+			isset($_POST['activa'] ) ? $_POST['activa'] :  null,
+			isset($_POST['descripcion'] ) ? $_POST['descripcion'] :  null,
+			isset($_POST['id_padre'] ) ? $_POST['id_padre'] :  null,
+			isset($_POST['nombre'] ) ? $_POST['nombre'] :  null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiContactosCategoriaBuscar extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"activa" => new ApiExposedProperty("activa", false, GET, array( "bool" )),
+			"query" => new ApiExposedProperty("query", false, GET, array( "string" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ContactosController::BuscarCategoria( 
+ 			
+			
+			isset($_GET['activa'] ) ? $_GET['activa'] :  true ,
+			isset($_GET['query'] ) ? $_GET['query'] :  null
+			
+			);
+		}catch(Exception $e){
+ 			//Logger::error($e);
+			throw new ApiException( $this->error_dispatcher->invalidDatabaseOperation( $e->getMessage() ) );
+		}
+ 	}
+  }
+  
+  
+
+  class ApiContactosCategoriaDetalles extends ApiHandler {
+  
+
+	protected function DeclareAllowedRoles(){  return BYPASS;  }
+	protected function GetRequest()
+	{
+		$this->request = array(	
+			"id_categoria" => new ApiExposedProperty("id_categoria", true, GET, array( "int" )),
+		);
+	}
+
+	protected function GenerateResponse() {		
+		try{
+ 		$this->response = ContactosController::DetallesCategoria( 
+ 			
+			
+			isset($_GET['id_categoria'] ) ? $_GET['id_categoria'] : null
 			
 			);
 		}catch(Exception $e){

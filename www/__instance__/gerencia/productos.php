@@ -55,44 +55,7 @@
 	$tabla->addOnClick( "id_producto", "(function(a){ window.location = 'productos.ver.php?pid=' + a; })" );
 
 	$page->addComponent( $tabla );
-
-
-
-
-
-
-
-
-
-
-
-
-	$page->nextTab("Categorias");
-	$page->addComponent(new TitleComponent("Categorias para producto", 2));
-
-	$tCats = new TableComponent( array(
-	"nombre" => "Nombre",
-	"descripcion" => "Descripcion",
-	"id_categoria_padre" => "Categoria Padre",
-	"activa" => "Activa"
-	), ClasificacionProductoDAO::getAll() );
-
-	$tCats->addColRender("activa", "funcion_activa");
-	$tCats->addColRender("id_categoria_padre", "funcion_cat_padre_desc");
-	$page->addComponent($tCats);
-
-
-	$page->addComponent(new TitleComponent("Nueva Categoria de Producto", 2));
-	$nCatProd = new DAOFormComponent(new ClasificacionProducto());
-	$nCatProd->hideField(array("id_clasificacion_producto"));
-	$nCatProd->hideField(array("activa"));
-	$nCatProd->createComboBoxJoin("id_categoria_padre", "nombre", ClasificacionProductoDAO::getAll( ) );
-	$nCatProd->makeObligatory(array("nombre"));
-	$nCatProd->addApiCall("api/producto/categoria/nueva/" , "GET");
-	$nCatProd->onApiCallSuccessRedirect("productos.php");
-	$page->addComponent($nCatProd);
-
-
+	
 
 
 	$page->nextTab("Unidades");

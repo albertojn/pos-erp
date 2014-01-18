@@ -28,20 +28,14 @@ class Sucursal extends VO
 			if( isset($data['id_direccion']) ){
 				$this->id_direccion = $data['id_direccion'];
 			}
-			if( isset($data['rfc']) ){
-				$this->rfc = $data['rfc'];
-			}
-			if( isset($data['razon_social']) ){
-				$this->razon_social = $data['razon_social'];
+			if( isset($data['id_tarifa']) ){
+				$this->id_tarifa = $data['id_tarifa'];
 			}
 			if( isset($data['descripcion']) ){
 				$this->descripcion = $data['descripcion'];
 			}
 			if( isset($data['id_gerente']) ){
 				$this->id_gerente = $data['id_gerente'];
-			}
-			if( isset($data['saldo_a_favor']) ){
-				$this->saldo_a_favor = $data['saldo_a_favor'];
 			}
 			if( isset($data['fecha_apertura']) ){
 				$this->fecha_apertura = $data['fecha_apertura'];
@@ -67,11 +61,9 @@ class Sucursal extends VO
 		$vec = array( 
 			"id_sucursal" => $this->id_sucursal,
 			"id_direccion" => $this->id_direccion,
-			"rfc" => $this->rfc,
-			"razon_social" => $this->razon_social,
+			"id_tarifa" => $this->id_tarifa,
 			"descripcion" => $this->descripcion,
 			"id_gerente" => $this->id_gerente,
-			"saldo_a_favor" => $this->saldo_a_favor,
 			"fecha_apertura" => $this->fecha_apertura,
 			"activa" => $this->activa,
 			"fecha_baja" => $this->fecha_baja
@@ -100,22 +92,13 @@ class Sucursal extends VO
 	public $id_direccion;
 
 	/**
-	  * rfc
+	  * id_tarifa
 	  * 
-	  * RFC de la sucursal<br>
+	  * Id de la tarifa por default<br>
 	  * @access public
-	  * @var varchar(30)
+	  * @var int(11)
 	  */
-	public $rfc;
-
-	/**
-	  * razon_social
-	  * 
-	  * Razon social de la sucursal<br>
-	  * @access public
-	  * @var varchar(100)
-	  */
-	public $razon_social;
+	public $id_tarifa;
 
 	/**
 	  * descripcion
@@ -134,15 +117,6 @@ class Sucursal extends VO
 	  * @var int(11)
 	  */
 	public $id_gerente;
-
-	/**
-	  * saldo_a_favor
-	  * 
-	  * Saldo a favor de la sucursal<br>
-	  * @access public
-	  * @var float
-	  */
-	public $saldo_a_favor;
 
 	/**
 	  * fecha_apertura
@@ -224,51 +198,27 @@ class Sucursal extends VO
 	}
 
 	/**
-	  * getRfc
+	  * getIdTarifa
 	  * 
-	  * Get the <i>rfc</i> property for this object. Donde <i>rfc</i> es RFC de la sucursal
-	  * @return varchar(30)
+	  * Get the <i>id_tarifa</i> property for this object. Donde <i>id_tarifa</i> es Id de la tarifa por default
+	  * @return int(11)
 	  */
-	final public function getRfc()
+	final public function getIdTarifa()
 	{
-		return $this->rfc;
+		return $this->id_tarifa;
 	}
 
 	/**
-	  * setRfc( $rfc )
+	  * setIdTarifa( $id_tarifa )
 	  * 
-	  * Set the <i>rfc</i> property for this object. Donde <i>rfc</i> es RFC de la sucursal.
-	  * Una validacion basica se hara aqui para comprobar que <i>rfc</i> es de tipo <i>varchar(30)</i>. 
+	  * Set the <i>id_tarifa</i> property for this object. Donde <i>id_tarifa</i> es Id de la tarifa por default.
+	  * Una validacion basica se hara aqui para comprobar que <i>id_tarifa</i> es de tipo <i>int(11)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
-	  * @param varchar(30)
+	  * @param int(11)
 	  */
-	final public function setRfc( $rfc )
+	final public function setIdTarifa( $id_tarifa )
 	{
-		$this->rfc = $rfc;
-	}
-
-	/**
-	  * getRazonSocial
-	  * 
-	  * Get the <i>razon_social</i> property for this object. Donde <i>razon_social</i> es Razon social de la sucursal
-	  * @return varchar(100)
-	  */
-	final public function getRazonSocial()
-	{
-		return $this->razon_social;
-	}
-
-	/**
-	  * setRazonSocial( $razon_social )
-	  * 
-	  * Set the <i>razon_social</i> property for this object. Donde <i>razon_social</i> es Razon social de la sucursal.
-	  * Una validacion basica se hara aqui para comprobar que <i>razon_social</i> es de tipo <i>varchar(100)</i>. 
-	  * Si esta validacion falla, se arrojara... algo. 
-	  * @param varchar(100)
-	  */
-	final public function setRazonSocial( $razon_social )
-	{
-		$this->razon_social = $razon_social;
+		$this->id_tarifa = $id_tarifa;
 	}
 
 	/**
@@ -317,30 +267,6 @@ class Sucursal extends VO
 	final public function setIdGerente( $id_gerente )
 	{
 		$this->id_gerente = $id_gerente;
-	}
-
-	/**
-	  * getSaldoAFavor
-	  * 
-	  * Get the <i>saldo_a_favor</i> property for this object. Donde <i>saldo_a_favor</i> es Saldo a favor de la sucursal
-	  * @return float
-	  */
-	final public function getSaldoAFavor()
-	{
-		return $this->saldo_a_favor;
-	}
-
-	/**
-	  * setSaldoAFavor( $saldo_a_favor )
-	  * 
-	  * Set the <i>saldo_a_favor</i> property for this object. Donde <i>saldo_a_favor</i> es Saldo a favor de la sucursal.
-	  * Una validacion basica se hara aqui para comprobar que <i>saldo_a_favor</i> es de tipo <i>float</i>. 
-	  * Si esta validacion falla, se arrojara... algo. 
-	  * @param float
-	  */
-	final public function setSaldoAFavor( $saldo_a_favor )
-	{
-		$this->saldo_a_favor = $saldo_a_favor;
 	}
 
 	/**

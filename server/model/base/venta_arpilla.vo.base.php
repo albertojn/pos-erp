@@ -119,7 +119,7 @@ class VentaArpilla extends VO
 	/**
 	  * fecha_origen
 	  * 
-	  * Fecha en la que se envÃƒÂ­a el embarque<br>
+	  * Fecha en la que se envÃƒÆ’Ã‚Â­a el embarque<br>
 	  * @access public
 	  * @var int(11)
 	  */
@@ -276,7 +276,7 @@ class VentaArpilla extends VO
 	/**
 	  * getFechaOrigen
 	  * 
-	  * Get the <i>fecha_origen</i> property for this object. Donde <i>fecha_origen</i> es Fecha en la que se envÃƒÂ­a el embarque
+	  * Get the <i>fecha_origen</i> property for this object. Donde <i>fecha_origen</i> es Fecha en la que se envÃƒÆ’Ã‚Â­a el embarque
 	  * @return int(11)
 	  */
 	final public function getFechaOrigen()
@@ -287,7 +287,7 @@ class VentaArpilla extends VO
 	/**
 	  * setFechaOrigen( $fecha_origen )
 	  * 
-	  * Set the <i>fecha_origen</i> property for this object. Donde <i>fecha_origen</i> es Fecha en la que se envÃƒÂ­a el embarque.
+	  * Set the <i>fecha_origen</i> property for this object. Donde <i>fecha_origen</i> es Fecha en la que se envÃƒÆ’Ã‚Â­a el embarque.
 	  * Una validacion basica se hara aqui para comprobar que <i>fecha_origen</i> es de tipo <i>int(11)</i>. 
 	  * Si esta validacion falla, se arrojara... algo. 
 	  * @param int(11)

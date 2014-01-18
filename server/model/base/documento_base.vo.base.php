@@ -40,6 +40,9 @@ class DocumentoBase extends VO
 			if( isset($data['json_impresion']) ){
 				$this->json_impresion = $data['json_impresion'];
 			}
+                                                                      if( isset($data['nombre_plantilla']) ){
+				$this->nombre_plantilla = $data['nombre_plantilla'];
+			}
 			if( isset($data['ultima_modificacion']) ){
 				$this->ultima_modificacion = $data['ultima_modificacion'];
 			}
@@ -62,6 +65,7 @@ class DocumentoBase extends VO
 			"nombre" => $this->nombre,
 			"activo" => $this->activo,
 			"json_impresion" => $this->json_impresion,
+                                                                      "nombre_plantilla"=>$this->nombre_plantilla,
 			"ultima_modificacion" => $this->ultima_modificacion
 		); 
 	return json_encode($vec); 
@@ -138,6 +142,7 @@ class DocumentoBase extends VO
 	  * Get the <i>id_documento_base</i> property for this object. Donde <i>id_documento_base</i> es  [Campo no documentado]
 	  * @return int(11)
 	  */
+                        public $nombre_plantilla;
 	final public function getIdDocumentoBase()
 	{
 		return $this->id_documento_base;
@@ -302,6 +307,15 @@ class DocumentoBase extends VO
 	final public function setUltimaModificacion( $ultima_modificacion )
 	{
 		$this->ultima_modificacion = $ultima_modificacion;
+	}
+          
+                        final public function setNombrePlantilla( $nombre_plantilla )
+	{
+		$this->nombre_plantilla = $nombre_plantilla;
+	}
+                      final public function getNombrePlantilla()
+	{
+		return $this->nombre_plantilla;
 	}
 
 }

@@ -378,11 +378,11 @@ class ShoppingCartComponent extends CartComponent implements GuiComponent
 					$i = ImpuestosController::Lista();
 					$iLista = $i["resultados"];
 					$impuestos_to = 0;
+
 					//carrito_impuesto
 					foreach ($iLista as $imp)
 					{
-						//var_dump($imp);
-						$impuestos_to = $imp->getMontoPorcentaje();
+						$impuestos_to += $imp->getImporte();
 					}
 
 					echo "impuesto = subtotal * " . $impuestos_to . ";";
@@ -673,9 +673,9 @@ class ShoppingCartComponent extends CartComponent implements GuiComponent
 
 					?><select id="sucursal_seleccionada" onChange="seleccionar_sucursal(this.value)" ><?php
 
- 							for ($i = 0; $i < sizeof($sucursales); $i++) {
-     							echo "<option value=\"" . $sucursales[$i]->getIdSucursal() . "\" >" . $sucursales[$i]->getRazonSocial() . "</option>";
- 							}
+							for ($i = 0; $i < sizeof($sucursales); $i++) {
+								echo "<option value=\"" . $sucursales[$i]->getIdSucursal() . "\" >" . $sucursales[$i]->getDescripcion() . "</option>";
+							}
 
 					?></select><?php
 

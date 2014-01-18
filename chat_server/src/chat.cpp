@@ -17,6 +17,10 @@ using namespace mysqlpp;
 #define NO_REDIS			7
 #define INTERNAL_ERROR		8
 
+/**
+  *
+  *
+  **/
 class HttpResponse{
 
 	public:
@@ -161,13 +165,13 @@ public:
 
 			instanceConn.connect( bres[0]["db_name"], bres[0]["db_host"], bres[0]["db_user"], bres[0]["db_password"] );
 
-		return instanceConn;
+			return instanceConn;
 
 		}catch(BadQuery er){
 
 			HttpResponse::error(INTERNAL_ERROR);
 			//cout << "Error:" << er.what() << endl ;
-		return instanceConn;
+			return instanceConn;
 
 		}catch(const BadConversion& er){
 			HttpResponse::error(INTERNAL_ERROR);
@@ -190,7 +194,7 @@ public:
 		redisContext *redis = redisConnect("127.0.0.1", 6379);
 
 		if (redis->err) {
-		    //printf("Error: %s\n", redis->errstr);
+			//printf("Error: %s\n", redis->errstr);
 			HttpResponse::error(NO_REDIS);
 		}
 
@@ -322,7 +326,7 @@ public:
 			cout << "Error" << er.what() << endl;
 			return 0;
 
-	}
+		}
 
 		return 1;
 	}
@@ -408,7 +412,7 @@ public:
 
 			if(i < (results - 1)){
 				cout << ", ";
-		}
+			}
 		}
 
 		cout << "]}";
@@ -416,13 +420,14 @@ public:
 };
 
 class ContactsController{
-private:
+	private:
 		ContactsController(){
 		};
 
+	public:
+		static void getOnlineContacts(){
 			try{
 				Connection conn = DB::getInstanceConn(_get("instance"));
-
 
 				Query query = conn.query();
 
@@ -453,18 +458,18 @@ private:
 				for(size_t i = 0 ; i < bres.num_rows(); i++){
 					cout << "{" ;
 					cout << "\"leaf\":true, \"iconCls\": \"user-green\",";
-					cout << "\"id_usuario\" : " 		<< bres[i]["id_usuario"] << ",";
+					cout << "\"id_usuario\" : "						<< bres[i]["id_usuario"] << ",";
 					cout << "\"id_rol\":"							<< bres[i]["id_rol"] << ",";
 					cout << "\"rol_descripcion\" : \""				<< bres[i]["descripcion"] << "\",";
 					cout << "\"rol_nombre\" : \""					<< bres[i]["rol_nombre"] << "\",";
-					cout << "\"nombre\" : \"" 			<< bres[i]["nombre"] << "\",";
-					cout << "\"correo_electronico\" : \"" << bres[i]["correo_electronico"] << "\",";
-					cout << "\"ip\" : \"" 				<< bres[i]["ip"] << "\"";
+					cout << "\"nombre\" : \"" 						<< bres[i]["nombre"] << "\",";
+					cout << "\"correo_electronico\" : \""			<< bres[i]["correo_electronico"] << "\",";
+					cout << "\"ip\" : \"" 							<< bres[i]["ip"] << "\"";
 					cout << "}";
 
 					if(i < bres.num_rows() - 1){
 						cout << ",";
-				}
+					}
 				}
 
 				cout << "]},";
@@ -519,12 +524,13 @@ private:
 			}catch(const Exception& er){
 				cout << "Error" << er.what() << endl;
 
-
+			}
 		}
 };
 
 class ApiHandler{
-private:
+
+	private:
 	int testInstance(){
 		string instance = _get("instance");
 
@@ -548,7 +554,9 @@ private:
 		}
 	}
 
+	public:
 	void dispatch( string path ){
+
 		//look for global necesary params
 		testInstance();
 
@@ -577,6 +585,7 @@ private:
   *
   **/
 int main( int nargs, char **args ){
+
 	// Set global variables
 	argss = args;
 	nargss = nargs;
@@ -584,6 +593,7 @@ int main( int nargs, char **args ){
 	HttpResponse::bootstrap();
 
 	ApiHandler ah ;
+
 	ah.dispatch( header("PATH_INFO")  );
 
 	return EXIT_SUCCESS;

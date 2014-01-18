@@ -484,13 +484,16 @@ class InstanciasController {
 		$out = "";
 		$destiny_file = str_replace("server", "static_content/db_backups", POS_PATH_TO_SERVER_ROOT);
 
+		if (is_writable($destiny_file) !== true) {
+			Logger::log("Verifique que tenga los permisos necesarios para la carpeta de respaldos (0775)");
+			throw new AccessDeniedException ("Verifique que tenga los permisos necesarios para la carpeta de respaldos (0775)");
+		}
+
 		global $POS_CONFIG;
 
 		$sql = "SELECT * FROM instances $ids_string;";
-
-
 		$rs = $POS_CONFIG["CORE_CONN"]->Execute($sql);
-		//echo(":::::::::::::::::::::::::: Resultado: " . print_r($rs->fields));
+
 		$instancias = $rs->GetArray();
 
 		foreach ($instancias as $ins) {
@@ -1340,7 +1343,7 @@ class InstanciasController {
 
 		if($instance_id === NULL){
 			Logger::error("Error, debe especificar el id de una instancia a eliminar");
-			return json_encode(array("success"=>"false", "reason"=>"Error, debe especificar el id de una instancia a eliminar"));
+			throw new InvalidDataException ("Error, debe especificar el id de una instancia a eliminar");
 		}
 
 		$db_name = "pos_instance_" . $instance_id;
@@ -1352,7 +1355,7 @@ class InstanciasController {
 
 			if (empty($res)) {
 				Logger::error("No se puede eliminar la BD pos_instance asociada ya que la instalacion ha previamente sido eliminada o no se ha realizado ninguna instalaci&oacute;n");
-				return json_encode(array("success"=>"false", "reason"=>"Error, no se puede eliminar la BD pos_instance asociada ya que la instalacion ha previamente sido eliminada o no se ha realizado ninguna instalaci&oacute;n"));
+				throw new InvalidDatabaseOperationException ("Error, no se puede eliminar la BD pos_instance asociada ya que la instalacion ha previamente sido eliminada o no se ha realizado ninguna instalaci&oacute;n");
 			}
 		}
 
@@ -1362,8 +1365,7 @@ class InstanciasController {
 			try{
 				$POS_CONFIG["CORE_CONN"]->GetRow($sql);
 			}catch(Exception $e){
-				Logger::warn("Error al eliminar los permisos del usuario pos_instance_{$instance_id} de la BD");
-				//return json_encode(array("success"=>"false", "reason"=>"Error al eliminar los permisos del usuario pos_instance_{$instance_id} de la BD"));
+				Logger::warn("Error al eliminar los permisos del usuario pos_instance_{$instance_id} de la BD");				
 			}
 
 			$sql = "DROP USER $db_name@localhost";
@@ -1371,7 +1373,6 @@ class InstanciasController {
 				$POS_CONFIG["CORE_CONN"]->GetRow($sql);
 			}catch(Exception $e){
 				Logger::warn("Error al eliminar el usuario pos_instance_{$instance_id} de la BD");
-				//return json_encode(array("success"=>"false", "reason"=>"Error al eliminar el usuario pos_instance_{$instance_id} de la BD"));
 			}
 		}
 
@@ -1382,7 +1383,7 @@ class InstanciasController {
 				$res = $POS_CONFIG["CORE_CONN"]->GetRow($sql);
 			}catch(Exception $e){
 				Logger::error("Error al eliminar la base de datos pos_instance_{$instance_id}");
-				return json_encode(array("success"=>"false", "reason"=>"Error al eliminar la base de datos pos_instance_{$instance_id}"));
+				throw new InvalidDatabaseOperationException ("Error al eliminar la base de datos pos_instance_{$instance_id}");
 			}
 		}
 
@@ -1394,7 +1395,7 @@ class InstanciasController {
 
 			if (!empty($res)) {
 				Logger::error("Error al desactivar la instancia");
-				return json_encode(array("success"=>"false", "reason"=>"Error al desactivar la instancia"));
+				throw new InvalidDatabaseOperationException ("Error al desactivar la instancia");
 			}
 		}
 
@@ -1409,7 +1410,6 @@ class InstanciasController {
 		}
 
 		Logger::log("Se ha elimiando correctamente la instancia {$instance_id}");
-		return json_encode(array("success"=>"true"));
 	}
 
 	/**

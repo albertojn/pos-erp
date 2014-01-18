@@ -76,6 +76,15 @@ public class AdminPAQProxy extends HttpResponder{
 
         }
 
+        if((path.length > 2 ) && path[2].equals("updateCteProv")){
+            System.out.println("-- updateCteProv --");
+            if(searchInQuery("callback") !=null){
+                return (searchInQuery("callback") + "(" + updateCteProv() + ");");
+            }else{
+                return updateCteProv();
+            }
+        }
+
 
         if(( path.length > 2 )  && path[2].equals("loadClientes")){
             
@@ -460,39 +469,63 @@ public class AdminPAQProxy extends HttpResponder{
 
         TestRuntime test = new TestRuntime(params);     
         
-        reason = test.reason;
+        //reason = test.reason;
 
+        System.out.println("===========================================");
+        System.out.println("LA EMPRESA ES: " + test.reason);
+        System.out.println("===========================================");
         //-------------------------
         if (test.success == true){
 
-            String[] arrayResponse = test.reason.split(" ");
+            //String[] arrayResponse = test.reason.split(" ");
             try{
-                reason = arrayResponse[1];
+                //reason = arrayResponse[1];
+                /*
+                for (int i = 1; i < arrayResponse.length; i++) {
+                    reason += arrayResponse[i] + " ";
+                }*/
+                reason = test.reason.substring(4);
             }catch(Exception e){
                 r = "{\"success\" : false, \"reason\":\"Respuesta inesperada -> " + e.getMessage().replace("\"", "'") + "\"}";
                 System.out.println(r);
                 return r;
             }
         }
-        //------------------------   
-        
-        r = "{\"success\" : " + test.success + ", \"code\" : " + test.code + ", \"reason\":\"" + reason + "\"}"; 
+        //------------------------
+                //Comprueba si existe una lista de esa empresa
+        boolean existeLista = (new File("C:\\Caffeina\\Files\\CteProv_" + numEmpresa + ".txt").exists());
+        System.out.println("Archivo de lista de clientes: " + existeLista);
+
+        r = "{\"success\" : " + test.success + ", \"code\" : " + test.code + ", \"reason\":\"" + reason + "\",\"existeLista\":" + existeLista + "}"; 
         System.out.println(r);
-        
-        //-----------------
-        
-        params = URLDecoder.decode(path) + "\\Lista_Clientes_SDK\\InitListaClientes.EXE " + numEmpresa + " " + "1500"; 
-        
-        System.out.println("Llamando a WriteClientes con los parametros : " + params);
-        WriteClientes clientes = new WriteClientes(params);
-        
-        
-
-        //----------------
-
+        if(!existeLista){
+            //Si no existe la lista, crea automaticamente el archivo
+            params = URLDecoder.decode(path) + "\\Lista_Clientes_SDK\\InitListaClientes.EXE " + numEmpresa + " " + "1500"; 
+            
+            System.out.println("Llamando a WriteClientes con los parametros : " + params);
+            WriteClientes clientes = new WriteClientes(params);
+        }
 
         return r;
 
+    }
+
+    /*
+    * Actualiza la lista de clientes (el archivo CteProv_X.txt)
+    */
+    private String updateCteProv(){
+        String params = "";
+        String numEmpresa = searchInQuery("numEmpresa");
+        String path = searchInQuery("path");
+        String r ="";
+
+        params = URLDecoder.decode(path) + "\\Lista_Clientes_SDK\\InitListaClientes.EXE " + numEmpresa + " " + "1500"; 
+        
+        System.out.println("Llamando a WriteClientes con los parametros : " + params);
+
+        WriteClientes clientes = new WriteClientes(params);
+        r = "{\"success\" : " + clientes.success + ", \"code\" : \"" + clientes.code + "\", \"reason\":\"" + clientes.reason + "\"}"; 
+        return r;
     }
 
 
@@ -599,8 +632,20 @@ public class AdminPAQProxy extends HttpResponder{
         //String path = "C:/Documents and Settings/Administrador/Escritorio/CONNECTION_SDK/Lista_Proveedores_SDK/InitListaClientes.EXE"/*searchInQuery("path")*/;
         String path = searchInQuery("path") + "/Nueva_Compra_Venta_SDK/InitCompraVenta.EXE";
 
-        params = path + " " + searchInQuery("numEmpresa") + " " + searchInQuery("serie_documento") + " " + fechaActual + " " + searchInQuery("codigo_cliente_proveedor") + " " + searchInQuery("codigo_producto_servicio") + " " + searchInQuery("codigo_almacen") + " " + searchInQuery("numero_unidades") + " " + searchInQuery("precio_unitario") + " " + searchInQuery("codigo_concepto");
-
+        params = path + " " + searchInQuery("numEmpresa") + " " + searchInQuery("folio_documento") + " " + fechaActual + " " + searchInQuery("codigo_cliente_proveedor") + " " + searchInQuery("codigo_producto_servicio") + " " + searchInQuery("codigo_almacen") + " " + searchInQuery("numero_unidades") + " " + searchInQuery("precio_unitario") + " " + searchInQuery("codigo_concepto") + " " + searchInQuery("serie_documento");
+        
+        /*
+         * 1) Numero de empresa
+         * 2) Folio del documento
+         * 3) Fecha actual
+         * 4) Codigo cliente-proveedor
+         * 5) Codigo de producto-servicio
+         * 6) Codigo de almacen
+         * 7) Numero de unidades
+         * 8) Precio unitario
+         * 9) Codigo del concepto
+         *10) Serie del documento
+        */
         System.out.println("ENVIANDO : " + params);
 
         TestRuntime CompraVenta = new TestRuntime(params);
@@ -752,6 +797,7 @@ class LoadClientes {
 
         int start = Integer.parseInt(searchInQuery("start"));
         int limit = Integer.parseInt(searchInQuery("limit"));
+        int numEmpresa = Integer.parseInt(searchInQuery("numEmpresa"));
 
           File archivo = null;
           FileReader fr = null;
@@ -761,9 +807,9 @@ class LoadClientes {
              // Apertura del fichero y creacion de BufferedReader para poder
              // hacer una lectura comoda (disponer del metodo readLine()).
 
-            System.out.println("Abriendo archivo : C:\\Caffeina\\Files\\CteProv.txt");
+            System.out.println("Abriendo archivo: C:\\Caffeina\\Files\\CteProv_" + numEmpresa + ".txt");
 
-             archivo = new File ("C:\\Caffeina\\Files\\CteProv.txt");
+             archivo = new File ("C:\\Caffeina\\Files\\CteProv_" + numEmpresa + ".txt");
              fr = new FileReader (archivo);
              br = new BufferedReader(fr);
 
@@ -771,7 +817,7 @@ class LoadClientes {
              String linea = "";
 
              String buffer = "";
-
+//LoadClientes
              int pointer = 0;
              int cont = 0;
 
@@ -852,7 +898,6 @@ class WriteClientes {
 
             // Se lee la primera linea 
             String aux = br.readLine();
-
             System.out.println("--- 6.2 ---");
 
             // Mientras se haya leido alguna linea 
@@ -861,19 +906,23 @@ class WriteClientes {
             PrintWriter pw = null;
             try
             {
-                System.out.println("Creando nuevo fichero C:\\Caffeina\\Files\\CteProv.txt");                
-                fichero = new FileWriter("C:\\Caffeina\\Files\\CteProv.txt");
+                System.out.println("Creando nuevo fichero C:\\Caffeina\\Files\\CteProv_" + searchInQuery("numEmpresa") + ".txt");               
+                fichero = new FileWriter("C:\\Caffeina\\Files\\CteProv_" + searchInQuery("numEmpresa") + ".txt");
                 pw = new PrintWriter(fichero);
 
                 //System.out.println("aux = " + aux);
-
+            System.out.println("--- 6.3 ---");
                 while (aux != null) {
                     //System.out.println("aux = " + aux);
                     pw.println(aux);
                     aux = br.readLine();
                 }                    
-                        
-
+            System.out.println("--- 6.4 ---");
+                if(new File("C:\\Caffeina\\Files\\CteProv_" + searchInQuery("numEmpresa") + ".txt").exists()){
+                    this.code="100";
+                    this.success=true;
+                    this.reason="OK";
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

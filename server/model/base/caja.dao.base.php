@@ -161,6 +161,11 @@ abstract class CajaDAOBase extends DAO
 			array_push( $val, $caja->getActiva() );
 		}
 
+		if( ! is_null( $caja->getIdCuentaContable() ) ){
+			$sql .= " `id_cuenta_contable` = ? AND";
+			array_push( $val, $caja->getIdCuentaContable() );
+		}
+
 		if(sizeof($val) == 0){return self::getAll(/* $pagina = NULL, $columnas_por_pagina = NULL, $orden = NULL, $tipo_de_orden = 'ASC' */);}
 		$sql = substr($sql, 0, -3) . " )";
 		if( ! is_null ( $orderBy ) ){
@@ -183,7 +188,7 @@ abstract class CajaDAOBase extends DAO
 	  *	
 	  * Este metodo es un metodo de ayuda para uso interno. Se ejecutara todas las manipulaciones
 	  * en la base de datos que estan dadas en el objeto pasado.No se haran consultas SELECT 
-	  * aqui, sin embargo. El valor de retorno indica cuántas filas se vieron afectadas.
+	  * aqui, sin embargo. El valor de retorno indica cuÃ¡ntas filas se vieron afectadas.
 	  *	
 	  * @internal private information for advanced developers only
 	  * @return Filas afectadas o un string con la descripcion del error
@@ -191,7 +196,7 @@ abstract class CajaDAOBase extends DAO
 	  **/
 	private static final function update( $caja )
 	{
-		$sql = "UPDATE caja SET  `id_sucursal` = ?, `token` = ?, `descripcion` = ?, `abierta` = ?, `saldo` = ?, `control_billetes` = ?, `activa` = ? WHERE  `id_caja` = ?;";
+		$sql = "UPDATE caja SET  `id_sucursal` = ?, `token` = ?, `descripcion` = ?, `abierta` = ?, `saldo` = ?, `control_billetes` = ?, `activa` = ?, `id_cuenta_contable` = ? WHERE  `id_caja` = ?;";
 		$params = array( 
 			$caja->getIdSucursal(), 
 			$caja->getToken(), 
@@ -200,6 +205,7 @@ abstract class CajaDAOBase extends DAO
 			$caja->getSaldo(), 
 			$caja->getControlBilletes(), 
 			$caja->getActiva(), 
+			$caja->getIdCuentaContable(), 
 			$caja->getIdCaja(), );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -223,7 +229,7 @@ abstract class CajaDAOBase extends DAO
 	  **/
 	private static final function create( &$caja )
 	{
-		$sql = "INSERT INTO caja ( `id_caja`, `id_sucursal`, `token`, `descripcion`, `abierta`, `saldo`, `control_billetes`, `activa` ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO caja ( `id_caja`, `id_sucursal`, `token`, `descripcion`, `abierta`, `saldo`, `control_billetes`, `activa`, `id_cuenta_contable` ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		$params = array( 
 			$caja->getIdCaja(), 
 			$caja->getIdSucursal(), 
@@ -233,6 +239,7 @@ abstract class CajaDAOBase extends DAO
 			$caja->getSaldo(), 
 			$caja->getControlBilletes(), 
 			$caja->getActiva(), 
+			$caja->getIdCuentaContable(), 
 		 );
 		global $conn;
 		try{$conn->Execute($sql, $params);}
@@ -364,6 +371,17 @@ abstract class CajaDAOBase extends DAO
 				array_push( $val, max($a,$b)); 
 		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
 			$sql .= " `activa` = ? AND"; 
+			$a = is_null ( $a ) ? $b : $a;
+			array_push( $val, $a);
+			
+		}
+
+		if( ( !is_null (($a = $cajaA->getIdCuentaContable()) ) ) & ( ! is_null ( ($b = $cajaB->getIdCuentaContable()) ) ) ){
+				$sql .= " `id_cuenta_contable` >= ? AND `id_cuenta_contable` <= ? AND";
+				array_push( $val, min($a,$b)); 
+				array_push( $val, max($a,$b)); 
+		}elseif( !is_null ( $a ) || !is_null ( $b ) ){
+			$sql .= " `id_cuenta_contable` = ? AND"; 
 			$a = is_null ( $a ) ? $b : $a;
 			array_push( $val, $a);
 			

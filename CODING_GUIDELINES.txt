@@ -1,0 +1,71 @@
+
+Tabs en vez de espacios, y no se mezclan epacios con tabs.
+Si estas editando una linea existente que tiene espacios. Conviertelos a tabs.
+
+No trailing spaces.
+
+No mas de dos espacios juntos
+Bien:
+	accion1();
+
+	accion2();
+
+Mal:
+	accion1();
+
+
+	accrion2();
+
+Siempre se usan llaves:
+Bien:
+	while (foo) {
+		bar();
+	}
+
+Mal:
+	while (foo)
+		bar();
+
+
+----------------- Estructuras de control/desicion -------------------
+LLave que abre en la misma linea
+Bien:
+	if (x) {
+		//codigo
+	}
+
+Mal:
+	if (x)
+	{
+		//codigo
+	}
+
+
+
+Un espacio despues de if,while, for, switch
+Bien:
+	for (;;) {
+		//loop infinito
+	}
+
+Mal:
+	for(;;){
+		//loop infinito
+	}
+
+
+
+----------------- Comentarios -------------------
+
+Comentarios en su propia linea
+Bien:
+	// Asignemos el numero de meses
+	$a = 4;
+
+Mal:
+	$a = 5; // Asignamos los meses
+
+
+
+
+
